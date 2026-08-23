@@ -165,7 +165,7 @@ export const Home: React.FC = () => {
                 {/* Main Hero Photograph */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-amber-950/10 shadow-inner">
                   <img
-                    src={getProductImageUrl('/images/hero-traditional-spread.webp')}
+                    src={getProductImageUrl('/products/hero-traditional-spread.webp')}
                     alt="Annapurna Aahaar Traditional Food Spread - Sevaya, Papad, and Pure Turmeric"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                     loading="eager"
