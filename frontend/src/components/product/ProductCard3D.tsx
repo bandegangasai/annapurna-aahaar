@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Check, Sparkles, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Check, Sparkles } from 'lucide-react';
 import { Product, ProductVariant } from '../../types';
 import { formatINR, getProductImageUrl } from '../../utils/formatters';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ProductCard3DProps {
   product: Product;
@@ -14,6 +15,7 @@ interface ProductCard3DProps {
 export const ProductCard3D: React.FC<ProductCard3DProps> = ({ product }) => {
   const { addItem } = useCart();
   const { showToast } = useToast();
+  const { t, getLocalizedProduct } = useLanguage();
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(() => {
     return product.variants?.[0] || {
@@ -29,44 +31,50 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({ product }) => {
 
   const [isAdded, setIsAdded] = useState(false);
 
+  const localized = getLocalizedProduct(
+    product.slug || product.id,
+    product.name,
+    product.description
+  );
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     addItem(product, selectedVariant, 1);
     setIsAdded(true);
-    showToast(`Added ${product.name} (${selectedVariant.weight}) to cart!`, 'success');
+    showToast(`${t('prod_btn_added')}: ${localized.name} (${selectedVariant.weight})`, 'success');
 
-    setTimeout(() => setIsAdded(false), 1500);
+    setTimeout(() => setIsAdded(false), 1600);
   };
 
   return (
     <motion.div
       whileHover={{ y: -6, scale: 1.01 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="group bg-white rounded-3xl overflow-hidden border border-heritage-gold/25 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+      className="group bg-white rounded-3xl overflow-hidden border border-[#C79A45]/30 shadow-subtle hover:shadow-card-lift hover:border-[#C79A45] transition-all duration-300 flex flex-col justify-between"
     >
       {/* Product Image Showcase */}
       <Link
         to={`/products/${product.slug}`}
-        className="relative block overflow-hidden bg-gradient-to-b from-[#FAF6EE] to-[#F3EBD9] aspect-square p-4 flex items-center justify-center border-b border-heritage-gold/15"
+        className="relative block overflow-hidden bg-[#FAF6EE] aspect-square p-4 flex items-center justify-center border-b border-[#C79A45]/15"
       >
         <img
           src={getProductImageUrl(product.imageUrl)}
-          alt={product.name}
-          className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500"
+          alt={localized.name}
+          className="w-full h-full object-contain object-center group-hover:scale-106 transition-transform duration-500"
           loading="lazy"
         />
 
-        {/* Category & Verified Badges */}
+        {/* Category & Heritage Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-          <span className="bg-heritage-maroon/90 backdrop-blur-sm text-cream-100 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm border border-heritage-gold/30">
+          <span className="bg-[#173F35]/95 backdrop-blur-sm text-[#F8F3E7] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs border border-[#C79A45]/40">
             {product.category}
           </span>
           {product.isFeatured && (
-            <span className="bg-heritage-gold text-heritage-darkMaroon text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+            <span className="bg-[#C79A45] text-[#173F35] text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
               <Sparkles className="w-3 h-3" />
-              Speciality
+              {t('prod_badge_popular')}
             </span>
           )}
         </div>
@@ -77,22 +85,22 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({ product }) => {
         <div>
           <Link
             to={`/products/${product.slug}`}
-            className="group-hover:text-heritage-richRed transition-colors"
+            className="group-hover:text-[#173F35] transition-colors"
           >
-            <h3 className="font-serif font-bold text-stone-900 text-lg sm:text-xl line-clamp-1">
-              {product.name}
+            <h3 className="font-serif font-bold text-stone-primary text-lg sm:text-xl line-clamp-1">
+              {localized.name}
             </h3>
           </Link>
-          <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 mt-1.5 leading-relaxed">
-            {product.description}
+          <p className="text-xs sm:text-sm text-stone-muted line-clamp-2 mt-1.5 leading-relaxed">
+            {localized.description}
           </p>
         </div>
 
         {/* Variant Picker (Weight / Pack Size) */}
         {product.variants && product.variants.length > 0 && (
           <div>
-            <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block mb-1.5">
-              Available Weight / Pack:
+            <span className="text-[11px] font-bold text-stone-muted uppercase tracking-wider block mb-1.5">
+              {t('prod_select_weight')}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {product.variants.map((v) => (
@@ -105,8 +113,8 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({ product }) => {
                   }}
                   className={`text-xs px-3 py-1 rounded-xl font-bold transition-all ${
                     selectedVariant.id === v.id
-                      ? 'bg-heritage-maroon text-cream-100 shadow-md border border-heritage-gold'
-                      : 'bg-cream-100 text-stone-700 hover:bg-cream-200 border border-heritage-gold/20'
+                      ? 'bg-[#173F35] text-[#F8F3E7] shadow-sm border border-[#C79A45]'
+                      : 'bg-[#F8F3E7] text-stone-primary hover:bg-[#F1E9D5] border border-[#C79A45]/25'
                   }`}
                 >
                   {v.weight}
@@ -116,37 +124,37 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({ product }) => {
           </div>
         )}
 
-        {/* Price & Action Button */}
+        {/* Price & Action Buttons */}
         <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-stone-500 block uppercase font-bold tracking-wider">
+            <span className="text-[10px] text-stone-muted block uppercase font-bold tracking-wider">
               Price
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="font-serif font-black text-xl text-heritage-maroon">
+              <span className="font-serif font-black text-xl text-[#173F35]">
                 {formatINR(selectedVariant.price)}
               </span>
-              <span className="text-xs text-stone-500 font-medium">/ {selectedVariant.weight}</span>
+              <span className="text-xs text-stone-muted font-medium">/ {selectedVariant.weight}</span>
             </div>
           </div>
 
           <button
             onClick={handleAddToCart}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 ${
+            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 ${
               isAdded
-                ? 'bg-emerald-700 text-white'
-                : 'bg-gradient-to-r from-heritage-maroon to-heritage-richRed hover:from-heritage-darkMaroon hover:to-heritage-maroon text-cream-100 border border-heritage-gold/30'
+                ? 'bg-emerald-800 text-white'
+                : 'bg-[#173F35] hover:bg-[#0C241E] text-[#F8F3E7] border border-[#C79A45]/40'
             }`}
           >
             {isAdded ? (
               <>
                 <Check className="w-4 h-4 stroke-[3]" />
-                <span>Added</span>
+                <span>{t('prod_btn_added')}</span>
               </>
             ) : (
               <>
-                <ShoppingBag className="w-4 h-4 text-heritage-gold" />
-                <span>Add</span>
+                <ShoppingBag className="w-4 h-4 text-[#C79A45]" />
+                <span>{t('prod_btn_add')}</span>
               </>
             )}
           </button>
@@ -155,3 +163,5 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({ product }) => {
     </motion.div>
   );
 };
+
+export default ProductCard3D;

@@ -3,104 +3,120 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-// 3D Traditional Mill / Chakki & Grain Vessel Mesh
-function TraditionalChakkiMesh() {
-  const meshRef = useRef<THREE.Group>(null);
-  const topStoneRef = useRef<THREE.Mesh>(null);
+// 3D Traditional Brass Thali, Grain Milling Chakki & Golden Haldi Essence
+function HeritageComposition() {
+  const groupRef = useRef<THREE.Group>(null);
+  const chakkiStoneRef = useRef<THREE.Mesh>(null);
+  const papadPlateRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
-    if (meshRef.current) {
-      meshRef.current.rotation.y = time * 0.18;
-      meshRef.current.position.y = Math.sin(time * 0.7) * 0.08;
+    if (groupRef.current) {
+      groupRef.current.rotation.y = time * 0.15;
+      groupRef.current.position.y = Math.sin(time * 0.6) * 0.06;
     }
-    if (topStoneRef.current) {
-      topStoneRef.current.rotation.y = -time * 0.35;
+    if (chakkiStoneRef.current) {
+      chakkiStoneRef.current.rotation.y = -time * 0.3;
+    }
+    if (papadPlateRef.current) {
+      papadPlateRef.current.rotation.y = time * 0.2;
     }
   });
 
   return (
-    <group ref={meshRef} position={[0, -0.25, 0]} scale={[1.1, 1.1, 1.1]}>
-      {/* Base Terracotta Platform */}
-      <mesh position={[0, -0.7, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[2.2, 2.4, 0.4, 32]} />
+    <group ref={groupRef} position={[0, -0.2, 0]} scale={[1.15, 1.15, 1.15]}>
+      {/* 1. Traditional Indian Brass Thali Base */}
+      <mesh position={[0, -0.65, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[2.3, 2.5, 0.15, 48]} />
         <meshStandardMaterial
-          color="#5C1D06"
-          roughness={0.85}
-          metalness={0.1}
-        />
-      </mesh>
-
-      {/* Decorative Antique Gold Rim Ring */}
-      <mesh position={[0, -0.45, 0]}>
-        <torusGeometry args={[2.22, 0.08, 16, 64]} />
-        <meshStandardMaterial
-          color="#C89B3C"
-          metalness={0.75}
+          color="#C79A45"
+          metalness={0.85}
           roughness={0.25}
         />
       </mesh>
 
-      {/* Bottom Grinding Stone */}
-      <mesh position={[0, -0.2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[1.9, 2.0, 0.5, 32]} />
+      {/* Raised Brass Rim */}
+      <mesh position={[0, -0.55, 0]}>
+        <torusGeometry args={[2.42, 0.08, 16, 64]} />
         <meshStandardMaterial
-          color="#7C2D12"
-          roughness={0.75}
-          metalness={0.15}
+          color="#DFC17B"
+          metalness={0.9}
+          roughness={0.2}
         />
       </mesh>
 
-      {/* Top Rotating Grinding Stone */}
-      <mesh ref={topStoneRef} position={[0, 0.35, 0]} castShadow>
-        <cylinderGeometry args={[1.8, 1.85, 0.5, 32]} />
+      {/* 2. Traditional Grain Grinding Chakki (Stone & Terracotta Base) */}
+      <mesh position={[0, -0.4, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[1.7, 1.8, 0.35, 32]} />
         <meshStandardMaterial
-          color="#9A3412"
-          roughness={0.65}
+          color="#173F35"
+          roughness={0.7}
           metalness={0.2}
         />
       </mesh>
 
-      {/* Central Grain Hopper (Brass / Antique Gold) */}
-      <mesh position={[0, 0.65, 0]}>
-        <cylinderGeometry args={[0.5, 0.7, 0.3, 24]} />
+      {/* Top Rotating Chakki Stone (Deep Forest / Dark Terracotta) */}
+      <mesh ref={chakkiStoneRef} position={[0, 0.05, 0]} castShadow>
+        <cylinderGeometry args={[1.5, 1.55, 0.45, 32]} />
         <meshStandardMaterial
-          color="#C89B3C"
-          metalness={0.7}
-          roughness={0.25}
+          color="#A65332"
+          roughness={0.6}
+          metalness={0.25}
         />
       </mesh>
 
-      {/* Wooden Turning Handle (Traditional Hatha) */}
-      <mesh position={[1.2, 0.9, 0]} rotation={[0, 0, 0.1]} castShadow>
-        <cylinderGeometry args={[0.1, 0.12, 0.9, 16]} />
+      {/* Central Brass Grain Hopper */}
+      <mesh position={[0, 0.38, 0]}>
+        <cylinderGeometry args={[0.45, 0.6, 0.25, 24]} />
         <meshStandardMaterial
-          color="#2B170F"
+          color="#C79A45"
+          metalness={0.8}
+          roughness={0.2}
+        />
+      </mesh>
+
+      {/* Traditional Wooden Handle */}
+      <mesh position={[0.95, 0.55, 0]} rotation={[0, 0, 0.08]} castShadow>
+        <cylinderGeometry args={[0.08, 0.1, 0.75, 16]} />
+        <meshStandardMaterial
+          color="#3E2723"
           roughness={0.9}
         />
       </mesh>
 
-      {/* Golden Grain Aura / Central Essence Sphere */}
-      <Float speed={2} rotationIntensity={0.5} floatIntensity={0.8}>
-        <mesh position={[0, 1.35, 0]}>
-          <sphereGeometry args={[0.35, 32, 32]} />
+      {/* 3. Golden Haldi / Grain Essence Sphere */}
+      <Float speed={2.5} rotationIntensity={0.6} floatIntensity={0.9}>
+        <mesh position={[0, 1.15, 0]}>
+          <sphereGeometry args={[0.38, 32, 32]} />
           <MeshDistortMaterial
-            color="#D4AF37"
-            emissive="#9A781E"
-            emissiveIntensity={0.5}
-            roughness={0.2}
-            metalness={0.8}
-            distort={0.35}
+            color="#E5A91E"
+            emissive="#C79A45"
+            emissiveIntensity={0.4}
+            roughness={0.25}
+            metalness={0.65}
+            distort={0.25}
             speed={2}
           />
         </mesh>
       </Float>
+
+      {/* 4. Handcrafted Sun-Dried Papad Disk (Floating Angle) */}
+      <group ref={papadPlateRef} position={[1.4, 0.4, 0.5]} rotation={[0.4, 0.2, 0.3]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.65, 0.65, 0.02, 32]} />
+          <meshStandardMaterial
+            color="#F1E9D5"
+            roughness={0.8}
+            metalness={0.05}
+          />
+        </mesh>
+      </group>
     </group>
   );
 }
 
-// 3D Floating Grain & Spice Particles
-function FloatingParticles({ count = 60 }: { count?: number }) {
+// Floating Golden Grain & Spice Particles
+function FloatingHeritageParticles({ count = 55 }: { count?: number }) {
   const pointsRef = useRef<THREE.Points>(null);
 
   const [positions, colors] = useMemo(() => {
@@ -108,17 +124,18 @@ function FloatingParticles({ count = 60 }: { count?: number }) {
     const col = new Float32Array(count * 3);
 
     const palette = [
-      new THREE.Color('#C89B3C'), // Antique Gold
-      new THREE.Color('#E5BE6C'), // Golden Turmeric
-      new THREE.Color('#9A3412'), // Terracotta
-      new THREE.Color('#FAF6EE'), // Sandalwood Cream
+      new THREE.Color('#C79A45'), // Antique Gold
+      new THREE.Color('#DFC17B'), // Light Gold
+      new THREE.Color('#A65332'), // Terracotta
+      new THREE.Color('#E5A91E'), // Turmeric Yellow
+      new THREE.Color('#F8F3E7'), // Warm Ivory
     ];
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
-      pos[i3] = (Math.random() - 0.5) * 8;
-      pos[i3 + 1] = (Math.random() - 0.5) * 6;
-      pos[i3 + 2] = (Math.random() - 0.5) * 6;
+      pos[i3] = (Math.random() - 0.5) * 7.5;
+      pos[i3 + 1] = (Math.random() - 0.5) * 5.5;
+      pos[i3 + 2] = (Math.random() - 0.5) * 5.5;
 
       const color = palette[Math.floor(Math.random() * palette.length)];
       col[i3] = color.r;
@@ -132,8 +149,8 @@ function FloatingParticles({ count = 60 }: { count?: number }) {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     if (pointsRef.current) {
-      pointsRef.current.rotation.y = time * 0.04;
-      pointsRef.current.rotation.x = Math.sin(time * 0.03) * 0.08;
+      pointsRef.current.rotation.y = time * 0.035;
+      pointsRef.current.rotation.x = Math.sin(time * 0.025) * 0.06;
     }
   });
 
@@ -154,26 +171,26 @@ function FloatingParticles({ count = 60 }: { count?: number }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.12}
+        size={0.11}
         vertexColors
         transparent
-        opacity={0.85}
+        opacity={0.8}
         sizeAttenuation
       />
     </points>
   );
 }
 
-// 2D Fallback Visual
+// 2D Static High-Quality Fallback for WebGL Unavailable or Reduced Motion
 function FallbackHeroVisual() {
   return (
     <div className="w-full h-full flex items-center justify-center relative select-none">
-      <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-gradient-to-tr from-heritage-maroon/20 via-heritage-gold/20 to-transparent blur-3xl" />
-      <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-dashed border-heritage-gold/40 flex items-center justify-center p-6 animate-spin-slow">
-        <div className="w-full h-full rounded-full border-4 border-heritage-gold/60 flex items-center justify-center bg-heritage-darkMaroon/30 backdrop-blur-sm shadow-2xl">
-          <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-br from-heritage-maroon via-heritage-richRed to-heritage-darkMaroon flex flex-col items-center justify-center shadow-inner text-cream-100 p-4 text-center border border-heritage-gold/40">
-            <span className="font-serif font-black text-3xl sm:text-4xl text-heritage-gold">AA</span>
-            <span className="text-[10px] tracking-widest uppercase font-bold text-cream-200 mt-1">
+      <div className="absolute w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-tr from-[#173F35]/20 via-[#C79A45]/20 to-transparent blur-3xl" />
+      <div className="relative w-60 h-60 sm:w-72 sm:h-72 rounded-full border-2 border-dashed border-[#C79A45]/50 flex items-center justify-center p-5">
+        <div className="w-full h-full rounded-full border-4 border-[#C79A45] flex items-center justify-center bg-[#173F35]/40 backdrop-blur-sm shadow-2xl">
+          <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-[#173F35] to-[#0C241E] flex flex-col items-center justify-center shadow-inner text-[#F8F3E7] p-4 text-center border border-[#C79A45]/50">
+            <span className="font-serif font-black text-3xl sm:text-4xl text-[#C79A45]">AA</span>
+            <span className="text-[10px] tracking-widest uppercase font-bold text-[#DFC17B] mt-1">
               Annapurna Aahaar
             </span>
           </div>
@@ -185,8 +202,16 @@ function FallbackHeroVisual() {
 
 export const HeroScene: React.FC = () => {
   const [hasWebGL, setHasWebGL] = useState(true);
+  const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(true);
 
   useEffect(() => {
+    // Check Reduced Motion Preference
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mediaQuery.matches) setIsReducedMotion(true);
+
+    // Check WebGL availability
     try {
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -194,36 +219,54 @@ export const HeroScene: React.FC = () => {
     } catch {
       setHasWebGL(false);
     }
+
+    // Viewport Intersection Observer to Pause when scrolled off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
-  if (!hasWebGL) {
+  if (!hasWebGL || isReducedMotion) {
     return <FallbackHeroVisual />;
   }
 
   return (
-    <div className="w-full h-[380px] sm:h-[480px] lg:h-[540px] relative">
-      <Canvas
-        camera={{ position: [0, 1.2, 4.5], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
-        onCreated={({ gl }) => {
-          gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.1;
-        }}
-      >
-        <ambientLight intensity={0.75} />
-        <directionalLight position={[5, 8, 5]} intensity={1.3} color="#FFFDF5" castShadow />
-        <pointLight position={[-4, 2, -2]} intensity={0.8} color="#C89B3C" />
-        <spotLight
-          position={[0, 6, 2]}
-          angle={0.6}
-          penumbra={0.8}
-          intensity={1.2}
-          color="#FDEFB3"
-        />
+    <div ref={containerRef} className="w-full h-[360px] sm:h-[460px] lg:h-[520px] relative">
+      {isInView && (
+        <Canvas
+          camera={{ position: [0, 1.1, 4.4], fov: 45 }}
+          gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+          onCreated={({ gl }) => {
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1.1;
+          }}
+        >
+          <ambientLight intensity={0.7} />
+          <directionalLight position={[5, 8, 5]} intensity={1.25} color="#FFFDF5" castShadow />
+          <pointLight position={[-4, 2, -2]} intensity={0.8} color="#C79A45" />
+          <spotLight
+            position={[0, 6, 2]}
+            angle={0.6}
+            penumbra={0.8}
+            intensity={1.2}
+            color="#DFC17B"
+          />
 
-        <TraditionalChakkiMesh />
-        <FloatingParticles count={75} />
-      </Canvas>
+          <HeritageComposition />
+          <FloatingHeritageParticles count={55} />
+        </Canvas>
+      )}
     </div>
   );
 };
+
+export default HeroScene;

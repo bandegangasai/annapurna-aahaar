@@ -7,63 +7,66 @@ import {
   Flame,
   Award,
   Heart,
-  Truck,
+  Phone,
   ArrowRight,
 } from 'lucide-react';
 import { SEOHead } from '../components/common/SEOHead';
+import { useLanguage } from '../context/LanguageContext';
 
 export const WhyUs: React.FC = () => {
+  const { t } = useLanguage();
+
   const pillars = [
     {
       icon: Sparkles,
-      title: 'Authentic Indian Taste',
-      desc: 'Formulated with age-old recipes from traditional kitchens, preserving rich culinary heritage in every bite.',
+      title: t('trust_1_title'),
+      desc: t('trust_1_desc'),
     },
     {
       icon: Sun,
-      title: 'Natural Sun-Curing',
-      desc: 'Naturally sun-cured papads and whole-wheat sevaya for crispiness and long shelf life without chemical preservatives.',
+      title: t('trust_2_title'),
+      desc: t('trust_2_desc'),
     },
     {
       icon: ShieldCheck,
-      title: 'Hygienic Clean Processing',
-      desc: 'Prepared in clean, dust-free facilities in Bhainsa, Telangana with moisture-proof food grade packaging.',
+      title: t('trust_3_title'),
+      desc: t('trust_3_desc'),
     },
     {
       icon: Award,
-      title: 'Pure Whole Grains',
-      desc: '100% whole grain flours with zero fillers, artificial starches, or industrial blending.',
+      title: t('trust_4_title'),
+      desc: t('trust_4_desc'),
     },
     {
       icon: Flame,
-      title: 'Golden Pure Turmeric',
-      desc: 'Farm-sourced golden turmeric powder stone-ground to retain high curcumin levels and natural medicinal potency.',
+      title: 'Pure Golden Turmeric',
+      desc: 'Farm-sourced golden turmeric powder stone-ground to retain high curcumin levels and natural medicinal aroma.',
     },
     {
       icon: Heart,
-      title: 'Dedicated Customer Service',
-      desc: 'Direct from Bande Omkar in Bhainsa with prompt dispatch, full order tracking, and Cash on Delivery / Online payment support.',
+      title: 'Dedicated Customer Care',
+      desc: 'Direct from Bande Omkar in Bhainsa with prompt dispatch, full order tracking, and 24/7 Telephone IVR assistance (9347036152).',
     },
   ];
 
   return (
-    <div className="bg-[#FAF6EE] min-h-screen py-10 lg:py-16">
+    <div className="bg-[#F8F3E7] min-h-screen py-10 lg:py-16 text-[#252525]">
       <SEOHead
         title="Why Choose Annapurna Aahaar | Pure Indian Food Products"
-        description="Discover the 6 core pillars of quality and tradition that make Annapurna Aahaar the preferred choice for authentic Indian food."
+        description="Discover the core pillars of quality and tradition that make Annapurna Aahaar the preferred choice for authentic Indian food in Bhainsa, Telangana (504103)."
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold text-heritage-antiqueGold uppercase tracking-widest block mb-1">
+          <span className="text-xs font-bold text-[#C79A45] uppercase tracking-widest block mb-1">
             Our Quality Standard
           </span>
-          <h1 className="font-serif font-black text-3xl sm:text-5xl text-heritage-maroon leading-tight">
+          <h1 className="font-serif font-black text-3xl sm:text-5xl text-[#173F35] leading-tight">
             Why Choose Annapurna Aahaar?
           </h1>
-          <p className="text-stone-600 text-sm sm:text-base mt-2">
-            The values and principles behind every grain and papad prepared in Bhainsa, Telangana.
+          <p className="text-stone-muted text-sm sm:text-base mt-2">
+            The values and principles behind every grain and papad prepared in Bhainsa, Telangana (504103).
           </p>
         </div>
 
@@ -74,15 +77,15 @@ export const WhyUs: React.FC = () => {
             return (
               <div
                 key={i}
-                className="bg-white p-8 rounded-3xl border border-heritage-gold/30 shadow-sm hover:shadow-md transition-all space-y-4"
+                className="bg-white p-8 rounded-3xl border border-[#C79A45]/30 shadow-subtle hover:shadow-card-lift transition-all space-y-4"
               >
-                <div className="w-12 h-12 rounded-2xl bg-heritage-gold/20 flex items-center justify-center text-heritage-maroon border border-heritage-gold/40">
-                  <Icon className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-2xl bg-[#173F35] flex items-center justify-center text-[#C79A45] border border-[#C79A45]/40 shadow-xs">
+                  <Icon className="w-6 h-6 text-[#C79A45]" />
                 </div>
-                <h3 className="font-serif font-bold text-xl text-stone-900">
+                <h3 className="font-serif font-bold text-xl text-stone-primary">
                   {p.title}
                 </h3>
-                <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
+                <p className="text-stone-muted text-xs sm:text-sm leading-relaxed">
                   {p.desc}
                 </p>
               </div>
@@ -91,24 +94,32 @@ export const WhyUs: React.FC = () => {
         </div>
 
         {/* CTA Card */}
-        <div className="bg-heritage-darkMaroon text-cream-100 rounded-3xl p-8 sm:p-12 text-center border-2 border-heritage-gold/40 shadow-xl space-y-4">
-          <h2 className="font-serif font-bold text-2xl sm:text-3xl text-cream-50">
+        <div className="bg-[#173F35] text-[#F8F3E7] rounded-3xl p-8 sm:p-12 text-center border-2 border-[#C79A45]/40 shadow-xl space-y-4">
+          <h2 className="font-serif font-black text-2xl sm:text-3xl text-white">
             Taste the Pure Difference Today
           </h2>
-          <p className="text-xs sm:text-sm text-cream-200 max-w-lg mx-auto">
+          <p className="text-xs sm:text-sm text-stone-200 max-w-lg mx-auto">
             Order traditional wheat sevaya, round sun-dried papads, and pure turmeric powder directly to your home.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 bg-heritage-gold hover:bg-heritage-antiqueGold text-heritage-darkMaroon font-black px-8 py-3.5 rounded-2xl text-sm transition-all shadow-lg"
+              className="w-full sm:w-auto bg-[#C79A45] hover:bg-[#D5AD56] text-[#173F35] font-black px-7 py-3.5 rounded-2xl shadow-lg transition-all text-sm"
             >
-              <span>Explore Full Catalogue</span>
-              <ArrowRight className="w-4 h-4" />
+              {t('hero_shop_now')}
             </Link>
+            <a
+              href="tel:9347036152"
+              className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-[#C79A45]/40 px-6 py-3.5 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 text-sm"
+            >
+              <Phone className="w-4 h-4 text-[#C79A45]" />
+              <span>Call 9347036152</span>
+            </a>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default WhyUs;

@@ -7,11 +7,12 @@ import {
   X,
   Phone,
   Clock,
-  ChevronRight,
-  ShieldCheck,
-  Headphones,
+  Globe,
+  MapPin,
+  Sparkles,
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useLanguage, LANGUAGES, LanguageCode } from '../../context/LanguageContext';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -20,6 +21,7 @@ export const Navbar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { totalItemsCount, setIsCartOpen } = useCart();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -46,70 +48,95 @@ export const Navbar: React.FC = () => {
   };
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Our Story', path: '/our-story' },
-    { name: 'Products', path: '/products' },
-    { name: 'Why Us', path: '/why-us' },
-    { name: 'Contact', path: '/contact' },
+    { name: t('nav_home'), path: '/' },
+    { name: t('nav_products'), path: '/products' },
+    { name: t('nav_about'), path: '/our-story' },
+    { name: t('nav_why_us'), path: '/why-us' },
+    { name: t('nav_track'), path: '/track' },
+    { name: t('nav_contact'), path: '/contact' },
   ];
 
   return (
     <>
-      {/* Top Authentic Heritage Notice Bar with IVR Ordering Phone */}
-      <div className="bg-heritage-darkMaroon text-cream-100 text-xs py-2 px-4 font-medium border-b border-heritage-gold/30">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      {/* Top Authentic Heritage Bar with Multilingual Language Selector & 24/7 Phone Hotline */}
+      <div className="bg-[#173F35] text-[#F8F3E7] text-xs py-2 px-3 sm:px-6 font-medium border-b border-[#C79A45]/30">
+        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+          {/* Location & Brand Motto */}
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-heritage-gold animate-pulse" />
-            <span className="hidden sm:inline">Bhainsa, Nirmal District, Telangana (504103)</span>
-            <span className="sm:hidden">Bhainsa, Telangana</span>
-            <span className="text-heritage-gold/50 hidden md:inline">|</span>
-            <span className="hidden md:inline text-cream-200">Owner: Bande Omkar</span>
+            <MapPin className="w-3.5 h-3.5 text-[#C79A45] shrink-0" />
+            <span className="hidden sm:inline text-stone-200">
+              Bhainsa, Nirmal District, Telangana (504103)
+            </span>
+            <span className="sm:hidden text-stone-200">Bhainsa, Telangana</span>
+            <span className="text-[#C79A45]/40 hidden md:inline">•</span>
+            <span className="hidden md:inline text-[#C79A45] font-semibold">
+              Owner: Bande Omkar
+            </span>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-6 text-xs">
-            {/* Dedicated IVR Hotline Call Link */}
+          {/* Right Top Bar: Language Buttons & Call Hotline */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Top Language Switcher Bar */}
+            <div className="flex items-center bg-[#0C241E] p-0.5 rounded-full border border-[#C79A45]/40 shadow-inner">
+              <span className="px-2 text-[11px] text-[#C79A45] flex items-center gap-1 font-bold">
+                <Globe className="w-3 h-3" />
+                <span className="hidden xl:inline">Language:</span>
+              </span>
+              {LANGUAGES.map((lang) => {
+                const isSelected = language === lang.code;
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                      isSelected
+                        ? 'bg-[#C79A45] text-[#173F35] shadow-xs'
+                        : 'text-[#F8F3E7] hover:text-[#C79A45] hover:bg-[#173F35]/50'
+                    }`}
+                    title={`Switch language to ${lang.label}`}
+                  >
+                    {lang.nativeName}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Direct Phone Dial Link */}
             <a
               href="tel:9347036152"
-              className="flex items-center gap-1.5 bg-heritage-gold/25 hover:bg-heritage-gold/40 text-heritage-gold border border-heritage-gold/40 px-2.5 py-0.5 rounded-full font-bold transition-all"
-              title="24/7 Telephone IVR Ordering in English, Marathi, Hindi, Telugu"
+              className="flex items-center gap-1.5 bg-[#C79A45]/20 hover:bg-[#C79A45]/30 text-[#C79A45] border border-[#C79A45]/50 px-3 py-1 rounded-full font-bold transition-all text-xs"
+              title="Call our 24/7 Telephone IVR: 9347036152"
             >
-              <Phone className="w-3 h-3 animate-pulse" />
-              <span>Order by Phone: <strong className="text-white">9347036152</strong></span>
+              <Phone className="w-3 h-3 animate-pulse text-[#C79A45]" />
+              <span className="hidden sm:inline">{t('nav_call_to_order')}:</span>
+              <strong className="text-white">9347036152</strong>
             </a>
-
-            <Link
-              to="/track"
-              className="hidden lg:flex items-center gap-1 text-cream-200 hover:text-heritage-gold transition-colors"
-            >
-              <Clock className="w-3.5 h-3.5" />
-              <span>Track Order</span>
-            </Link>
           </div>
         </div>
       </div>
 
-      {/* Main Sticky Navbar */}
+      {/* Main Sticky Navbar Header */}
       <header
         className={`sticky top-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? 'bg-[#FAF6EE]/95 backdrop-blur-md shadow-md py-3 border-b border-heritage-gold/20'
-            : 'bg-[#FAF6EE] py-4'
+            ? 'bg-[#F8F3E7]/95 backdrop-blur-md shadow-md py-3 border-b border-[#C79A45]/20'
+            : 'bg-[#F8F3E7] py-4 border-b border-[#C79A45]/15'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-heritage-gold via-heritage-antiqueGold to-heritage-maroon p-0.5 shadow-md group-hover:scale-105 transition-transform">
-              <div className="w-full h-full rounded-full bg-heritage-maroon flex items-center justify-center border border-heritage-gold/40">
-                <span className="font-serif font-black text-lg text-heritage-gold tracking-wider">AA</span>
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#C79A45] to-[#173F35] p-0.5 shadow-md group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-full h-full rounded-[14px] bg-[#173F35] flex items-center justify-center border border-[#C79A45]/40">
+                <span className="font-serif font-black text-lg text-[#C79A45] tracking-wider">AA</span>
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-serif font-black text-xl sm:text-2xl text-heritage-maroon tracking-wide group-hover:text-heritage-richRed transition-colors">
-                ANNAPURNA AHAAR
+              <span className="font-serif font-black text-xl sm:text-2xl text-[#173F35] tracking-tight group-hover:text-[#0C241E] transition-colors">
+                ANNAPURNA AAHAAR
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-heritage-antiqueGold tracking-widest uppercase">
-                Tradition in Every Grain
+              <span className="text-[10px] sm:text-[11px] font-bold text-[#C79A45] tracking-widest uppercase">
+                {t('tagline')}
               </span>
             </div>
           </Link>
@@ -124,8 +151,8 @@ export const Navbar: React.FC = () => {
                   to={link.path}
                   className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${
                     isActive
-                      ? 'text-heritage-maroon bg-heritage-gold/15 shadow-sm border border-heritage-gold/30'
-                      : 'text-stone-700 hover:text-heritage-maroon hover:bg-cream-200/60'
+                      ? 'text-[#173F35] bg-[#C79A45]/15 shadow-2xs border border-[#C79A45]/30'
+                      : 'text-stone-700 hover:text-[#173F35] hover:bg-[#F1E9D5]'
                   }`}
                 >
                   {link.name}
@@ -134,22 +161,22 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Action Buttons */}
+          {/* Action Buttons: Call to Order CTA, Search, Cart & Mobile Menu */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Desktop CALL TO ORDER Button */}
+            {/* Desktop "CALL TO ORDER" Primary Action */}
             <a
               href="tel:9347036152"
-              className="hidden lg:flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition-all hover:scale-105"
-              title="24/7 Telephone Ordering: 9347036152"
+              className="hidden lg:flex items-center gap-2 bg-[#173F35] hover:bg-[#0C241E] text-[#F8F3E7] text-xs font-bold px-4 py-2.5 rounded-xl border border-[#C79A45] shadow-xs transition-all hover:scale-105"
+              title="24/7 Telephone Voice Hotline: 9347036152"
             >
-              <Phone className="w-3.5 h-3.5 text-amber-200 animate-pulse" />
-              <span>CALL: 9347036152</span>
+              <Phone className="w-3.5 h-3.5 text-[#C79A45] animate-pulse" />
+              <span>{t('nav_call_to_order')}: <strong>9347036152</strong></span>
             </a>
 
-            {/* Search Trigger */}
+            {/* Search Trigger Button */}
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 rounded-full text-stone-700 hover:text-heritage-maroon hover:bg-heritage-gold/10 transition-colors"
+              className="p-2 rounded-xl text-stone-700 hover:text-[#173F35] hover:bg-[#F1E9D5] transition-colors"
               aria-label="Search Products"
             >
               <Search className="w-5 h-5" />
@@ -158,12 +185,12 @@ export const Navbar: React.FC = () => {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-full text-stone-700 hover:text-heritage-maroon hover:bg-heritage-gold/10 transition-colors"
+              className="relative p-2 rounded-xl text-stone-700 hover:text-[#173F35] hover:bg-[#F1E9D5] transition-colors"
               aria-label="View Shopping Cart"
             >
               <ShoppingBag className="w-5 h-5" />
               {totalItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-heritage-maroon text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-pulse">
+                <span className="absolute -top-1 -right-1 bg-[#173F35] text-[#C79A45] border border-[#C79A45] text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-pulse">
                   {totalItemsCount}
                 </span>
               )}
@@ -172,7 +199,7 @@ export const Navbar: React.FC = () => {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-stone-700 hover:text-heritage-maroon hover:bg-cream-200/60"
+              className="md:hidden p-2 rounded-xl text-stone-700 hover:text-[#173F35] hover:bg-[#F1E9D5]"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -188,102 +215,83 @@ export const Navbar: React.FC = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search papad, whole wheat sevaya, turmeric powder, instant food..."
-                className="w-full pl-10 pr-24 py-2.5 rounded-xl border-2 border-heritage-gold/40 focus:border-heritage-maroon focus:outline-none bg-white text-stone-800 shadow-inner text-sm"
+                placeholder="Search papad, whole wheat sevaya, turmeric powder, instant noodles..."
+                className="w-full pl-10 pr-24 py-2.5 rounded-xl border-2 border-[#C79A45]/40 focus:border-[#173F35] focus:outline-none bg-white text-[#252525] shadow-inner text-sm font-medium"
                 autoFocus
               />
               <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
               <button
                 type="submit"
-                className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-heritage-maroon text-white text-xs font-bold rounded-lg hover:bg-heritage-richRed transition-colors"
+                className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-[#173F35] text-[#F8F3E7] text-xs font-bold rounded-lg hover:bg-[#0C241E] transition-colors"
               >
                 Search
               </button>
             </form>
           </div>
         )}
-      </header>
 
-      {/* Mobile Drawer Menu */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="fixed inset-y-0 right-0 w-4/5 max-w-sm bg-[#FAF6EE] shadow-2xl p-6 flex flex-col justify-between overflow-y-auto">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-heritage-gold/20">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-heritage-maroon flex items-center justify-center text-heritage-gold font-serif font-bold text-sm">
-                    AA
-                  </div>
-                  <span className="font-serif font-bold text-heritage-maroon text-base">
-                    Annapurna Aahaar
-                  </span>
-                </div>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1 rounded-full text-stone-500 hover:text-stone-800"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+        {/* Mobile Navigation Drawer */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-[#F8F3E7] border-b border-[#C79A45]/30 px-4 pt-3 pb-6 space-y-4 animate-fadeIn">
+            {/* Mobile Language Selector */}
+            <div className="bg-[#173F35] p-3 rounded-2xl border border-[#C79A45]/30 space-y-2 text-center">
+              <span className="text-xs text-[#C79A45] font-bold block">
+                🌐 Choose Language / भाषा निवडा / भाषा चुनें / భాషను ఎంచుకోండి:
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                {LANGUAGES.map((lang) => {
+                  const isSelected = language === lang.code;
+                  return (
+                    <button
+                      key={lang.code}
+                      onClick={() => setLanguage(lang.code)}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold transition-all ${
+                        isSelected
+                          ? 'bg-[#C79A45] text-[#173F35] shadow-sm'
+                          : 'bg-[#0C241E] text-[#F8F3E7] hover:bg-[#C79A45]/20'
+                      }`}
+                    >
+                      {lang.nativeName} ({lang.label})
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              {/* Mobile Dedicated CALL TO ORDER Button */}
-              <div className="my-4">
-                <a
-                  href="tel:9347036152"
-                  className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-heritage-maroon to-heritage-richRed text-white py-3.5 px-4 rounded-xl font-bold shadow-md hover:opacity-90 transition-all text-sm"
-                >
-                  <Phone className="w-4 h-4 animate-pulse text-heritage-gold" />
-                  <span>CALL TO ORDER: 9347036152</span>
-                </a>
-                <p className="text-center text-[10px] text-stone-600 mt-1 font-medium">
-                  24/7 Voice IVR: English, मराठी, हिंदी, తెలుగు
-                </p>
-              </div>
-
-              <div className="mt-4 space-y-1">
-                {navLinks.map((link) => (
+            {/* Mobile Nav Links */}
+            <nav className="flex flex-col space-y-1">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                return (
                   <Link
                     key={link.name}
                     to={link.path}
-                    className="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-stone-700 hover:text-heritage-maroon hover:bg-cream-200/80 transition-colors"
+                    className={`px-4 py-3 rounded-xl text-sm font-bold flex items-center justify-between ${
+                      isActive
+                        ? 'text-[#173F35] bg-[#C79A45]/20 border border-[#C79A45]/40'
+                        : 'text-stone-700 hover:bg-[#F1E9D5]'
+                    }`}
                   >
                     <span>{link.name}</span>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#C79A45]" />
                   </Link>
-                ))}
-                <Link
-                  to="/track"
-                  className="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-stone-700 hover:text-heritage-maroon hover:bg-cream-200/80 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-heritage-gold" />
-                    <span>Track Order Status</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-stone-400" />
-                </Link>
-              </div>
-            </div>
+                );
+              })}
+            </nav>
 
-            <div className="pt-6 border-t border-heritage-gold/20 space-y-3">
-              <div className="bg-heritage-gold/10 p-3 rounded-xl border border-heritage-gold/30 text-xs text-stone-700 space-y-1">
-                <div className="flex items-center gap-1 font-bold text-heritage-maroon">
-                  <ShieldCheck className="w-4 h-4 text-heritage-gold" />
-                  <span>Authentic Heritage Kitchen</span>
-                </div>
-                <p className="text-stone-600 text-[11px]">
-                  Bhainsa, Nirmal District, Telangana (504103)
-                </p>
-                <div className="text-[11px] text-stone-600 pt-1">
-                  Owner: <strong>Bande Omkar</strong>
-                </div>
-                <div className="text-[11px] text-stone-600">
-                  Helpline: <strong>6305970844 / 8688456925</strong>
-                </div>
-              </div>
-            </div>
+            {/* Mobile Direct Dial Call Button */}
+            <a
+              href="tel:9347036152"
+              className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#173F35] text-[#F8F3E7] font-bold rounded-2xl shadow-md border border-[#C79A45] text-xs"
+            >
+              <Phone className="w-4 h-4 text-[#C79A45] animate-bounce" />
+              <span>{t('nav_call_to_order')}: <strong>9347036152</strong></span>
+            </a>
           </div>
-        </div>
-      )}
+        )}
+      </header>
     </>
   );
 };
+
+export default Navbar;
