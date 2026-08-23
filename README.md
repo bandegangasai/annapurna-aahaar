@@ -6,7 +6,7 @@
 
 [![Live Production Storefront](https://img.shields.io/badge/🌐_Official_Storefront-Visit_Live_Website-173F35?style=for-the-badge&logo=google-chrome&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/)
 [![Multilingual Engine](https://img.shields.io/badge/🎙️_Multilingual_Support-4_Languages-C79A45?style=for-the-badge&logo=translate&logoColor=173F35)](#-multilingual-internationalization-4-languages)
-[![24/7 Voice Hotline](https://img.shields.io/badge/📞_24%2F7_Voice_Helpline-9347036152-173F35?style=for-the-badge&logo=phone&logoColor=C79A45)](tel:9347036152)
+[![24/7 Voice Hotline](https://img.shields.io/badge/📞_Voice_Helpline-24%2F7_Automated-173F35?style=for-the-badge&logo=phone&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/#/contact)
 [![100% Free Hosting](https://img.shields.io/badge/⚡_Cloud_Hosting-100%25_Free_GitHub_Pages-0C241E?style=for-the-badge&logo=github&logoColor=white)](https://bandegangasai.github.io/annapurna-aahaar/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-A65332?style=for-the-badge)](LICENSE)
 
@@ -19,9 +19,9 @@
 
 | Gateway | Link / Endpoint | Purpose |
 | :--- | :--- | :--- |
-| 🛍️ **Interactive Web Storefront** | [https://bandegangasai.github.io/annapurna-aahaar/](https://bandegangasai.github.io/annapurna-aahaar/) | Browse products, select weights, add to cart & checkout |
-| 📦 **Real-Time Order Tracking** | [https://bandegangasai.github.io/annapurna-aahaar/#/track](https://bandegangasai.github.io/annapurna-aahaar/#/track) | Live order status tracking from kitchen to doorstep |
-| 📞 **24/7 Voice Telephony Hotline** | `tel:9347036152` | Multilingual automated telephone ordering & assistance |
+| 🛍️ **Interactive Web Storefront** | [Visit Storefront](https://bandegangasai.github.io/annapurna-aahaar/) | Browse products, select weights, add to cart & checkout |
+| 📦 **Real-Time Order Tracking** | [Live Order Tracker](https://bandegangasai.github.io/annapurna-aahaar/#/track) | Live order status tracking from kitchen to doorstep |
+| 📞 **Customer Care & Contact** | [Contact & Support](https://bandegangasai.github.io/annapurna-aahaar/#/contact) | Enquiries, direct kitchen contact, and telephone hotline |
 | 🗺️ **XML Sitemap** | [sitemap.xml](https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml) | Automated search engine crawl map for Google & Bing |
 | 🤖 **Robots Directives** | [robots.txt](https://bandegangasai.github.io/annapurna-aahaar/robots.txt) | Search engine indexing rules & security filters |
 | 🐙 **Source Code Repository** | [GitHub Repo](https://github.com/bandegangasai/annapurna-aahaar) | Official repository with CI/CD deployment pipelines |
@@ -32,12 +32,10 @@
 
 * **Business Name**: **ANNAPURNA AAHAAR**
 * **Tagline**: *"Tradition in Every Grain."*
-* **Founder & Owner**: **Bande Omkar**
-* **Culinary Heritage Location**: **Bhainsa, Nirmal District, Telangana — 504103, India**
-* **Primary IVR / Voice Customer Helpline**: **`9347036152`**
-* **Payment Mobile & Support**: **`9542836358`**
-* **Official UPI ID**: **`9542836358@ybl`** *(India Post Payment Bank - 3676)*
-* **Official Business Email**: **`annapurnaaahaar@gmail.com`**
+* **Origin & Production**: **Bhainsa, Nirmal District, Telangana (504103), India**
+* **Core Offerings**: Handcrafted sun-cured papads, stone-ground pure turmeric powder, whole-wheat sevaya, and traditional Indian food staples.
+* **Customer Channels**: Multilingual Web Storefront, 24/7 Automated Voice Telephony, and Instant Doorstep Dispatch.
+* **Official Business Email**: `annapurnaaahaar@gmail.com`
 
 ---
 
@@ -77,13 +75,13 @@ All authentic products are prepared using time-honored traditional techniques in
 * Preference saved in `localStorage` for returning visitors.
 
 ### 4. 📞 Multilingual Voice Telephony & IVR Engine
-* 24/7 automated telephone voice helpline at **`9347036152`** supporting English, Marathi, Hindi, and Telugu.
+* 24/7 automated telephone voice helpline supporting English, Marathi, Hindi, and Telugu.
 * Automated keypad ordering, live order status lookup, order cancellation, and kitchen staff dispatch.
 * Robust session recovery backed by PostgreSQL state storage and Polly neural voices (*Aditi*, *Chitra*, *Kajal*).
 
 ### 5. 💳 Multi-Mode Payment Infrastructure
 * **Cash on Delivery (COD)**: Doorstep settlement upon delivery.
-* **Direct UPI Transfer**: 1-click UPI copy, mobile deep link support (`upi://pay`), and 12-digit transaction reference verification.
+* **Direct UPI Transfer**: Integrated 1-click UPI copy, mobile deep link support (`upi://pay`), and 12-digit transaction reference verification.
 * **Online Payment Gateway**: Secure digital checkout with cards, net banking, and UPI.
 
 ### 6. 🔍 100% Free Google Search Engine Optimization (SEO)
@@ -100,7 +98,7 @@ All authentic products are prepared using time-honored traditional techniques in
 flowchart TD
     subgraph Clients["Customer Channels"]
         WebClient["🖥️ Web Storefront (Desktop/Mobile)"]
-        VoiceClient["📞 Voice Telephone Call (9347036152)"]
+        VoiceClient["📞 Multilingual Voice Helpline"]
     end
 
     subgraph CDN["Edge & Hosting (100% Free)"]
@@ -196,4 +194,4 @@ npm run test:ivr:e2e
 ## 📄 License & Ownership
 
 © 2026 **ANNAPURNA AAHAAR**. All rights reserved.  
-Founded & Managed by **Bande Omkar** — **Bhainsa, Nirmal District, Telangana (504103)**.
+Authentic Heritage Food Products from **Bhainsa, Nirmal District, Telangana (504103)**.
