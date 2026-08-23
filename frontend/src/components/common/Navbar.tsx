@@ -5,12 +5,11 @@ import {
   Search,
   Menu,
   X,
-  Sparkles,
   Phone,
   Clock,
   ChevronRight,
   ShieldCheck,
-  MapPin,
+  Headphones,
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
@@ -56,7 +55,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      {/* Top Authentic Heritage Notice Bar with Real Business Details */}
+      {/* Top Authentic Heritage Notice Bar with IVR Ordering Phone */}
       <div className="bg-heritage-darkMaroon text-cream-100 text-xs py-2 px-4 font-medium border-b border-heritage-gold/30">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -67,14 +66,17 @@ export const Navbar: React.FC = () => {
             <span className="hidden md:inline text-cream-200">Owner: Bande Omkar</span>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6 text-xs">
+          <div className="flex items-center gap-3 sm:gap-6 text-xs">
+            {/* Dedicated IVR Hotline Call Link */}
             <a
-              href="tel:6305970844"
-              className="flex items-center gap-1 text-heritage-gold hover:text-white transition-colors"
+              href="tel:9347036152"
+              className="flex items-center gap-1.5 bg-heritage-gold/25 hover:bg-heritage-gold/40 text-heritage-gold border border-heritage-gold/40 px-2.5 py-0.5 rounded-full font-bold transition-all"
+              title="24/7 Telephone IVR Ordering in English, Marathi, Hindi, Telugu"
             >
-              <Phone className="w-3.5 h-3.5" />
-              <span>6305970844 / 8688456925</span>
+              <Phone className="w-3 h-3 animate-pulse" />
+              <span>Order by Phone: <strong className="text-white">9347036152</strong></span>
             </a>
+
             <Link
               to="/track"
               className="hidden lg:flex items-center gap-1 text-cream-200 hover:text-heritage-gold transition-colors"
@@ -134,12 +136,21 @@ export const Navbar: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Desktop CALL TO ORDER Button */}
+            <a
+              href="tel:9347036152"
+              className="hidden lg:flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition-all hover:scale-105"
+              title="24/7 Telephone Ordering: 9347036152"
+            >
+              <Phone className="w-3.5 h-3.5 text-amber-200 animate-pulse" />
+              <span>CALL: 9347036152</span>
+            </a>
+
             {/* Search Trigger */}
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="p-2 rounded-full text-stone-700 hover:text-heritage-maroon hover:bg-heritage-gold/10 transition-colors"
-              title="Search Products"
-              aria-label="Search"
+              aria-label="Search Products"
             >
               <Search className="w-5 h-5" />
             </button>
@@ -147,90 +158,132 @@ export const Navbar: React.FC = () => {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center gap-2 bg-heritage-maroon hover:bg-heritage-darkMaroon text-cream-100 px-4 py-2 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition-all border border-heritage-gold/30 transform active:scale-95"
-              aria-label="Shopping Cart"
+              className="relative p-2 rounded-full text-stone-700 hover:text-heritage-maroon hover:bg-heritage-gold/10 transition-colors"
+              aria-label="View Shopping Cart"
             >
-              <ShoppingBag className="w-4 h-4 text-heritage-gold" />
-              <span className="hidden sm:inline">Cart</span>
+              <ShoppingBag className="w-5 h-5" />
               {totalItemsCount > 0 && (
-                <span className="bg-heritage-gold text-heritage-darkMaroon text-xs font-black w-5 h-5 rounded-full flex items-center justify-center animate-bounce">
+                <span className="absolute -top-1 -right-1 bg-heritage-maroon text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-pulse">
                   {totalItemsCount}
                 </span>
               )}
             </button>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-stone-700 hover:text-heritage-maroon hover:bg-cream-200 transition-colors"
-              aria-label="Open Menu"
+              className="md:hidden p-2 rounded-lg text-stone-700 hover:text-heritage-maroon hover:bg-cream-200/60"
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Expandable Search Bar */}
+        {/* Collapsible Search Input */}
         {isSearchOpen && (
-          <div className="border-t border-heritage-gold/20 bg-[#FAF6EE] px-4 py-3 shadow-inner">
-            <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto flex items-center gap-2">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-stone-400" />
-                <input
-                  type="text"
-                  placeholder="Search papad, turmeric, haldi, sevaya, noodles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-heritage-gold/30 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold focus:border-transparent text-stone-900 placeholder-stone-400 font-medium"
-                />
-              </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-2 transition-all">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search papad, whole wheat sevaya, turmeric powder, instant food..."
+                className="w-full pl-10 pr-24 py-2.5 rounded-xl border-2 border-heritage-gold/40 focus:border-heritage-maroon focus:outline-none bg-white text-stone-800 shadow-inner text-sm"
+                autoFocus
+              />
+              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
               <button
                 type="submit"
-                className="bg-heritage-maroon hover:bg-heritage-darkMaroon text-cream-100 px-6 py-2.5 rounded-full text-sm font-bold transition-colors"
+                className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-heritage-maroon text-white text-xs font-bold rounded-lg hover:bg-heritage-richRed transition-colors"
               >
                 Search
               </button>
             </form>
           </div>
         )}
+      </header>
 
-        {/* Mobile Navigation Drawer */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-heritage-gold/20 bg-[#FAF6EE] px-4 pt-3 pb-6 space-y-2 shadow-2xl animate-fadeIn">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={`block px-4 py-2.5 rounded-xl text-base font-bold transition-colors ${
-                  location.pathname === link.path
-                    ? 'text-heritage-maroon bg-heritage-gold/20 font-black'
-                    : 'text-stone-700 hover:bg-cream-200'
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="pt-3 border-t border-heritage-gold/20 space-y-2">
-              <Link
-                to="/track"
-                className="flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-bold text-stone-800 bg-cream-200/70"
-              >
-                <span className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-heritage-maroon" />
-                  Track Your Order
-                </span>
-                <ChevronRight className="w-4 h-4 text-stone-400" />
-              </Link>
-              <div className="px-4 py-2 text-xs text-stone-600 space-y-1 bg-white rounded-xl border border-heritage-gold/20">
-                <div className="font-bold text-heritage-maroon">Annapurna Aahaar — Bhainsa</div>
-                <div>Owner: Bande Omkar</div>
-                <div>Helpline: 6305970844 / 8688456925</div>
+      {/* Mobile Drawer Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-y-0 right-0 w-4/5 max-w-sm bg-[#FAF6EE] shadow-2xl p-6 flex flex-col justify-between overflow-y-auto">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-heritage-gold/20">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-heritage-maroon flex items-center justify-center text-heritage-gold font-serif font-bold text-sm">
+                    AA
+                  </div>
+                  <span className="font-serif font-bold text-heritage-maroon text-base">
+                    Annapurna Aahaar
+                  </span>
+                </div>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-1 rounded-full text-stone-500 hover:text-stone-800"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Mobile Dedicated CALL TO ORDER Button */}
+              <div className="my-4">
+                <a
+                  href="tel:9347036152"
+                  className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-heritage-maroon to-heritage-richRed text-white py-3.5 px-4 rounded-xl font-bold shadow-md hover:opacity-90 transition-all text-sm"
+                >
+                  <Phone className="w-4 h-4 animate-pulse text-heritage-gold" />
+                  <span>CALL TO ORDER: 9347036152</span>
+                </a>
+                <p className="text-center text-[10px] text-stone-600 mt-1 font-medium">
+                  24/7 Voice IVR: English, मराठी, हिंदी, తెలుగు
+                </p>
+              </div>
+
+              <div className="mt-4 space-y-1">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    to={link.path}
+                    className="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-stone-700 hover:text-heritage-maroon hover:bg-cream-200/80 transition-colors"
+                  >
+                    <span>{link.name}</span>
+                    <ChevronRight className="w-4 h-4 text-stone-400" />
+                  </Link>
+                ))}
+                <Link
+                  to="/track"
+                  className="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-stone-700 hover:text-heritage-maroon hover:bg-cream-200/80 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-heritage-gold" />
+                    <span>Track Order Status</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-stone-400" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-heritage-gold/20 space-y-3">
+              <div className="bg-heritage-gold/10 p-3 rounded-xl border border-heritage-gold/30 text-xs text-stone-700 space-y-1">
+                <div className="flex items-center gap-1 font-bold text-heritage-maroon">
+                  <ShieldCheck className="w-4 h-4 text-heritage-gold" />
+                  <span>Authentic Heritage Kitchen</span>
+                </div>
+                <p className="text-stone-600 text-[11px]">
+                  Bhainsa, Nirmal District, Telangana (504103)
+                </p>
+                <div className="text-[11px] text-stone-600 pt-1">
+                  Owner: <strong>Bande Omkar</strong>
+                </div>
+                <div className="text-[11px] text-stone-600">
+                  Helpline: <strong>6305970844 / 8688456925</strong>
+                </div>
               </div>
             </div>
           </div>
-        )}
-      </header>
+        </div>
+      )}
     </>
   );
 };

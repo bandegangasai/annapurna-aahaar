@@ -1,13 +1,13 @@
-# 🌾 Annapurna Aahaar — Full-Stack 3D E-Commerce Platform
+# 🌾 Annapurna Aahaar — Multilingual IVR, Telephone Ordering, E-Commerce & Admin Suite
 
 > **"Tradition in Every Grain."**  
-> *Pure Ingredients. Authentic Indian Taste.*
+> *Authentic Indian Taste from Bhainsa, Nirmal District, Telangana (504103)*
 
-Annapurna Aahaar is a production-grade, culturally authentic full-stack 3D Indian food e-commerce platform crafted for **Bande Omkar** in **Bhainsa, Nirmal District, Telangana (504103)**.
+Annapurna Aahaar is a production-grade, culturally authentic e-commerce and automated telephony platform crafted for **Bande Omkar** in **Bhainsa, Nirmal District, Telangana (504103)**. Customers can order online via desktop/mobile or dial our **24/7 Telephone IVR Hotline (`9347036152`)** in 4 Indian languages.
 
 ---
 
-## 🏛️ Verified Business Information
+## 🏛️ Verified Business & Telephony Profile
 
 | Attribute | Details |
 | :--- | :--- |
@@ -15,118 +15,145 @@ Annapurna Aahaar is a production-grade, culturally authentic full-stack 3D India
 | **Tagline** | *"Tradition in Every Grain."* |
 | **Proprietor / Owner** | **Bande Omkar** |
 | **Location** | **Bhainsa, Nirmal District, Telangana — 504103** |
-| **Phone Lines** | `+91 6305970844`, `+91 8688456925` |
-| **Email** | `annapurnaaahaar@gmail.com` |
-| **Preferred Domain** | `annapurnaaahaar.in` |
+| **Dedicated IVR Hotline** | **`9347036152`** (24/7 Multilingual Automated Voice Ordering) |
+| **Kitchen Helplines** | `+91 6305970844`, `+91 8688456925` |
+| **Business Payment Mobile** | `9542826358` |
+| **Business UPI ID** | `9542826358@ybl` (India Post Payment Bank - 3676) |
+| **Business Email** | `annapurnaaahaar@gmail.com` |
+| **Admin Portal** | `https://bandegangasai.github.io/annapurna-aahaar/#/admin/dashboard` |
 
 ---
 
-## 🚀 Key Highlights & Architectural Features
+## 📞 24/7 Multilingual IVR Telephony Engine
 
-### 1. Indian Cultural Visual Language & 3D Experience
-- **Color Palette**: Deep Royal Maroon (`#4A0E17`), Antique Gold (`#C89B3C`), Warm Sandalwood Cream (`#FAF6EE`), and Terracotta (`#9A3412`).
-- **Interactive 3D Hero Scene**: Traditional stone mill (Chakki) with rotating grindstone, grain hopper, and orbiting spice/wheat particles powered by Three.js & React Three Fiber (with automatic 2D animated fallback).
-- **Exact Product Photography**: Dedicated, authentic vector assets in `/products/` for all 8 products (Sevaya, Urad Dal Papad, Moong Dal Papad, Masala Papad, Rice Papad, Pure Golden Turmeric, Maggie, and Desi Noodles) — **zero unrelated stock food (no broccoli, no samosas)**.
-- **Zero Fabricated Claims**: No fake review stars, no fake establishment dates ("since 19xx"), no fabricated awards.
+Customers who cannot comfortably use the website can place, track, or manage orders by phone by calling **`9347036152`**.
 
-### 2. Verified Product Catalog & Dynamic Pricing
-- **Traditional Wheat Sevaya** (`Flours & Grains`): 1 kg (₹100), 2 kg (₹200), 5 kg (₹500).
-- **Handcrafted Papads** (`Papad`):
-  - Urad Dal Papad: 500 g (₹150), 1 kg (₹300)
-  - Moong Dal Papad: 500 g (₹150), 1 kg (₹300)
-  - Masala Papad: 500 g (₹150), 1 kg (₹300)
-  - Rice Papad: 500 g (₹150), 1 kg (₹300)
-- **Pure Turmeric Powder** (`Spices`): 500 g (₹80), 1 kg (₹150).
-- **Noodles & Instant Foods**: Maggie & Desi Noodles (Admin configurable).
+### Supported Languages:
+1. **English**: Clear, concise natural voice prompts.
+2. **मराठी (Marathi)**: Authentic regional Marathi voice prompts.
+3. **हिंदी (Hindi)**: Natural conversational Hindi pronunciation.
+4. **తెలుగు (Telugu)**: Regional Telugu voice prompts.
 
-### 3. Dual Payment Infrastructure (Online + Offline)
-- **Online Payments (Razorpay)**:
-  - Backend order creation (`POST /api/orders`)
-  - Server-side cryptographic HMAC SHA256 signature verification (`POST /api/orders/razorpay-verify`)
-  - Seamless frontend modal and sandbox simulation.
-- **Cash on Delivery (Pay Offline)**:
-  - Stored with `paymentMethod = "OFFLINE_COD"`, `paymentStatus = "PENDING"`.
-  - Admin can update payment status (`PAID` / `PENDING`) directly from the dashboard.
-
-### 4. Real-Time Order Tracking & Admin Fulfillment Center
-- **Customer Live Timeline**: 6-step progress bar (`PENDING` ➔ `ACCEPTED` ➔ `PROCESSING` ➔ `READY` ➔ `OUT FOR DELIVERY` ➔ `DELIVERED` or `REJECTED`) with real-time auto-polling.
-- **Admin Center (`/admin/login`)**:
-  - Prominent **NEW ORDER ALERT** banner and badges
-  - One-click **ACCEPT** & **REJECT** actions
-  - Dynamic product price and inventory editor
-  - Customer contact enquiries reader.
-
----
-
-## 🛠️ Technology Stack
-
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Three.js, `@react-three/fiber`, `@react-three/drei`, Framer Motion, Lucide Icons.
-- **Backend**: Node.js, Express.js, TypeScript, Prisma ORM, Zod, JWT, bcryptjs, crypto.
-- **Database**: SQLite (local development zero-config) / PostgreSQL (production).
-- **Payments**: Razorpay SDK / API integration.
-- **SEO**: JSON-LD Structured Data (`LocalBusiness` & `Organization`), Canonical URLs, Open Graph, `sitemap.xml`, `robots.txt`.
-
----
-
-## 🏃 Local Setup & Development
-
-### 1. Clone & Install Dependencies
-```bash
-# In backend
-cd backend
-npm install
-npm run prisma:generate
-npm run prisma:push
-npm run prisma:seed
-
-# In frontend
-cd ../frontend
-npm install
+### Call Flow & DTMF Keypad Actions:
+```
+Caller Dials 9347036152
+       ↓
+Language Menu:
+  [1] English  [2] मराठी  [3] हिंदी  [4] తెలుగు
+       ↓
+Main Voice Menu:
+  [1] Place / Confirm Order
+      → Dynamic Product Selection (1-8)
+      → Dynamic Variant Weight Selection
+      → Voice Order Summary Read-back
+      → Confirm (1) / Change (2) / Cancel (3)
+      → Atomic Order creation in PostgreSQL (orderSource: 'IVR')
+      → Real-Time SSE alert to Admin Dashboard & SMS/Email Dispatch
+  [2] Track Live Order Status
+      → Caller ID lookup → Live database status speech
+  [3] Cancel Order
+      → Cancellation Rule evaluation → Confirmation → Cancel update
+  [4] Human Customer Support
+      → Transfer to Agent (6305970844 / 8688456925)
+  [9] Repeat Menu
 ```
 
-### 2. Run Development Servers
-```bash
-# Terminal 1: Backend API (port 5000)
-cd backend
-npm run dev
+---
 
-# Terminal 2: Frontend Client (port 5173)
-cd frontend
-npm run dev
+## 🏗️ Unified Database & Real-Time Architecture
+
+Website orders and Telephone IVR orders flow into the **same single source of truth PostgreSQL database** with real-time Server-Sent Events (SSE) updates to the Admin Dashboard.
+
+```
+                   ┌──────────────────────────────────────┐
+                   │    CUSTOMER CHANNELS (WEB / PHONE)   │
+                   └──────────────────┬───────────────────┘
+                                      │
+              ┌───────────────────────┴───────────────────────┐
+              ▼                                               ▼
+   [ Website Checkout ]                            [ Customer Dials 9347036152 ]
+   • Online / COD / UPI                            • IVR Webhook (/api/ivr/incoming)
+              │                                               │
+              └───────────────────────┬───────────────────────┘
+                                      │
+                                      ▼
+                   ┌──────────────────────────────────────┐
+                   │       CENTRAL BACKEND ON RENDER      │
+                   │ • Dynamic Pricing Engine             │
+                   │ • TwiML/VoiceXML Generator           │
+                   │ • Gmail SMTP & SMS Dispatcher        │
+                   │ • SSE Real-Time Broadcaster          │
+                   └──────────────────┬───────────────────┘
+                                      │
+                                      ▼
+                   ┌──────────────────────────────────────┐
+                   │       POSTGRESQL (PRISMA ORM)        │
+                   │ • Orders (WEBSITE / IVR)             │
+                   │ • Calls & IvrInteractions (DTMF)     │
+                   │ • Payments & Frozen Snapshots        │
+                   └──────────────────────────────────────┘
 ```
 
-### 3. Run Automated End-to-End Test Suite
+---
+
+## ⚙️ Telephony & Webhook Deployment
+
+### Public Webhook Endpoints:
+* **Incoming Call Webhook**: `https://annapurna-aahaar-1.onrender.com/api/ivr/incoming`
+* **Language Selection**: `https://annapurna-aahaar-1.onrender.com/api/ivr/select-language`
+* **Main Menu**: `https://annapurna-aahaar-1.onrender.com/api/ivr/main-menu`
+* **Product Menu**: `https://annapurna-aahaar-1.onrender.com/api/ivr/order/select-product`
+* **Variant Menu**: `https://annapurna-aahaar-1.onrender.com/api/ivr/order/select-variant`
+* **Order Confirmation**: `https://annapurna-aahaar-1.onrender.com/api/ivr/order/confirm`
+* **Cancel Confirmation**: `https://annapurna-aahaar-1.onrender.com/api/ivr/cancel-confirm`
+* **Status Callback**: `https://annapurna-aahaar-1.onrender.com/api/ivr/status-callback`
+
+### Telephony Provider Setup (Twilio / Exotel / Plivo):
+In your telecom provider console for number **`9347036152`**, configure the incoming voice webhook URL to:
+```
+https://annapurna-aahaar-1.onrender.com/api/ivr/incoming (HTTP POST)
+```
+
+---
+
+## 📊 Admin Dashboard Features (`/#/admin/dashboard`)
+
+1. **Live Orders Stream**:
+   - Visual badges for `orderSource` (🌐 `WEBSITE` vs 📞 `IVR`) and `language` (`ENGLISH`, `MARATHI`, `HINDI`, `TELUGU`).
+   - One-click Accept, Reject, Process, and Dispatch controls.
+2. **Call Center Suite (`/admin/call-center`)**:
+   - KPIs: Total Calls, Today's Calls, Completed, Missed, IVR Orders, Average Duration.
+   - Multilingual distribution metrics across English, Marathi, Hindi, Telugu.
+   - Call logs table with Caller ID, Duration, Menu Option, and DTMF interaction drilldown.
+3. **Payment Verification**:
+   - Manual UPI verification queue for direct transfers to `9542826358@ybl`.
+4. **Sales & Analytics**:
+   - Breakdown by channel: Website Sales vs. IVR Sales vs. Phone Sales.
+   - Breakdown by payment mode: Online vs. COD vs. Manual UPI.
+5. **CSV Exports**:
+   - Orders CSV, Sales CSV, Payments CSV, Call Records CSV, and IVR Interactions CSV.
+
+---
+
+## 🧪 Automated Test Suites
+
 ```bash
+# Run website e-commerce and checkout test suite
 cd backend
 npm run test:e2e
+
+# Run multilingual IVR telephony test suite
+npm run test:ivr:e2e
 ```
 
 ---
 
-## 🔐 Credentials & Default Logins
+## 🌐 Live Production Links
 
-- **Admin Login URL**: `http://localhost:5173/admin/login`
-- **Admin Email**: `admin@annapurnaaahaar.in`
-- **Admin Password**: `Admin@Annapurna2026`
-
----
-
-## 🌐 Production Deployment Guide
-
-### Frontend (Vercel)
-1. Import repository on [Vercel](https://vercel.com).
-2. Set Root Directory to `frontend`.
-3. Configure Environment Variables:
-   - `VITE_API_URL`: URL of deployed backend (e.g. `https://api.annapurnaaahaar.in/api`).
-4. Add custom domain `annapurnaaahaar.in` with CNAME `cname.vercel-dns.com`.
-
-### Backend (Render / Railway)
-1. Deploy `backend` as a Web Service.
-2. Build Command: `npm install && npm run prisma:generate && npm run build`
-3. Start Command: `npm start`
-4. Set Environment Variables:
-   - `DATABASE_URL`: Production PostgreSQL connection string (Neon / Supabase / Render Postgres).
-   - `JWT_SECRET`: Secure production secret key.
-   - `RAZORPAY_KEY_ID`: Production Razorpay Key ID.
-   - `RAZORPAY_KEY_SECRET`: Production Razorpay Key Secret.
-   - `CLIENT_URL`: `https://annapurnaaahaar.in`
+* 🛍️ **Storefront**: [**https://bandegangasai.github.io/annapurna-aahaar/**](https://bandegangasai.github.io/annapurna-aahaar/)
+* 📦 **Live Customer Tracking**: [**https://bandegangasai.github.io/annapurna-aahaar/#/track**](https://bandegangasai.github.io/annapurna-aahaar/#/track)
+* 🔐 **Admin Management Portal**: [**https://bandegangasai.github.io/annapurna-aahaar/#/admin/dashboard**](https://bandegangasai.github.io/annapurna-aahaar/#/admin/dashboard)
+  * **Email**: `admin@annapurnaaahaar.in`
+  * **Password**: `Admin@Annapurna2026`
+* ☁️ **Backend API**: [**https://annapurna-aahaar-1.onrender.com**](https://annapurna-aahaar-1.onrender.com)
+* 🐙 **GitHub Repository**: [**https://github.com/bandegangasai/annapurna-aahaar**](https://github.com/bandegangasai/annapurna-aahaar)

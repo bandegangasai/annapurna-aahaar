@@ -31,7 +31,7 @@ async function main() {
 
   console.log(`✅ Admin user seeded: ${admin.email}`);
 
-  // 2. Seed Verified Products and Variants with Exact Product Photography Assets
+  // 2. Seed Verified Products and Variants with Exact Catalog Prices
   const productsData = [
     {
       id: 'prod-sevaya-1',
@@ -39,7 +39,7 @@ async function main() {
       slug: 'traditional-wheat-sevaya',
       category: 'Flours & Grains',
       description:
-        'Pure, sun-dried traditional whole wheat sevaya (vermicelli) prepared with authentic grain milling techniques. Ideal for authentic sweet kheer, breakfast upma, and festive celebrations.',
+        'Pure, sun-dried traditional whole wheat sevaya (vermicelli) prepared with authentic grain milling techniques in Bhainsa. Ideal for sweet kheer, breakfast upma, and festive celebrations.',
       imageUrl: '/products/sevaya.webp',
       isFeatured: true,
       variants: [
@@ -86,8 +86,8 @@ async function main() {
       imageUrl: '/products/masala-papad.webp',
       isFeatured: false,
       variants: [
-        { id: 'var-masala-500g', weight: '500 g', unit: '500g', price: 160.0, stock: 140 },
-        { id: 'var-masala-1kg', weight: '1 kg', unit: 'kg', price: 320.0, stock: 90 },
+        { id: 'var-masala-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 140 },
+        { id: 'var-masala-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 90 },
       ],
     },
     {
@@ -100,75 +100,72 @@ async function main() {
       imageUrl: '/products/rice-papad.webp',
       isFeatured: false,
       variants: [
-        { id: 'var-rice-500g', weight: '500 g', unit: '500g', price: 140.0, stock: 160 },
-        { id: 'var-rice-1kg', weight: '1 kg', unit: 'kg', price: 280.0, stock: 100 },
+        { id: 'var-rice-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 160 },
+        { id: 'var-rice-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 110 },
       ],
     },
     {
       id: 'prod-turmeric-6',
-      name: 'Pure Turmeric Powder',
+      name: 'Pure Turmeric Powder (Haldi)',
       slug: 'pure-turmeric-powder',
       category: 'Spices',
       description:
-        '100% natural, farm-ground turmeric root powder with high curcumin content. No artificial colors, preservatives, or fillers added.',
+        'Pure farm-sourced Nizamabad-Nirmal turmeric ground at low temperatures to preserve high curcumin content and rich golden-yellow natural aroma.',
       imageUrl: '/products/turmeric-haldi-powder.webp',
       isFeatured: true,
       variants: [
-        { id: 'var-turmeric-500g', weight: '500 g', unit: '500g', price: 80.0, stock: 250 },
-        { id: 'var-turmeric-1kg', weight: '1 kg', unit: 'kg', price: 150.0, stock: 200 },
+        { id: 'var-turmeric-1kg', weight: '1 kg', unit: 'kg', price: 150.0, stock: 250 },
       ],
     },
     {
       id: 'prod-maggie-7',
-      name: 'Maggie',
-      slug: 'maggie',
+      name: 'Traditional Wheat Maggie',
+      slug: 'traditional-wheat-maggie',
       category: 'Noodles & Instant Foods',
       description:
-        'Family favorite delicious instant noodles with rich spice seasoning. Quick, wholesome snack for children and festive gatherings.',
+        'Nutritious, whole wheat instant noodles crafted without harmful preservatives or artificial palm oil additives. Kid-friendly, healthy, and easy to cook.',
       imageUrl: '/products/maggie.webp',
       isFeatured: false,
       variants: [
-        { id: 'var-maggie-pack4', weight: 'Pack of 4', unit: 'pack', price: 60.0, stock: 100 },
-        { id: 'var-maggie-pack12', weight: 'Family Pack (12)', unit: 'pack', price: 170.0, stock: 60 },
+        { id: 'var-maggie-pack', weight: '1 Pack (400g)', unit: 'pack', price: 80.0, stock: 100 },
       ],
     },
     {
       id: 'prod-noodles-8',
-      name: 'Noodles',
-      slug: 'noodles',
+      name: 'Handcrafted Desi Noodles',
+      slug: 'handcrafted-desi-noodles',
       category: 'Noodles & Instant Foods',
       description:
-        'High quality wheat stir-fry noodles made for authentic desi chowmein and hakka noodles. Non-sticky, tender texture.',
+        'Authentic cottage-industry milled noodles prepared using high-protein durum wheat flour. Boils tender, firm, and non-sticky.',
       imageUrl: '/products/noodles.webp',
       isFeatured: false,
       variants: [
-        { id: 'var-noodles-500g', weight: '500 g', unit: '500g', price: 65.0, stock: 120 },
-        { id: 'var-noodles-1kg', weight: '1 kg', unit: 'kg', price: 120.0, stock: 90 },
+        { id: 'var-noodles-pack', weight: '1 Pack (400g)', unit: 'pack', price: 80.0, stock: 120 },
       ],
     },
   ];
 
   for (const p of productsData) {
-    const { variants, ...prodData } = p;
-    await prisma.product.upsert({
-      where: { id: prodData.id },
-      update: prodData,
-      create: prodData,
+    const { variants, ...prodFields } = p;
+    const createdProduct = await prisma.product.upsert({
+      where: { id: prodFields.id },
+      update: prodFields,
+      create: prodFields,
     });
 
     for (const v of variants) {
       await prisma.productVariant.upsert({
         where: { id: v.id },
         update: {
+          productId: createdProduct.id,
           weight: v.weight,
           unit: v.unit,
           price: v.price,
           stock: v.stock,
-          productId: prodData.id,
         },
         create: {
           id: v.id,
-          productId: prodData.id,
+          productId: createdProduct.id,
           weight: v.weight,
           unit: v.unit,
           price: v.price,
@@ -176,18 +173,46 @@ async function main() {
         },
       });
     }
-    console.log(`🌾 Seeded product: ${prodData.name} (${prodData.category})`);
   }
 
-  // 3. Seed verified historical orders
+  console.log(`✅ Seeded ${productsData.length} products with variants.`);
+
+  // 3. Seed Default Cancellation Rules
+  const cancellationRules = [
+    { orderStatus: 'PENDING', isCancellable: true, requiresAdminOtp: false, description: 'Pending orders can be cancelled immediately by customer via IVR or Web' },
+    { orderStatus: 'ACCEPTED', isCancellable: true, requiresAdminOtp: false, description: 'Accepted orders can be cancelled before processing starts' },
+    { orderStatus: 'PROCESSING', isCancellable: false, requiresAdminOtp: true, description: 'Order in preparation requires customer care confirmation' },
+    { orderStatus: 'READY', isCancellable: false, requiresAdminOtp: true, description: 'Order packaged and ready for dispatch' },
+    { orderStatus: 'OUT_FOR_DELIVERY', isCancellable: false, requiresAdminOtp: true, description: 'Order dispatched with delivery partner' },
+    { orderStatus: 'DELIVERED', isCancellable: false, requiresAdminOtp: false, description: 'Delivered orders cannot be cancelled' },
+  ];
+
+  for (const rule of cancellationRules) {
+    await prisma.cancellationRule.upsert({
+      where: { orderStatus: rule.orderStatus },
+      update: rule,
+      create: rule,
+    });
+  }
+
+  console.log('✅ Seeded order cancellation rules.');
+
+  // 4. Seed Verified Customer & Orders (Website & IVR)
   const cust1 = await prisma.customer.upsert({
     where: { phone: '9823012345' },
-    update: {},
+    update: {
+      name: 'Ramesh Patel',
+      address: 'Shop No. 4, Main Market, Gandhi Chowk',
+      city: 'Bhainsa',
+      district: 'Nirmal District',
+      state: 'Telangana',
+      pincode: '504103',
+    },
     create: {
       name: 'Ramesh Patel',
       phone: '9823012345',
       email: 'ramesh.patel@example.com',
-      address: 'Main Bazar Road, Near Gandhi Chowk',
+      address: 'Shop No. 4, Main Market, Gandhi Chowk',
       city: 'Bhainsa',
       district: 'Nirmal District',
       state: 'Telangana',
@@ -195,24 +220,116 @@ async function main() {
     },
   });
 
-  await prisma.order.upsert({
-    where: { orderNumber: 'AA-2026-8921' },
-    update: {},
-    create: {
-      orderNumber: 'AA-2026-8921',
-      customerId: cust1.id,
-      status: 'ACCEPTED',
-      paymentMethod: 'OFFLINE',
-      paymentStatus: 'PENDING',
-      subtotal: 450,
-      deliveryFee: 0,
-      total: 450,
-      deliveryAddress: 'Main Bazar Road, Near Gandhi Chowk',
+  const cust2 = await prisma.customer.upsert({
+    where: { phone: '9848012345' },
+    update: {
+      name: 'Kavitha Reddy',
+      address: 'House #3-45, Shivaji Nagar',
       city: 'Bhainsa',
       district: 'Nirmal District',
       state: 'Telangana',
       pincode: '504103',
-      customerNotes: 'Please pack in fresh moisture-proof seal.',
+    },
+    create: {
+      name: 'Kavitha Reddy',
+      phone: '9848012345',
+      email: 'kavitha.reddy@example.com',
+      address: 'House #3-45, Shivaji Nagar',
+      city: 'Bhainsa',
+      district: 'Nirmal District',
+      state: 'Telangana',
+      pincode: '504103',
+    },
+  });
+
+  // Seed sample IVR Call & Order
+  const sampleCall = await prisma.call.upsert({
+    where: { callSid: 'CALL_IVR_DEMO_TELUGU_01' },
+    update: {
+      fromPhone: cust2.phone,
+      toPhone: '9347036152',
+      language: 'TELUGU',
+      duration: 125,
+      status: 'COMPLETED',
+      selectedOption: '1_ORDER',
+    },
+    create: {
+      callSid: 'CALL_IVR_DEMO_TELUGU_01',
+      fromPhone: cust2.phone,
+      toPhone: '9347036152',
+      language: 'TELUGU',
+      duration: 125,
+      status: 'COMPLETED',
+      selectedOption: '1_ORDER',
+    },
+  });
+
+  await prisma.ivrInteraction.createMany({
+    data: [
+      {
+        callId: sampleCall.id,
+        language: 'TELUGU',
+        menu: 'LANGUAGE_MENU',
+        dtmfInput: '4',
+        action: 'LANGUAGE_SELECTED',
+        details: 'Caller selected Telugu (తెలుగు)',
+      },
+      {
+        callId: sampleCall.id,
+        language: 'TELUGU',
+        menu: 'MAIN_MENU',
+        dtmfInput: '1',
+        action: 'OPTION_SELECTED',
+        details: 'Caller selected Place/Confirm Order',
+      },
+      {
+        callId: sampleCall.id,
+        language: 'TELUGU',
+        menu: 'PRODUCT_MENU',
+        dtmfInput: '2',
+        action: 'PRODUCT_SELECTED',
+        details: 'Caller selected Urad Dal Papad',
+      },
+      {
+        callId: sampleCall.id,
+        language: 'TELUGU',
+        menu: 'CONFIRM_MENU',
+        dtmfInput: '1',
+        action: 'ORDER_CONFIRMED',
+        details: 'Caller confirmed order via phone keypad',
+      },
+    ],
+  }).catch(() => {});
+
+  const order1 = await prisma.order.upsert({
+    where: { orderNumber: 'AA-2026-8921' },
+    update: {
+      orderSource: 'WEBSITE',
+      language: 'ENGLISH',
+      status: 'ACCEPTED',
+      paymentMethod: 'OFFLINE',
+      paymentStatus: 'PENDING',
+      subtotal: 450.0,
+      deliveryFee: 0.0,
+      total: 450.0,
+    },
+    create: {
+      orderNumber: 'AA-2026-8921',
+      customerId: cust1.id,
+      orderSource: 'WEBSITE',
+      language: 'ENGLISH',
+      status: 'ACCEPTED',
+      paymentMethod: 'OFFLINE',
+      paymentStatus: 'PENDING',
+      subtotal: 450.0,
+      deliveryFee: 0.0,
+      total: 450.0,
+      deliveryAddress: cust1.address,
+      city: cust1.city,
+      district: cust1.district,
+      state: cust1.state,
+      pincode: cust1.pincode,
+      customerNotes: 'Please pack in airtight bag',
       items: {
         create: [
           {
@@ -224,124 +341,100 @@ async function main() {
             variantNameSnapshot: '500 g (500g)',
             weight: '500 g',
             unit: '500g',
-            unitPrice: 150,
-            quantity: 2,
-            totalPrice: 300,
-          },
-          {
-            productId: 'prod-turmeric-6',
-            variantId: 'var-turmeric-1kg',
-            productName: 'Pure Turmeric Powder',
-            variantName: '1 kg (kg)',
-            productNameSnapshot: 'Pure Turmeric Powder',
-            variantNameSnapshot: '1 kg (kg)',
-            weight: '1 kg',
-            unit: 'kg',
-            unitPrice: 150,
-            quantity: 1,
-            totalPrice: 150,
+            unitPrice: 150.0,
+            quantity: 3,
+            totalPrice: 450.0,
           },
         ],
       },
       payments: {
         create: {
           gateway: 'CASH_ON_DELIVERY',
-          amount: 450,
+          amount: 450.0,
           currency: 'INR',
           status: 'PENDING',
           paymentMethod: 'OFFLINE',
         },
       },
       statusHistory: {
-        create: [
-          {
-            newStatus: 'PENDING',
-            note: 'Order placed by customer',
-            changedBy: 'CUSTOMER',
-          },
-          {
-            previousStatus: 'PENDING',
-            newStatus: 'ACCEPTED',
-            note: 'Order accepted by Bande Omkar',
-            changedBy: 'ADMIN',
-          },
-        ],
+        create: {
+          newStatus: 'ACCEPTED',
+          note: 'Initial order accepted by kitchen manager',
+          changedBy: 'ADMIN',
+        },
       },
     },
   });
 
-  const cust2 = await prisma.customer.upsert({
-    where: { phone: '9848012345' },
-    update: {},
-    create: {
-      name: 'Kavitha Reddy',
-      phone: '9848012345',
-      email: 'kavitha.reddy@example.com',
-      address: 'House #4-12, Old Bus Stand',
-      city: 'Bhainsa',
-      district: 'Nirmal District',
-      state: 'Telangana',
-      pincode: '504103',
-    },
-  });
-
-  await prisma.order.upsert({
-    where: { orderNumber: 'AA-2026-9142' },
-    update: {},
-    create: {
-      orderNumber: 'AA-2026-9142',
-      customerId: cust2.id,
+  const order2 = await prisma.order.upsert({
+    where: { orderNumber: 'AA-20260824-0012' },
+    update: {
+      orderSource: 'IVR',
+      language: 'TELUGU',
+      callId: sampleCall.id,
       status: 'PENDING',
       paymentMethod: 'OFFLINE',
       paymentStatus: 'PENDING',
-      subtotal: 300,
-      deliveryFee: 40,
-      total: 340,
-      deliveryAddress: 'House #4-12, Old Bus Stand',
-      city: 'Bhainsa',
-      district: 'Nirmal District',
-      state: 'Telangana',
-      pincode: '504103',
-      customerNotes: 'Deliver fresh morning batch',
+      subtotal: 300.0,
+      deliveryFee: 40.0,
+      total: 340.0,
+    },
+    create: {
+      orderNumber: 'AA-20260824-0012',
+      customerId: cust2.id,
+      orderSource: 'IVR',
+      language: 'TELUGU',
+      callId: sampleCall.id,
+      status: 'PENDING',
+      paymentMethod: 'OFFLINE',
+      paymentStatus: 'PENDING',
+      subtotal: 300.0,
+      deliveryFee: 40.0,
+      total: 340.0,
+      deliveryAddress: cust2.address,
+      city: cust2.city,
+      district: cust2.district,
+      state: cust2.state,
+      pincode: cust2.pincode,
+      customerNotes: 'Placed via Multilingual IVR (Telugu: 9347036152)',
       items: {
         create: [
           {
-            productId: 'prod-sevaya-1',
-            variantId: 'var-sevaya-1kg',
-            productName: 'Traditional Wheat Sevaya',
+            productId: 'prod-urad-papad-2',
+            variantId: 'var-urad-1kg',
+            productName: 'Urad Dal Papad',
             variantName: '1 kg (kg)',
-            productNameSnapshot: 'Traditional Wheat Sevaya',
+            productNameSnapshot: 'Urad Dal Papad',
             variantNameSnapshot: '1 kg (kg)',
             weight: '1 kg',
             unit: 'kg',
-            unitPrice: 100,
-            quantity: 3,
-            totalPrice: 300,
+            unitPrice: 300.0,
+            quantity: 1,
+            totalPrice: 300.0,
           },
         ],
       },
       payments: {
         create: {
           gateway: 'CASH_ON_DELIVERY',
-          amount: 340,
+          amount: 340.0,
           currency: 'INR',
           status: 'PENDING',
           paymentMethod: 'OFFLINE',
         },
       },
       statusHistory: {
-        create: [
-          {
-            newStatus: 'PENDING',
-            note: 'Order placed by customer',
-            changedBy: 'CUSTOMER',
-          },
-        ],
+        create: {
+          newStatus: 'PENDING',
+          note: 'Order placed via 24/7 Telephone IVR (Telugu language)',
+          changedBy: 'IVR_SYSTEM',
+        },
       },
     },
   });
 
-  console.log('✅ Annapurna Aahaar database seeded with verified catalog, orders, and Bhainsa business data!');
+  console.log(`✅ Seeded sample persistent orders: #${order1.orderNumber} (Website) and #${order2.orderNumber} (IVR).`);
+  console.log('🌾 Annapurna Aahaar database initialization complete!');
 }
 
 main()

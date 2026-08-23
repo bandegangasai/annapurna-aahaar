@@ -19,6 +19,15 @@ export const ENV = {
   BUSINESS_PHONE_SECONDARY: process.env.BUSINESS_PHONE_2 || '8688456925',
   BUSINESS_EMAIL: process.env.BUSINESS_EMAIL || 'annapurnaaahaar@gmail.com',
 
+  // Dedicated IVR & Telephony Configuration
+  IVR_PHONE_NUMBER: process.env.IVR_PHONE_NUMBER || '9347036152',
+  IVR_PROVIDER: process.env.IVR_PROVIDER || 'TWILIO_EXOTEL_PLIVO',
+  IVR_API_KEY: process.env.IVR_API_KEY || '',
+  IVR_API_SECRET: process.env.IVR_API_SECRET || '',
+  IVR_WEBHOOK_SECRET: process.env.IVR_WEBHOOK_SECRET || '',
+  AGENT_PHONE_PRIMARY: process.env.AGENT_PHONE_PRIMARY || '6305970844',
+  AGENT_PHONE_SECONDARY: process.env.AGENT_PHONE_SECONDARY || '8688456925',
+
   // Email Notifications (Gmail SMTP / Transactional)
   GMAIL_USER: process.env.GMAIL_USER || 'annapurnaaahaar@gmail.com',
   GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASSWORD || '',

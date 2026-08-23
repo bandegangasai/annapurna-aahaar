@@ -1,4 +1,13 @@
-import { Product, Order, OrderItem, ContactMessage, AdminStats } from '../types';
+import {
+  Product,
+  Order,
+  OrderItem,
+  ContactMessage,
+  AdminStats,
+  Call,
+  IvrInteraction,
+  CallCenterStats,
+} from '../types';
 
 const API_BASE = 'https://annapurna-aahaar-1.onrender.com/api';
 
@@ -851,7 +860,71 @@ export const api = {
     return { success: true, data: [] };
   },
 
+  // Call Center & Telephony Logs
+  async adminGetCallCenterStats(token?: string) {
+    const validToken = token || (await getValidJwtToken());
+    try {
+      const res = await fetchApi<{ success: boolean; data: CallCenterStats }>('/admin/call-center/stats', {}, validToken);
+      if (res.success && res.data) return res;
+    } catch {}
+    return {
+      success: true,
+      data: {
+        totalCalls: 0,
+        todayCalls: 0,
+        completedCalls: 0,
+        missedCalls: 0,
+        ivrOrdersCount: 0,
+        avgDuration: 0,
+        languageCounts: { ENGLISH: 0, MARATHI: 0, HINDI: 0, TELUGU: 0 },
+        optionCounts: { '1_ORDER': 0, '2_TRACK': 0, '3_CANCEL': 0, '4_SUPPORT': 0 },
+        ivrPhoneNumber: '9347036152',
+      },
+    };
+  },
+
+  async adminGetCalls(token?: string, params?: { language?: string; status?: string; search?: string; page?: number; limit?: number }) {
+    const validToken = token || (await getValidJwtToken());
+    try {
+      const query = new URLSearchParams();
+      if (params?.language && params.language !== 'ALL') query.append('language', params.language);
+      if (params?.status && params.status !== 'ALL') query.append('status', params.status);
+      if (params?.search) query.append('search', params.search);
+      if (params?.page) query.append('page', String(params.page));
+      if (params?.limit) query.append('limit', String(params.limit));
+
+      const res = await fetchApi<{ success: boolean; data: Call[]; pagination: any }>(
+        `/admin/calls?${query.toString()}`,
+        {},
+        validToken
+      );
+      if (res.success && res.data) return res;
+    } catch {}
+    return { success: true, data: [], pagination: { total: 0, page: 1, limit: 50, totalPages: 1 } };
+  },
+
+  async adminGetIvrInteractions(token?: string) {
+    const validToken = token || (await getValidJwtToken());
+    try {
+      const res = await fetchApi<{ success: boolean; data: IvrInteraction[] }>(
+        '/admin/ivr-interactions',
+        {},
+        validToken
+      );
+      if (res.success && res.data) return res;
+    } catch {}
+    return { success: true, data: [] };
+  },
+
   getExportOrdersCsvUrl(token?: string) {
     return `${API_BASE}/admin/orders/export?token=${token || ''}`;
+  },
+
+  getExportCallsCsvUrl(token?: string) {
+    return `${API_BASE}/admin/calls/export?token=${token || ''}`;
+  },
+
+  getExportIvrInteractionsCsvUrl(token?: string) {
+    return `${API_BASE}/admin/ivr-interactions/export?token=${token || ''}`;
   },
 };

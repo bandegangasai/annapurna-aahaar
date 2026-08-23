@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  ShoppingBag,
   Sparkles,
+  ArrowRight,
   ShieldCheck,
   Award,
-  Truck,
-  RotateCcw,
-  ArrowRight,
-  Star,
-  CheckCircle2,
-  ChevronRight,
-  PhoneCall,
-  MapPin,
   Sun,
-  Flame,
+  Truck,
   Heart,
+  Flame,
+  CheckCircle2,
+  Phone,
+  Headphones,
+  Volume2,
+  Layers,
+  Clock,
 } from 'lucide-react';
 import { ProductCard3D } from '../components/product/ProductCard3D';
 import { SEOHead } from '../components/common/SEOHead';
@@ -31,9 +30,9 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const res = await api.getProducts({ featured: true });
-        if (res.success && res.data.length > 0) {
-          setFeaturedProducts(res.data);
+        const response = await api.getProducts({ featured: true });
+        if (response.success && response.data) {
+          setFeaturedProducts(response.data);
         }
       } catch (err) {
         console.error('Error fetching featured products:', err);
@@ -81,11 +80,11 @@ export const Home: React.FC = () => {
     <div className="overflow-hidden">
       <SEOHead
         title="Annapurna Aahaar | Traditional Indian Food Products | Bhainsa, Telangana"
-        description="Annapurna Aahaar — authentic Indian food products from Bhainsa, Nirmal District, Telangana. Explore handcrafted papads, sun-dried wheat sevaya, and pure golden turmeric."
+        description="Annapurna Aahaar — authentic Indian food products from Bhainsa, Nirmal District, Telangana. Explore handcrafted papads, sun-dried wheat sevaya, and pure golden turmeric. Order online or call 9347036152."
       />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-[#F5ECDA] via-[#FAF6EE] to-[#FAF6EE] pt-8 pb-16 lg:pt-12 lg:pb-24 border-b border-heritage-gold/20">
+      <section className="relative bg-gradient-to-b from-[#F5ECDA] via-[#FAF6EE] to-[#FAF6EE] pt-8 pb-16 lg:pt-12 lg:pb-20 border-b border-heritage-gold/20">
         {/* Decorative Golden Ambient Glow */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-tr from-heritage-gold/15 via-heritage-maroon/10 to-transparent blur-3xl pointer-events-none" />
 
@@ -125,16 +124,18 @@ export const Home: React.FC = () => {
                   to="/products"
                   className="w-full sm:w-auto bg-gradient-to-r from-heritage-maroon via-heritage-richRed to-heritage-darkMaroon hover:from-heritage-darkMaroon hover:to-heritage-maroon text-cream-100 px-8 py-4 rounded-2xl font-bold text-base shadow-xl shadow-heritage-maroon/20 hover:shadow-2xl transition-all transform active:scale-95 flex items-center justify-center gap-2 border border-heritage-gold/30"
                 >
-                  <span>SHOP OUR PRODUCTS</span>
+                  <span>SHOP ONLINE</span>
                   <ArrowRight className="w-5 h-5 text-heritage-gold" />
                 </Link>
 
-                <Link
-                  to="/our-story"
-                  className="w-full sm:w-auto bg-white hover:bg-cream-100 text-heritage-maroon border border-heritage-gold/40 px-7 py-4 rounded-2xl font-bold text-base shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2"
+                {/* Prominent CALL TO ORDER button */}
+                <a
+                  href="tel:9347036152"
+                  className="w-full sm:w-auto bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-7 py-4 rounded-2xl font-bold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2.5 border border-amber-400/30 transform active:scale-95"
                 >
-                  <span>OUR STORY</span>
-                </Link>
+                  <Phone className="w-5 h-5 animate-pulse text-amber-200" />
+                  <span>CALL TO ORDER: 9347036152</span>
+                </a>
               </div>
 
               {/* Verified Business Badges */}
@@ -148,8 +149,8 @@ export const Home: React.FC = () => {
                   <div className="text-xs text-stone-600">PIN: 504103</div>
                 </div>
                 <div>
-                  <div className="font-serif font-bold text-lg sm:text-xl text-heritage-maroon">Online + COD</div>
-                  <div className="text-xs text-stone-600">Payment Modes</div>
+                  <div className="font-serif font-bold text-lg sm:text-xl text-heritage-maroon">4 Languages</div>
+                  <div className="text-xs text-stone-600">IVR Telephone Support</div>
                 </div>
               </div>
             </motion.div>
@@ -170,59 +171,12 @@ export const Home: React.FC = () => {
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                     loading="eager"
                   />
-                  {/* Subtle Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none" />
 
-                  {/* Top Floating Badge */}
                   <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-heritage-gold/30 shadow-md flex items-center gap-1.5 text-xs font-bold text-heritage-maroon">
                     <Sparkles className="w-3.5 h-3.5 text-heritage-gold animate-spin-slow" />
                     <span>Pure Handcrafted Taste</span>
                   </div>
-
-                  {/* Top Right Badge */}
-                  <div className="absolute top-3 right-3 bg-heritage-darkMaroon/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-heritage-gold/40 shadow-md text-[11px] font-bold text-heritage-gold">
-                    Bhainsa, Telangana
-                  </div>
-
-                  {/* Bottom Image Caption */}
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
-                    <div>
-                      <p className="font-serif font-bold text-sm text-cream-50 drop-shadow-sm">
-                        Authentic Food Spread
-                      </p>
-                      <p className="text-[11px] text-cream-200">
-                        Handmade Sevaya, Papads & Pure Turmeric
-                      </p>
-                    </div>
-                    <span className="bg-heritage-gold text-heritage-darkMaroon text-[11px] font-black px-2.5 py-1 rounded-xl shadow">
-                      100% PURE
-                    </span>
-                  </div>
-                </div>
-
-                {/* Interactive Highlights Bar */}
-                <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-                  <Link
-                    to="/products/traditional-wheat-sevaya"
-                    className="bg-white/90 hover:bg-white p-2 rounded-xl border border-heritage-gold/30 shadow-sm transition-all hover:scale-105"
-                  >
-                    <span className="font-serif font-bold text-heritage-maroon block">🌾 Sevaya</span>
-                    <span className="text-[10px] text-stone-500">Whole Wheat</span>
-                  </Link>
-                  <Link
-                    to="/products/urad-dal-papad"
-                    className="bg-white/90 hover:bg-white p-2 rounded-xl border border-heritage-gold/30 shadow-sm transition-all hover:scale-105"
-                  >
-                    <span className="font-serif font-bold text-heritage-maroon block">🍘 Papads</span>
-                    <span className="text-[10px] text-stone-500">Sun-Cured Crisp</span>
-                  </Link>
-                  <Link
-                    to="/products/pure-turmeric-powder"
-                    className="bg-white/90 hover:bg-white p-2 rounded-xl border border-heritage-gold/30 shadow-sm transition-all hover:scale-105"
-                  >
-                    <span className="font-serif font-bold text-heritage-maroon block">💛 Turmeric</span>
-                    <span className="text-[10px] text-stone-500">Golden Haldi</span>
-                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -230,106 +184,78 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Category Quick Grid */}
-      <section className="py-14 bg-white border-b border-heritage-gold/20">
+      {/* 24/7 MULTILINGUAL IVR & TELEPHONE ORDERING HIGHLIGHT SECTION */}
+      <section className="py-12 bg-gradient-to-br from-amber-900 via-amber-950 to-stone-900 text-white relative border-y-4 border-heritage-gold shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-bold text-heritage-antiqueGold uppercase tracking-widest block mb-1">
-              Curated Collections
-            </span>
-            <h2 className="font-serif font-black text-2xl sm:text-3xl text-heritage-maroon">
-              Authentic Indian Food Essentials
-            </h2>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-6 space-y-4">
+              <div className="inline-flex items-center gap-2 bg-heritage-gold text-heritage-darkMaroon px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
+                <Headphones className="w-3.5 h-3.5" />
+                <span>24/7 Telephone IVR Ordering</span>
+              </div>
+              <h2 className="font-serif font-black text-3xl sm:text-4xl text-cream-50 leading-tight">
+                Can't Use The Website? <br />
+                <span className="text-heritage-gold">Just Call 9347036152</span>
+              </h2>
+              <p className="text-cream-200/90 text-sm sm:text-base leading-relaxed">
+                We believe everyone should easily access authentic Indian food. Simply call our dedicated IVR number from any basic mobile or landline phone, select your language, and place your order using voice instructions.
+              </p>
+              <div className="pt-2 flex flex-wrap gap-4 items-center">
+                <a
+                  href="tel:9347036152"
+                  className="bg-gradient-to-r from-heritage-gold to-amber-500 hover:from-amber-400 hover:to-heritage-gold text-heritage-darkMaroon font-black px-8 py-4 rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center gap-3 text-base"
+                >
+                  <Phone className="w-5 h-5 animate-pulse" />
+                  <span>CALL: 9347036152</span>
+                </a>
+                <div className="text-xs text-amber-200">
+                  <span>Direct connection to our central kitchen in Bhainsa</span>
+                </div>
+              </div>
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Category 1: Papad */}
-            <Link
-              to="/products?category=Papad"
-              className="group relative rounded-3xl overflow-hidden bg-cream-100 border border-heritage-gold/30 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300"
-            >
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-heritage-maroon bg-heritage-gold/20 px-3 py-1 rounded-full">
-                  Handcrafted
-                </span>
-                <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-heritage-richRed transition-colors">
-                  Crispy Papads
-                </h3>
-                <p className="text-xs text-stone-600">
-                  Urad Dal, Moong Dal, Masala & Rice Papad. Sun-dried crispiness.
+            {/* 4 Languages Cards */}
+            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-heritage-gold/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-heritage-gold text-sm">1. English</span>
+                  <span className="text-[10px] bg-heritage-gold/20 px-2 py-0.5 rounded text-amber-200 font-bold">Press 1</span>
+                </div>
+                <p className="text-xs text-cream-200">
+                  "Welcome to Annapurna Aahaar. Press 1 for Orders, 2 to Track, 3 to Cancel, 4 for Support."
                 </p>
               </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-bold text-heritage-maroon">
-                <span>₹150 / 500g | ₹300 / 1kg</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-heritage-gold" />
-              </div>
-            </Link>
 
-            {/* Category 2: Sevaya */}
-            <Link
-              to="/products?category=Flours %26 Grains"
-              className="group relative rounded-3xl overflow-hidden bg-cream-100 border border-heritage-gold/30 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300"
-            >
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-heritage-maroon bg-heritage-gold/20 px-3 py-1 rounded-full">
-                  Pure Wheat
-                </span>
-                <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-heritage-richRed transition-colors">
-                  Traditional Sevaya
-                </h3>
-                <p className="text-xs text-stone-600">
-                  Sun-dried whole wheat vermicelli for sweet kheer and breakfast upma.
+              <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-heritage-gold/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-heritage-gold text-sm">2. मराठी (Marathi)</span>
+                  <span className="text-[10px] bg-heritage-gold/20 px-2 py-0.5 rounded text-amber-200 font-bold">2 दाबा</span>
+                </div>
+                <p className="text-xs text-cream-200">
+                  "अन्नपूर्णा आहार मध्ये आपले स्वागत आहे. नवीन ऑर्डर करण्यासाठी 1 दाबा, ट्रॅकिंगसाठी 2 दाबा."
                 </p>
               </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-bold text-heritage-maroon">
-                <span>₹100 / kg</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-heritage-gold" />
-              </div>
-            </Link>
 
-            {/* Category 3: Turmeric */}
-            <Link
-              to="/products?category=Spices"
-              className="group relative rounded-3xl overflow-hidden bg-cream-100 border border-heritage-gold/30 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300"
-            >
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-heritage-maroon bg-heritage-gold/20 px-3 py-1 rounded-full">
-                  High Curcumin
-                </span>
-                <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-heritage-richRed transition-colors">
-                  Pure Turmeric
-                </h3>
-                <p className="text-xs text-stone-600">
-                  Pure farm golden-yellow turmeric powder, stone-ground with zero fillers.
+              <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-heritage-gold/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-heritage-gold text-sm">3. हिंदी (Hindi)</span>
+                  <span className="text-[10px] bg-heritage-gold/20 px-2 py-0.5 rounded text-amber-200 font-bold">3 दबाएँ</span>
+                </div>
+                <p className="text-xs text-cream-200">
+                  "अन्नपूर्णा आहार में आपका स्वागत है। ऑर्डर करने के लिए 1 दबाएँ, ट्रैक करने के लिए 2 दबाएँ।"
                 </p>
               </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-bold text-heritage-maroon">
-                <span>₹150 / kg</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-heritage-gold" />
-              </div>
-            </Link>
 
-            {/* Category 4: Noodles */}
-            <Link
-              to="/products?category=Noodles %26 Instant Foods"
-              className="group relative rounded-3xl overflow-hidden bg-cream-100 border border-heritage-gold/30 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300"
-            >
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-heritage-maroon bg-heritage-gold/20 px-3 py-1 rounded-full">
-                  Quick Snack
-                </span>
-                <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-heritage-richRed transition-colors">
-                  Noodles & Instant
-                </h3>
-                <p className="text-xs text-stone-600">
-                  Maggie masala noodles & whole wheat desi noodles for family snacking.
+              <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-heritage-gold/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-heritage-gold text-sm">4. తెలుగు (Telugu)</span>
+                  <span className="text-[10px] bg-heritage-gold/20 px-2 py-0.5 rounded text-amber-200 font-bold">4 నొక్కండి</span>
+                </div>
+                <p className="text-xs text-cream-200">
+                  "అన్నపూర్ణ ఆహార్ కు స్వాగతం. ఆర్డర్ చేయడానికి 1 నొక్కండి, ట్రాక్ చేయడానికి 2 నొక్కండి."
                 </p>
               </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-bold text-heritage-maroon">
-                <span>Packs Available</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-heritage-gold" />
-              </div>
-            </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -337,13 +263,13 @@ export const Home: React.FC = () => {
       {/* Featured Products Section */}
       <section className="py-16 bg-[#FAF6EE]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-4">
             <div>
               <span className="text-xs font-bold text-heritage-antiqueGold uppercase tracking-widest block mb-1">
-                Authentic Craftsmanship
+                Fresh From Bhainsa Kitchen
               </span>
               <h2 className="font-serif font-black text-3xl sm:text-4xl text-heritage-maroon">
-                Featured Products
+                Featured Traditional Specialties
               </h2>
             </div>
             <Link
@@ -483,14 +409,15 @@ export const Home: React.FC = () => {
                   to="/products"
                   className="w-full sm:w-auto bg-heritage-gold hover:bg-heritage-antiqueGold text-heritage-darkMaroon font-black px-8 py-4 rounded-2xl shadow-xl transition-all transform active:scale-95 text-base"
                 >
-                  Order Now (Online / Cash on Delivery)
+                  Order Online (COD / UPI / Cards)
                 </Link>
-                <Link
-                  to="/contact"
-                  className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-cream-100 border border-cream-200/30 px-6 py-4 rounded-2xl font-bold transition-colors text-sm"
+                <a
+                  href="tel:9347036152"
+                  className="w-full sm:w-auto bg-white/15 hover:bg-white/25 text-white border border-heritage-gold/40 px-7 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 text-base"
                 >
-                  Contact Bande Omkar
-                </Link>
+                  <Phone className="w-4 h-4 text-heritage-gold" />
+                  <span>Call to Order: 9347036152</span>
+                </a>
               </div>
             </div>
           </div>

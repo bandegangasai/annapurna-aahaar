@@ -13,6 +13,7 @@ import {
   Smartphone,
   Copy,
   Check,
+  Phone,
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
@@ -251,13 +252,35 @@ export const Checkout: React.FC = () => {
           </Link>
         </div>
 
-        <div className="text-center max-w-2xl mx-auto mb-10">
+        <div className="text-center max-w-2xl mx-auto mb-8">
           <span className="text-xs font-bold text-heritage-antiqueGold uppercase tracking-widest block mb-1">
             Secure Checkout
           </span>
           <h1 className="font-serif font-black text-3xl sm:text-4xl text-heritage-maroon">
             Delivery & Payment Details
           </h1>
+        </div>
+
+        {/* Prefer Ordering by Phone Banner */}
+        <div className="max-w-4xl mx-auto mb-8 bg-gradient-to-r from-amber-500/15 via-amber-600/10 to-amber-500/15 border-2 border-amber-500/40 rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <div className="w-11 h-11 rounded-2xl bg-amber-600 flex items-center justify-center text-white shrink-0 shadow-md">
+              <Phone className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <h4 className="font-serif font-bold text-stone-900 text-sm sm:text-base">Can't complete checkout online? Order by Phone!</h4>
+              <p className="text-xs text-stone-600 mt-0.5">
+                Call our 24/7 Automated Multilingual IVR at <strong className="text-heritage-maroon">9347036152</strong> (English, मराठी, हिंदी, తెలుగు).
+              </p>
+            </div>
+          </div>
+          <a
+            href="tel:9347036152"
+            className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-5 py-3 rounded-2xl shadow-md transition-all flex items-center gap-2 shrink-0 hover:scale-105"
+          >
+            <Phone className="w-4 h-4" />
+            <span>CALL: 9347036152</span>
+          </a>
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">

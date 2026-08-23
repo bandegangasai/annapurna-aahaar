@@ -117,6 +117,29 @@ export const Contact: React.FC = () => {
               <div className="space-y-2">
                 <span className="text-xs font-bold text-stone-500 uppercase">Direct Phone Lines</span>
                 <div className="space-y-2">
+                  {/* Dedicated 24/7 IVR Phone Ordering Hotline */}
+                  <a
+                    href="tel:9347036152"
+                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-600/10 to-amber-500/15 hover:bg-amber-100 border-2 border-amber-500/40 transition-all group shadow-sm"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center text-white shadow-md">
+                      <Phone className="w-5 h-5 animate-pulse" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-black text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          24/7 Voice IVR Hotline
+                        </span>
+                      </div>
+                      <span className="font-serif font-black text-stone-900 text-base group-hover:text-heritage-maroon block mt-0.5">
+                        9347036152
+                      </span>
+                      <span className="text-[10px] text-stone-600 block">
+                        Order in English, मराठी, हिंदी, తెలుగు
+                      </span>
+                    </div>
+                  </a>
+
                   <a
                     href="tel:6305970844"
                     className="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF6EE] hover:bg-cream-200 border border-heritage-gold/25 transition-colors group"
@@ -125,7 +148,7 @@ export const Contact: React.FC = () => {
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-xs text-stone-500 block">Primary Helpline</span>
+                      <span className="text-xs text-stone-500 block">Primary Kitchen Helpline</span>
                       <span className="font-bold text-stone-900 text-sm group-hover:text-heritage-maroon">
                         +91 6305970844
                       </span>
@@ -140,7 +163,7 @@ export const Contact: React.FC = () => {
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-xs text-stone-500 block">Secondary Helpline</span>
+                      <span className="text-xs text-stone-500 block">Secondary Kitchen Helpline</span>
                       <span className="font-bold text-stone-900 text-sm group-hover:text-heritage-maroon">
                         +91 8688456925
                       </span>

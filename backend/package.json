@@ -10,7 +10,8 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:seed": "tsx prisma/seed.ts",
-    "test:e2e": "tsx src/test-e2e.ts"
+    "test:e2e": "tsx src/test-e2e.ts",
+    "test:ivr:e2e": "tsx src/test-ivr-e2e.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

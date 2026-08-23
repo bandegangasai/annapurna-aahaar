@@ -10,6 +10,7 @@ import {
   Mail,
   ArrowRight,
   ExternalLink,
+  Headphones,
 } from 'lucide-react';
 
 export const Footer: React.FC = () => {
@@ -55,6 +56,31 @@ export const Footer: React.FC = () => {
         </div>
       </div>
 
+      {/* Multilingual Phone Ordering Strip */}
+      <div className="bg-gradient-to-r from-amber-900/60 via-amber-800/40 to-amber-900/60 border-b border-heritage-gold/30 py-4 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-heritage-gold text-heritage-darkMaroon flex items-center justify-center font-bold">
+              <Phone className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-white">Can't use the website? Order directly by phone!</div>
+              <div className="text-xs text-amber-200">
+                24/7 Multilingual Voice IVR: English, मराठी (Marathi), हिंदी (Hindi), తెలుగు (Telugu)
+              </div>
+            </div>
+          </div>
+
+          <a
+            href="tel:9347036152"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-heritage-gold to-amber-500 hover:from-amber-400 hover:to-heritage-gold text-heritage-darkMaroon font-black px-6 py-2.5 rounded-full shadow-lg text-sm transition-all hover:scale-105"
+          >
+            <Phone className="w-4 h-4" />
+            <span>CALL TO ORDER: 9347036152</span>
+          </a>
+        </div>
+      </div>
+
       {/* Main Footer Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
         {/* Brand & Owner Col */}
@@ -93,9 +119,15 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
+            {/* Dedicated IVR Hotline */}
             <div className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-heritage-gold shrink-0" />
-              <span>+91 6305970844 / +91 8688456925</span>
+              <span>Dedicated IVR Hotline: <a href="tel:9347036152" className="text-heritage-gold font-bold hover:underline">9347036152</a></span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-heritage-gold/70 shrink-0" />
+              <span>Kitchen Helplines: +91 6305970844 / +91 8688456925</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -182,6 +214,10 @@ export const Footer: React.FC = () => {
           </h4>
           <ul className="space-y-2 text-xs text-cream-300">
             <li>
+              <span className="block text-cream-100 font-semibold">Phone Ordering:</span>
+              <a href="tel:9347036152" className="text-heritage-gold font-bold">Call 9347036152</a> (24/7)
+            </li>
+            <li>
               <span className="block text-cream-100 font-semibold">Payment Methods:</span>
               <span>Online (Razorpay / UPI / Cards) & Cash on Delivery</span>
             </li>
@@ -199,22 +235,20 @@ export const Footer: React.FC = () => {
               to="/admin/login"
               className="inline-flex items-center gap-1.5 text-xs text-heritage-gold border border-heritage-gold/40 px-3 py-1.5 rounded-lg hover:bg-heritage-gold/10 transition-all font-semibold"
             >
-              <span>Admin Management</span>
+              <span>Admin Management Portal</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Bottom Copyright */}
-      <div className="border-t border-heritage-gold/20 py-4 px-4 text-center text-xs text-cream-400">
+      {/* Bottom Legal & Copyright Bar */}
+      <div className="border-t border-heritage-gold/20 py-6 px-4 text-center text-xs text-cream-300 bg-[#220409]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <span>
-            © {new Date().getFullYear()} Annapurna Aahaar (Owner: Bande Omkar, Bhainsa, Telangana). All rights reserved.
-          </span>
-          <span className="text-[11px] text-cream-400/70">
-            Tradition in Every Grain.
-          </span>
+          <p>© {new Date().getFullYear()} Annapurna Aahaar. All rights reserved. Registered in Bhainsa, Telangana.</p>
+          <p className="text-heritage-gold/80">
+            Tradition in Every Grain • Owner: <strong>Bande Omkar</strong>
+          </p>
         </div>
       </div>
     </footer>

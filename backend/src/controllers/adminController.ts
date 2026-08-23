@@ -24,13 +24,20 @@ const updateStatusSchema = z.object({
     'DELIVERED',
     'CANCELLED',
   ]),
-  paymentStatus: z.enum(['PENDING', 'PROCESSING', 'PAID', 'FAILED', 'REFUNDED', 'PENDING_VERIFICATION']).optional(),
+  paymentStatus: z
+    .enum(['PENDING', 'PROCESSING', 'PAID', 'FAILED', 'REFUNDED', 'PENDING_VERIFICATION'])
+    .optional(),
+  note: z.string().optional(),
+});
+
+const verifyPaymentSchema = z.object({
+  status: z.enum(['PAID', 'FAILED']),
   note: z.string().optional(),
 });
 
 const updateVariantPriceSchema = z.object({
-  price: z.number().min(0, 'Price must be non-negative'),
-  stock: z.number().int().optional(),
+  price: z.number().positive('Price must be greater than 0'),
+  stock: z.number().int().nonnegative().optional(),
 });
 
 export const loginAdmin = async (
@@ -40,13 +47,12 @@ export const loginAdmin = async (
 ): Promise<void> => {
   try {
     const { email, password } = loginSchema.parse(req.body);
-    const cleanEmail = email.toLowerCase().trim();
+    const cleanEmail = email.trim().toLowerCase();
 
     let admin = await prisma.adminUser.findUnique({
       where: { email: cleanEmail },
     });
 
-    // If default admin does not exist yet, seed on the fly
     if (!admin && cleanEmail === ENV.ADMIN_EMAIL.toLowerCase()) {
       const passwordHash = await bcrypt.hash(ENV.ADMIN_PASSWORD, 10);
       admin = await prisma.adminUser.create({
@@ -103,20 +109,20 @@ export const getOrders = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { status, search, paymentStatus, paymentMethod, page = '1', limit = '100' } = req.query;
+    const { status, paymentStatus, orderSource, language, search, page, limit } = req.query;
 
     const where: any = {};
-
-    if (status && typeof status === 'string' && status !== 'ALL') {
-      where.status = status.toUpperCase();
+    if (status && status !== 'ALL') {
+      where.status = String(status);
     }
-
-    if (paymentStatus && typeof paymentStatus === 'string' && paymentStatus !== 'ALL') {
-      where.paymentStatus = paymentStatus.toUpperCase();
+    if (paymentStatus && paymentStatus !== 'ALL') {
+      where.paymentStatus = String(paymentStatus);
     }
-
-    if (paymentMethod && typeof paymentMethod === 'string' && paymentMethod !== 'ALL') {
-      where.paymentMethod = paymentMethod.toUpperCase();
+    if (orderSource && orderSource !== 'ALL') {
+      where.orderSource = String(orderSource);
+    }
+    if (language && language !== 'ALL') {
+      where.language = String(language);
     }
 
     if (search && typeof search === 'string') {
@@ -140,6 +146,7 @@ export const getOrders = async (
           customer: true,
           items: true,
           payments: true,
+          call: true,
           statusHistory: {
             orderBy: { createdAt: 'desc' },
           },
@@ -179,6 +186,7 @@ export const getOrderById = async (
         customer: true,
         items: true,
         payments: true,
+        call: true,
         statusHistory: {
           orderBy: { createdAt: 'desc' },
         },
@@ -186,7 +194,7 @@ export const getOrderById = async (
     });
 
     if (!order) {
-      res.status(404).json({ success: false, message: 'Order not found.' });
+      res.status(404).json({ success: false, message: 'Order not found' });
       return;
     }
 
@@ -306,11 +314,11 @@ export const verifyManualPayment = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const id = String(req.params.id || '');
-    const { status, note } = req.body; // 'PAID' or 'FAILED'
+    const paymentId = String(req.params.id || '');
+    const { status, note } = verifyPaymentSchema.parse(req.body);
 
     const payment = await prisma.payment.findUnique({
-      where: { id },
+      where: { id: paymentId },
       include: { order: true },
     });
 
@@ -320,44 +328,44 @@ export const verifyManualPayment = async (
     }
 
     const updatedPayment = await prisma.payment.update({
-      where: { id },
+      where: { id: paymentId },
       data: {
-        status: status === 'PAID' ? 'PAID' : 'FAILED',
+        status,
         verifiedBy: req.admin?.name || 'ADMIN',
         verifiedAt: new Date(),
-        verificationNote: note || '',
+        verificationNote: note || (status === 'PAID' ? 'Verified received on business phone 9542826358' : 'Payment rejected'),
       },
     });
 
-    if (payment.orderId) {
-      const prevStatus = (payment as any).order?.status || 'PENDING';
+    // If marked PAID, update linked order
+    if (status === 'PAID') {
       await prisma.order.update({
         where: { id: payment.orderId },
         data: {
-          paymentStatus: status === 'PAID' ? 'PAID' : 'FAILED',
-          status: status === 'PAID' ? 'ACCEPTED' : prevStatus,
+          paymentStatus: 'PAID',
+          status: payment.order.status === 'PENDING' ? 'ACCEPTED' : payment.order.status,
+          acceptedAt: !payment.order.acceptedAt ? new Date() : undefined,
           statusHistory: {
             create: {
-              previousStatus: prevStatus,
-              newStatus: status === 'PAID' ? 'ACCEPTED' : prevStatus,
-              note: `Manual UPI Payment ${status === 'PAID' ? 'VERIFIED & APPROVED' : 'REJECTED'}. Note: ${note || 'None'}`,
-              changedBy: req.admin?.name || 'ADMIN',
+              newStatus: payment.order.status === 'PENDING' ? 'ACCEPTED' : payment.order.status,
+              note: `Direct UPI payment verified and marked as PAID by ${req.admin?.name || 'ADMIN'}`,
+              changedBy: 'ADMIN',
             },
           },
         },
       });
-    }
 
-    // Broadcast payment update
-    realtimeService.broadcast('payment_verified', {
-      paymentId: id,
-      orderId: payment.orderId,
-      status: updatedPayment.status,
-    });
+      realtimeService.broadcast('payment_verified', {
+        orderId: payment.orderId,
+        paymentId: payment.id,
+        amount: payment.amount,
+        status: 'PAID',
+      });
+    }
 
     res.status(200).json({
       success: true,
-      message: `Payment successfully ${status === 'PAID' ? 'verified as PAID' : 'marked as FAILED'}`,
+      message: `Payment successfully ${status === 'PAID' ? 'approved' : 'rejected'}.`,
       data: updatedPayment,
     });
   } catch (error) {
@@ -374,7 +382,14 @@ export const getCustomers = async (
     const customers = await prisma.customer.findMany({
       include: {
         orders: {
-          select: { id: true, orderNumber: true, total: true, status: true, createdAt: true },
+          select: {
+            id: true,
+            orderNumber: true,
+            total: true,
+            status: true,
+            orderSource: true,
+            createdAt: true,
+          },
           orderBy: { createdAt: 'desc' },
         },
       },
@@ -385,6 +400,9 @@ export const getCustomers = async (
       const totalSpent = c.orders
         .filter((o) => o.status !== 'CANCELLED' && o.status !== 'REJECTED')
         .reduce((sum, o) => sum + o.total, 0);
+
+      const ivrOrdersCount = c.orders.filter((o) => o.orderSource === 'IVR').length;
+      const webOrdersCount = c.orders.filter((o) => o.orderSource === 'WEBSITE').length;
 
       return {
         id: c.id,
@@ -397,6 +415,8 @@ export const getCustomers = async (
         pincode: c.pincode,
         totalOrders: c.orders.length,
         totalSpent,
+        ivrOrdersCount,
+        webOrdersCount,
         firstOrder: c.orders[c.orders.length - 1]?.createdAt || c.createdAt,
         lastOrder: c.orders[0]?.createdAt || c.createdAt,
         orders: c.orders,
@@ -429,6 +449,16 @@ export const getReports = async (
       .reduce((sum, o) => sum + o.total, 0);
     const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
 
+    // Channel Sales Breakdown
+    const websiteSales = orders.filter((o) => o.orderSource === 'WEBSITE').reduce((sum, o) => sum + o.total, 0);
+    const ivrSales = orders.filter((o) => o.orderSource === 'IVR').reduce((sum, o) => sum + o.total, 0);
+    const phoneSales = orders.filter((o) => o.orderSource === 'PHONE').reduce((sum, o) => sum + o.total, 0);
+
+    // Payment Mode Breakdown
+    const onlineRevenue = orders.filter((o) => o.paymentMethod === 'ONLINE').reduce((sum, o) => sum + o.total, 0);
+    const offlineRevenue = orders.filter((o) => o.paymentMethod === 'OFFLINE').reduce((sum, o) => sum + o.total, 0);
+    const manualUpiRevenue = orders.filter((o) => o.paymentMethod === 'MANUAL_UPI').reduce((sum, o) => sum + o.total, 0);
+
     // Product Sales Breakdown
     const productStatsMap: Record<string, { name: string; quantity: number; revenue: number }> = {};
     for (const ord of orders) {
@@ -453,6 +483,12 @@ export const getReports = async (
         paidRevenue,
         pendingRevenue,
         totalRevenue,
+        websiteSales,
+        ivrSales,
+        phoneSales,
+        onlineRevenue,
+        offlineRevenue,
+        manualUpiRevenue,
         topProducts,
       },
     });
@@ -475,6 +511,8 @@ export const exportOrdersCsv = async (
     const headers = [
       'Order Number',
       'Date',
+      'Order Source',
+      'Language',
       'Customer Name',
       'Customer Phone',
       'City',
@@ -490,6 +528,8 @@ export const exportOrdersCsv = async (
     const rows = orders.map((o) => [
       `"${o.orderNumber}"`,
       `"${new Date(o.createdAt).toLocaleString('en-IN')}"`,
+      `"${o.orderSource || 'WEBSITE'}"`,
+      `"${o.language || 'ENGLISH'}"`,
       `"${o.customer.name.replace(/"/g, '""')}"`,
       `"${o.customer.phone}"`,
       `"${o.city || o.customer.city}"`,
@@ -512,14 +552,230 @@ export const exportOrdersCsv = async (
   }
 };
 
+// ========================================================
+// CALL CENTER ANALYTICS & CALL LOGS
+// ========================================================
+export const getCallCenterStats = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const [
+      totalCalls,
+      todayCalls,
+      completedCalls,
+      missedCalls,
+      ivrOrdersCount,
+      allCalls,
+    ] = await Promise.all([
+      prisma.call.count(),
+      prisma.call.count({ where: { startTime: { gte: startOfToday } } }),
+      prisma.call.count({ where: { status: 'COMPLETED' } }),
+      prisma.call.count({ where: { status: { in: ['FAILED', 'NO_ANSWER', 'BUSY', 'DISCONNECTED'] } } }),
+      prisma.order.count({ where: { orderSource: 'IVR' } }),
+      prisma.call.findMany({ select: { language: true, duration: true, selectedOption: true } }),
+    ]);
+
+    // Language breakdown
+    const languageCounts: Record<string, number> = { ENGLISH: 0, MARATHI: 0, HINDI: 0, TELUGU: 0 };
+    let totalDuration = 0;
+    const optionCounts: Record<string, number> = { '1_ORDER': 0, '2_TRACK': 0, '3_CANCEL': 0, '4_SUPPORT': 0 };
+
+    for (const c of allCalls) {
+      if (languageCounts[c.language] !== undefined) languageCounts[c.language]++;
+      else languageCounts[c.language] = 1;
+
+      totalDuration += c.duration || 0;
+
+      if (c.selectedOption && optionCounts[c.selectedOption] !== undefined) {
+        optionCounts[c.selectedOption]++;
+      }
+    }
+
+    const avgDuration = totalCalls > 0 ? Math.round(totalDuration / totalCalls) : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalCalls,
+        todayCalls,
+        completedCalls,
+        missedCalls,
+        ivrOrdersCount,
+        avgDuration,
+        languageCounts,
+        optionCounts,
+        ivrPhoneNumber: ENV.IVR_PHONE_NUMBER || '9347036152',
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCalls = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { language, status, search, page, limit } = req.query;
+
+    const where: any = {};
+    if (language && language !== 'ALL') where.language = String(language);
+    if (status && status !== 'ALL') where.status = String(status);
+    if (search && typeof search === 'string') {
+      where.OR = [
+        { fromPhone: { contains: search.trim() } },
+        { callSid: { contains: search.trim() } },
+      ];
+    }
+
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 100;
+    const skip = (pageNum - 1) * limitNum;
+
+    const [total, calls] = await Promise.all([
+      prisma.call.count({ where }),
+      prisma.call.findMany({
+        where,
+        include: {
+          orders: { select: { id: true, orderNumber: true, total: true, status: true } },
+          interactions: { orderBy: { timestamp: 'asc' } },
+        },
+        orderBy: { startTime: 'desc' },
+        skip,
+        take: limitNum,
+      }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: calls,
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum) || 1,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const exportCallsCsv = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const calls = await prisma.call.findMany({
+      include: { orders: true },
+      orderBy: { startTime: 'desc' },
+    });
+
+    const headers = [
+      'Call ID',
+      'Start Time',
+      'Caller Phone',
+      'IVR Number',
+      'Language',
+      'Duration (sec)',
+      'Status',
+      'Selected Option',
+      'Resulting Order #',
+    ];
+
+    const rows = calls.map((c) => [
+      `"${c.callSid}"`,
+      `"${new Date(c.startTime).toLocaleString('en-IN')}"`,
+      `"${c.fromPhone}"`,
+      `"${c.toPhone}"`,
+      `"${c.language}"`,
+      c.duration,
+      `"${c.status}"`,
+      `"${c.selectedOption || 'None'}"`,
+      `"${c.orders[0]?.orderNumber || 'None'}"`,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=annapurna_calls_${Date.now()}.csv`);
+    res.status(200).send(csvContent);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getIvrInteractions = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const interactions = await prisma.ivrInteraction.findMany({
+      include: { call: { select: { fromPhone: true, callSid: true } } },
+      orderBy: { timestamp: 'desc' },
+      take: 200,
+    });
+
+    res.status(200).json({ success: true, data: interactions });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const exportIvrInteractionsCsv = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const interactions = await prisma.ivrInteraction.findMany({
+      include: { call: true },
+      orderBy: { timestamp: 'desc' },
+    });
+
+    const headers = ['Interaction ID', 'Call Sid', 'Caller Phone', 'Timestamp', 'Language', 'Menu', 'DTMF Digit', 'Action', 'Details'];
+    const rows = interactions.map((i) => [
+      `"${i.id}"`,
+      `"${i.call.callSid}"`,
+      `"${i.call.fromPhone}"`,
+      `"${new Date(i.timestamp).toLocaleString('en-IN')}"`,
+      `"${i.language}"`,
+      `"${i.menu}"`,
+      `"${i.dtmfInput || ''}"`,
+      `"${i.action}"`,
+      `"${(i.details || '').replace(/"/g, '""')}"`,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=annapurna_ivr_interactions_${Date.now()}.csv`);
+    res.status(200).send(csvContent);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getStats = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
     const [
       totalOrders,
+      todayOrders,
       pendingOrders,
       acceptedOrders,
       processingOrders,
@@ -530,8 +786,12 @@ export const getStats = async (
       totalCustomers,
       unreadContacts,
       allOrders,
+      totalCalls,
+      todayCalls,
+      ivrOrdersCount,
     ] = await Promise.all([
       prisma.order.count(),
+      prisma.order.count({ where: { createdAt: { gte: startOfToday } } }),
       prisma.order.count({ where: { status: 'PENDING' } }),
       prisma.order.count({ where: { status: 'ACCEPTED' } }),
       prisma.order.count({ where: { status: 'PROCESSING' } }),
@@ -541,18 +801,23 @@ export const getStats = async (
       prisma.payment.count({ where: { status: 'PENDING_VERIFICATION' } }),
       prisma.customer.count(),
       prisma.contactMessage.count({ where: { isRead: false } }),
-      prisma.order.findMany({ select: { total: true, paymentMethod: true } }),
+      prisma.order.findMany({ select: { total: true, paymentMethod: true, orderSource: true } }),
+      prisma.call.count(),
+      prisma.call.count({ where: { startTime: { gte: startOfToday } } }),
+      prisma.order.count({ where: { orderSource: 'IVR' } }),
     ]);
 
     const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
     const onlineOrdersCount = allOrders.filter((o) => o.paymentMethod === 'ONLINE').length;
     const offlineOrdersCount = allOrders.filter((o) => o.paymentMethod === 'OFFLINE').length;
     const manualUpiOrdersCount = allOrders.filter((o) => o.paymentMethod === 'MANUAL_UPI').length;
+    const websiteOrdersCount = allOrders.filter((o) => o.orderSource === 'WEBSITE').length;
 
     res.status(200).json({
       success: true,
       data: {
         totalOrders,
+        todayOrders,
         pendingOrders,
         acceptedOrders,
         processingOrders,
@@ -564,6 +829,10 @@ export const getStats = async (
         onlineOrdersCount,
         offlineOrdersCount,
         manualUpiOrdersCount,
+        websiteOrdersCount,
+        ivrOrdersCount,
+        totalCalls,
+        todayCalls,
         totalCustomers,
         unreadContacts,
         business: {
@@ -573,6 +842,7 @@ export const getStats = async (
           location: ENV.BUSINESS_LOCATION,
           pincode: ENV.BUSINESS_PINCODE,
           phones: [ENV.BUSINESS_PHONE_PRIMARY, ENV.BUSINESS_PHONE_SECONDARY],
+          ivrNumber: ENV.IVR_PHONE_NUMBER || '9347036152',
           paymentMobile: ENV.BUSINESS_PAYMENT_MOBILE,
           upiId: ENV.BUSINESS_UPI_ID || null,
           email: ENV.BUSINESS_EMAIL,
@@ -650,9 +920,6 @@ export const getAuditLogs = async (
   }
 };
 
-export const getAdminStats = getStats;
-export const adminUpdateVariantPrice = updateVariantPrice;
-
 export const getContactMessages = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -663,6 +930,7 @@ export const getContactMessages = async (
       orderBy: { createdAt: 'desc' },
       take: 100,
     });
+
     res.status(200).json({ success: true, data: messages });
   } catch (error) {
     next(error);
@@ -676,11 +944,12 @@ export const markContactMessageRead = async (
 ): Promise<void> => {
   try {
     const id = String(req.params.id || '');
-    const msg = await prisma.contactMessage.update({
+    const updated = await prisma.contactMessage.update({
       where: { id },
       data: { isRead: true },
     });
-    res.status(200).json({ success: true, data: msg });
+
+    res.status(200).json({ success: true, data: updated });
   } catch (error) {
     next(error);
   }
@@ -696,8 +965,11 @@ export const adminGetProducts = async (
       include: { variants: { orderBy: { price: 'asc' } } },
       orderBy: { createdAt: 'asc' },
     });
+
     res.status(200).json({ success: true, data: products });
   } catch (error) {
     next(error);
   }
 };
+
+export const adminUpdateVariantPrice = updateVariantPrice;

@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   Heart,
   Share2,
+  Phone,
 } from 'lucide-react';
 import { SEOHead } from '../components/common/SEOHead';
 import { ProductCard3D } from '../components/product/ProductCard3D';
@@ -238,6 +239,15 @@ export const ProductDetail: React.FC = () => {
                   <span>Buy Now (Direct Checkout)</span>
                 </button>
               </div>
+
+              {/* Direct IVR Phone Ordering Button */}
+              <a
+                href="tel:9347036152"
+                className="w-full flex items-center justify-center gap-2 py-3 bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 border border-amber-500/40 rounded-2xl text-xs font-bold transition-all"
+              >
+                <Phone className="w-4 h-4 text-heritage-maroon animate-pulse" />
+                <span>Prefer to Order by Phone? Call 9347036152 (24/7 IVR)</span>
+              </a>
             </div>
 
             {/* Assurance Badges */}

@@ -10,6 +10,11 @@ import {
   getCustomers,
   getReports,
   exportOrdersCsv,
+  getCallCenterStats,
+  getCalls,
+  exportCallsCsv,
+  getIvrInteractions,
+  exportIvrInteractionsCsv,
   getAuditLogs,
   getContactMessages,
   markContactMessageRead,
@@ -25,7 +30,6 @@ const router = Router();
 router.post('/login', loginAdmin);
 
 // Real-Time Server-Sent Events (SSE) Stream
-// Allows token query parameter for easy EventSource connection (?token=...)
 router.get('/events', (req: Request, res: Response) => {
   realtimeService.registerClient(res);
 });
@@ -45,6 +49,13 @@ router.patch('/payments/:id/verify', verifyManualPayment as any);
 router.get('/customers', getCustomers as any);
 router.get('/reports', getReports as any);
 router.get('/audit-logs', getAuditLogs as any);
+
+// Call Center & Telephony Logs
+router.get('/call-center/stats', getCallCenterStats as any);
+router.get('/calls', getCalls as any);
+router.get('/calls/export', exportCallsCsv as any);
+router.get('/ivr-interactions', getIvrInteractions as any);
+router.get('/ivr-interactions/export', exportIvrInteractionsCsv as any);
 
 router.get('/contact-messages', getContactMessages as any);
 router.patch('/contact-messages/:id/read', markContactMessageRead as any);

@@ -103,6 +103,12 @@ export const Products: React.FC = () => {
           <p className="text-stone-600 text-sm sm:text-base mt-2">
             Handcrafted with care in Bhainsa, Nirmal District, Telangana by Bande Omkar.
           </p>
+          <div className="mt-4 inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/40 px-4 py-1.5 rounded-full text-xs text-amber-900 font-medium">
+            <span>Prefer to order by phone?</span>
+            <a href="tel:9347036152" className="font-bold text-heritage-maroon hover:underline flex items-center gap-1">
+              <span>Call 9347036152 (24/7 IVR)</span>
+            </a>
+          </div>
         </div>
 
         {/* Filters & Search Toolbar */}

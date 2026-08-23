@@ -63,9 +63,13 @@ model Customer {
 
 model Order {
   id                  String               @id @default(uuid())
-  orderNumber         String               @unique // e.g. "AA-20260823-1001"
+  orderNumber         String               @unique // e.g. "AA-20260824-1001"
   customerId          String
   customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  orderSource         String               @default("WEBSITE") // "WEBSITE", "IVR", "ADMIN", "PHONE"
+  language            String               @default("ENGLISH") // "ENGLISH", "MARATHI", "HINDI", "TELUGU"
+  callId              String?
+  call                Call?                @relation(fields: [callId], references: [id], onDelete: SetNull)
   status              String               @default("PENDING") // PENDING, ACCEPTED, REJECTED, PROCESSING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
   paymentMethod       String               @default("OFFLINE") // "OFFLINE" (Cash on Delivery), "ONLINE" (Razorpay), "MANUAL_UPI"
   paymentStatus       String               @default("PENDING") // "PENDING", "PROCESSING", "PAID", "FAILED", "REFUNDED", "PENDING_VERIFICATION"
@@ -145,12 +149,54 @@ model OrderStatusHistory {
   createdAt      DateTime @default(now())
 }
 
+model Call {
+  id             String           @id @default(uuid())
+  callSid        String           @unique // Unique Call Session ID (Twilio/Exotel/Plivo)
+  fromPhone      String           // Caller's phone number
+  toPhone        String           @default("9347036152") // Dedicated IVR number 9347036152
+  language       String           @default("ENGLISH") // "ENGLISH", "MARATHI", "HINDI", "TELUGU"
+  startTime      DateTime         @default(now())
+  endTime        DateTime?
+  duration       Int              @default(0) // in seconds
+  status         String           @default("IN_PROGRESS") // "RINGING", "IN_PROGRESS", "COMPLETED", "BUSY", "FAILED", "NO_ANSWER", "DISCONNECTED"
+  selectedOption String?          // "1_ORDER", "2_TRACK", "3_CANCEL", "4_SUPPORT", "9_REPEAT"
+  orderId        String?
+  orders         Order[]
+  recordingUrl   String?
+  interactions   IvrInteraction[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model IvrInteraction {
+  id         String   @id @default(uuid())
+  callId     String
+  call       Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+  language   String   @default("ENGLISH")
+  menu       String   // "LANGUAGE_MENU", "MAIN_MENU", "PRODUCT_MENU", "VARIANT_MENU", "CONFIRM_MENU", "TRACK_MENU", "CANCEL_MENU", "SUPPORT_MENU"
+  dtmfInput  String?  // Digits pressed (e.g. "1", "2", "3", "4", "9", "0")
+  action     String   // e.g. "LANGUAGE_SELECTED", "PRODUCT_SELECTED", "ORDER_CONFIRMED", "ORDER_CANCELLED", "ORDER_TRACKED", "SUPPORT_REQUESTED"
+  details    String?  // Human-readable summary of the step
+  orderId    String?
+  customerId String?
+  timestamp  DateTime @default(now())
+}
+
+model CancellationRule {
+  id               String   @id @default(uuid())
+  orderStatus      String   @unique // "PENDING", "ACCEPTED", "PROCESSING", "READY", "OUT_FOR_DELIVERY", "DELIVERED"
+  isCancellable    Boolean  @default(false)
+  requiresAdminOtp Boolean  @default(false)
+  description      String?
+  updatedAt        DateTime @updatedAt
+}
+
 model AuditLog {
   id        String     @id @default(uuid())
   adminId   String?
   admin     AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
-  action    String     // e.g. "ORDER_ACCEPTED", "ORDER_REJECTED", "PRICE_UPDATED", "PAYMENT_VERIFIED"
-  entity    String     // e.g. "Order", "ProductVariant", "Payment"
+  action    String     // e.g. "ORDER_ACCEPTED", "ORDER_REJECTED", "PRICE_UPDATED", "PAYMENT_VERIFIED", "IVR_ORDER_CREATED"
+  entity    String     // e.g. "Order", "ProductVariant", "Payment", "Call"
   entityId  String?
   details   String?
   timestamp DateTime   @default(now())
@@ -163,6 +209,8 @@ model ContactMessage {
   email     String?
   subject   String?
   message   String
+  callId    String?  // Optional link to IVR Call
+  language  String?  @default("ENGLISH")
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 }

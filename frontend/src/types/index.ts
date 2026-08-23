@@ -94,11 +94,57 @@ export interface Payment {
   order?: Order;
 }
 
+export interface IvrInteraction {
+  id: string;
+  callId: string;
+  language: string;
+  menu: string;
+  dtmfInput?: string;
+  action: string;
+  details?: string;
+  orderId?: string;
+  customerId?: string;
+  timestamp: string;
+}
+
+export interface Call {
+  id: string;
+  callSid: string;
+  fromPhone: string;
+  toPhone: string;
+  language: string;
+  startTime: string;
+  endTime?: string;
+  duration: number;
+  status: string;
+  selectedOption?: string;
+  orderId?: string;
+  orders?: Array<{ id: string; orderNumber: string; total: number; status: string }>;
+  interactions?: IvrInteraction[];
+  createdAt: string;
+}
+
+export interface CallCenterStats {
+  totalCalls: number;
+  todayCalls: number;
+  completedCalls: number;
+  missedCalls: number;
+  ivrOrdersCount: number;
+  avgDuration: number;
+  languageCounts: Record<string, number>;
+  optionCounts: Record<string, number>;
+  ivrPhoneNumber: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
   customerId: string;
   customer: Customer;
+  orderSource?: 'WEBSITE' | 'IVR' | 'ADMIN' | 'PHONE';
+  language?: 'ENGLISH' | 'MARATHI' | 'HINDI' | 'TELUGU';
+  callId?: string;
+  call?: Call;
   status:
     | 'PENDING'
     | 'ACCEPTED'
@@ -143,6 +189,7 @@ export interface AdminUser {
 
 export interface AdminStats {
   totalOrders: number;
+  todayOrders?: number;
   pendingOrders: number;
   acceptedOrders: number;
   processingOrders: number;
@@ -154,6 +201,10 @@ export interface AdminStats {
   onlineOrdersCount?: number;
   offlineOrdersCount?: number;
   manualUpiOrdersCount?: number;
+  websiteOrdersCount?: number;
+  ivrOrdersCount?: number;
+  totalCalls?: number;
+  todayCalls?: number;
   totalCustomers: number;
   unreadContacts: number;
   business: {
@@ -163,6 +214,7 @@ export interface AdminStats {
     location: string;
     pincode: string;
     phones: string[];
+    ivrNumber?: string;
     paymentMobile?: string;
     upiId?: string | null;
     email: string;
@@ -180,6 +232,8 @@ export interface CustomerSummary {
   pincode: string;
   totalOrders: number;
   totalSpent: number;
+  ivrOrdersCount?: number;
+  webOrdersCount?: number;
   firstOrder: string;
   lastOrder: string;
   orders: Array<{
@@ -187,6 +241,7 @@ export interface CustomerSummary {
     orderNumber: string;
     total: number;
     status: string;
+    orderSource?: string;
     createdAt: string;
   }>;
 }
@@ -196,6 +251,12 @@ export interface SalesReport {
   paidRevenue: number;
   pendingRevenue: number;
   totalRevenue: number;
+  websiteSales?: number;
+  ivrSales?: number;
+  phoneSales?: number;
+  onlineRevenue?: number;
+  offlineRevenue?: number;
+  manualUpiRevenue?: number;
   topProducts: Array<{
     name: string;
     quantity: number;
@@ -210,6 +271,8 @@ export interface ContactMessage {
   email?: string;
   subject?: string;
   message: string;
+  callId?: string;
+  language?: string;
   isRead: boolean;
   createdAt: string;
 }
