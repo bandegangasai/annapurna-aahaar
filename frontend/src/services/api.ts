@@ -754,8 +754,8 @@ export const api = {
     return {
       success: true,
       data: {
-        businessPaymentMobile: '9542826358',
-        businessUpiId: '9542826358@ybl',
+        businessPaymentMobile: '9542836358',
+        businessUpiId: '9542836358@ybl',
         businessName: 'Annapurna Aahaar',
         razorpayKeyId: null,
         isLiveGatewayAvailable: false,
@@ -948,7 +948,7 @@ export const api = {
         system: { status: 'OPERATIONAL', uptime: 120, environment: 'production' },
         database: { status: 'CONNECTED', latencyMs: 8, totalOrders: 0, totalCalls: 0 },
         ivr: { status: 'ONLINE', hotlineNumber: '9347036152', activeSessions: 0, languages: ['ENGLISH', 'MARATHI', 'HINDI', 'TELUGU'] },
-        payments: { status: 'ONLINE', paymentMobile: '9542826358', upiId: '9542826358@ybl', pendingReviewCount: 0 },
+        payments: { status: 'ONLINE', paymentMobile: '9542836358', upiId: '9542836358@ybl', pendingReviewCount: 0 },
       },
     };
   },

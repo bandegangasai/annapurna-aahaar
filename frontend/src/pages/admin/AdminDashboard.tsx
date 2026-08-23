@@ -1177,7 +1177,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
                   Manual UPI Payment Verification Queue
                 </div>
                 <h3 className="font-serif font-bold text-2xl text-white">
-                  Payment Mobile: 9542826358 • UPI ID: 9542826358@ybl
+                  Payment Mobile: 9542836358 • UPI ID: 9542836358@ybl
                 </h3>
                 <p className="text-xs text-purple-200 mt-1 max-w-xl">
                   Customers who paid directly to Bande Omkar's mobile / UPI ID submit their 12-digit UTR Reference ID. Verify bank SMS and click Approve to mark the order as PAID.
@@ -1609,10 +1609,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
                   </span>
                 </div>
                 <div className="font-serif font-bold text-xl text-stone-900">
-                  9542826358
+                  9542836358
                 </div>
                 <div className="text-xs text-stone-600">
-                  UPI ID: <strong>9542826358@ybl</strong> (IPPB - 3676)
+                  UPI ID: <strong>9542836358@ybl</strong> (IPPB - 3676)
                 </div>
               </div>
 

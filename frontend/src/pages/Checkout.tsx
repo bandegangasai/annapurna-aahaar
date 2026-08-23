@@ -56,8 +56,8 @@ export const Checkout: React.FC = () => {
     razorpayKeyId: string | null;
     isLiveGatewayAvailable: boolean;
   }>({
-    businessPaymentMobile: '9542826358',
-    businessUpiId: '9542826358@ybl',
+    businessPaymentMobile: '9542836358',
+    businessUpiId: '9542836358@ybl',
     businessName: 'Annapurna Aahaar',
     razorpayKeyId: null,
     isLiveGatewayAvailable: false,
@@ -195,7 +195,7 @@ export const Checkout: React.FC = () => {
           await api.submitManualUpiPayment({
             orderId: createdOrder.id,
             transactionReference: manualUpiRef.trim(),
-            manualUpiPhone: paymentConfig.businessPaymentMobile || '9542826358',
+            manualUpiPhone: paymentConfig.businessPaymentMobile || '9542836358',
             notes: formData.notes.trim() || undefined,
           });
         } catch (upiErr) {
@@ -484,7 +484,7 @@ export const Checkout: React.FC = () => {
                     />
                   </div>
                   <p className="text-xs text-stone-600">
-                    Pay using Google Pay / PhonePe / Paytm to business mobile <span className="font-bold text-heritage-maroon">9542826358</span>.
+                    Pay using Google Pay / PhonePe / Paytm to business mobile <span className="font-bold text-heritage-maroon">9542836358</span>.
                   </p>
                 </label>
 
@@ -542,7 +542,7 @@ export const Checkout: React.FC = () => {
                         </span>
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-mono font-black text-sm sm:text-base text-heritage-maroon">
-                            {paymentConfig.businessUpiId || '9542826358@ybl'}
+                            {paymentConfig.businessUpiId || '9542836358@ybl'}
                           </span>
                           <button
                             type="button"
@@ -562,7 +562,7 @@ export const Checkout: React.FC = () => {
                         </span>
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-mono font-black text-sm sm:text-base text-stone-900">
-                            {paymentConfig.businessPaymentMobile || '9542826358'}
+                            {paymentConfig.businessPaymentMobile || '9542836358'}
                           </span>
                           <button
                             type="button"

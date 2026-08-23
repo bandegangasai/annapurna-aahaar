@@ -19,7 +19,7 @@ const verifyPaymentSchema = z.object({
 const manualUpiSchema = z.object({
   orderId: z.string().min(1, 'Order ID is required'),
   transactionReference: z.string().min(4, 'Please enter a valid Transaction/UTR Reference ID'),
-  manualUpiPhone: z.string().optional().default('9542826358'),
+  manualUpiPhone: z.string().optional().default(ENV.BUSINESS_PAYMENT_MOBILE || '9542836358'),
   notes: z.string().optional(),
 });
 

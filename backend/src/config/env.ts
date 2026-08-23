@@ -41,8 +41,8 @@ export const ENV = {
   SMS_SENDER_ID: process.env.SMS_SENDER_ID || 'ANNAHR',
 
   // Payment Configuration
-  BUSINESS_PAYMENT_MOBILE: process.env.BUSINESS_PAYMENT_MOBILE || '9542826358',
-  BUSINESS_UPI_ID: process.env.BUSINESS_UPI_ID || '9542826358@ybl', // Verified PhonePe / IPPB VPA
+  BUSINESS_PAYMENT_MOBILE: process.env.BUSINESS_PAYMENT_MOBILE || '9542836358',
+  BUSINESS_UPI_ID: process.env.BUSINESS_UPI_ID || '9542836358@ybl', // Verified PhonePe / IPPB VPA
   BUSINESS_UPI_BANK: 'India Post Payment Bank - 3676',
 
   // Razorpay Online Payment Credentials

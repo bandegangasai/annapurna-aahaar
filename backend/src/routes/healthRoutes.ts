@@ -90,8 +90,8 @@ router.get('/payment', async (req: Request, res: Response) => {
 
     res.status(200).json({
       status: 'HEALTHY',
-      paymentMobile: ENV.BUSINESS_PAYMENT_MOBILE || '9542826358',
-      upiId: ENV.BUSINESS_UPI_ID || '9542826358@ybl',
+      paymentMobile: ENV.BUSINESS_PAYMENT_MOBILE || '9542836358',
+      upiId: ENV.BUSINESS_UPI_ID || '9542836358@ybl',
       upiBank: ENV.BUSINESS_UPI_BANK,
       gateway: 'Razorpay / Cash on Delivery / Direct UPI',
       paidTransactions: paidCount,
@@ -155,8 +155,8 @@ router.get('/detailed', async (req: Request, res: Response) => {
         },
         payments: {
           status: 'ONLINE',
-          paymentMobile: ENV.BUSINESS_PAYMENT_MOBILE || '9542826358',
-          upiId: ENV.BUSINESS_UPI_ID || '9542826358@ybl',
+          paymentMobile: ENV.BUSINESS_PAYMENT_MOBILE || '9542836358',
+          upiId: ENV.BUSINESS_UPI_ID || '9542836358@ybl',
           pendingReviewCount: pendingPayments,
         },
       },

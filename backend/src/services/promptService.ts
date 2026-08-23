@@ -93,10 +93,10 @@ export const PROMPTS: Record<PromptKey, Record<IvrLanguage, string>> = {
     TELUGU: 'మీ డెలివరీ చిరునామా మీ మొబైల్ లొకేషన్ ప్రకారం భైంసా, తెలంగాణ గా నమోదు చేయబడింది.',
   },
   PAYMENT_MENU: {
-    ENGLISH: 'Payment method is Cash on Delivery. For manual UPI to 9542826358, notify on delivery.',
-    MARATHI: 'पेमेंट पद्धत कॅश ऑन डिलिव्हरी आहे. 9542826358 वर युपीआय द्वारे पैसे देण्याचा पर्याय देखील उपलब्ध आहे.',
-    HINDI: 'भुगतान का तरीका कैश ऑन डिलीवरी है। 9542826358 पर यूपीआई से भी भुगतान कर सकते हैं।',
-    TELUGU: 'చెల్లింపు విధానం క్యాష్ ఆన్ డెలివరీ. 9542826358 నంబర్‌కు యూపీఐ ద్వారా కూడా చెల్లించవచ్చు.',
+    ENGLISH: 'Payment method is Cash on Delivery. For manual UPI to 9542836358, notify on delivery.',
+    MARATHI: 'पेमेंट पद्धत कॅश ऑन डिलिव्हरी आहे. 9542836358 वर युपीआय द्वारे पैसे देण्याचा पर्याय देखील उपलब्ध आहे.',
+    HINDI: 'भुगतान का तरीका कैश ऑन डिलीवरी है। 9542836358 पर यूपीआई से भी भुगतान कर सकते हैं।',
+    TELUGU: 'చెల్లింపు విధానం క్యాష్ ఆన్ డెలివరీ. 9542836358 నంబర్‌కు యూపీఐ ద్వారా కూడా చెల్లించవచ్చు.',
   },
   ORDER_SUMMARY: {
     ENGLISH: 'Order summary: {summary}. Total payable amount is {total} rupees.',
@@ -165,10 +165,10 @@ export const PROMPTS: Record<PromptKey, Record<IvrLanguage, string>> = {
     TELUGU: 'అన్నపూర్ణ ఆహార్, భైంసా కు కాల్ చేసినందుకు ధన్యవాదాలు. శుభదినం. నమస్కారం.',
   },
   PAYMENT_PENDING: {
-    ENGLISH: 'Payment is pending. You can pay via Cash on Delivery or UPI to 9542826358.',
-    MARATHI: 'पेमेंट बाकी आहे. आपण डिलिव्हरीच्या वेळी रोख किंवा 9542826358 वर युपीआय करू शकता.',
-    HINDI: 'भुगतान लंबित है। आप डिलीवरी पर नकद या 9542826358 पर यूपीआई कर सकते हैं।',
-    TELUGU: 'చెల్లింపు పెండింగ్‌లో ఉంది. మీరు క్యాష్ ఆన్ డెలివరీ లేదా 9542826358 కు యూపీఐ చేయవచ్చు.',
+    ENGLISH: 'Payment is pending. You can pay via Cash on Delivery or UPI to 9542836358.',
+    MARATHI: 'पेमेंट बाकी आहे. आपण डिलिव्हरीच्या वेळी रोख किंवा 9542836358 वर युपीआय करू शकता.',
+    HINDI: 'भुगतान लंबित है। आप डिलीवरी पर नकद या 9542836358 पर यूपीआई कर सकते हैं।',
+    TELUGU: 'చెల్లింపు పెండింగ్‌లో ఉంది. మీరు క్యాష్ ఆన్ డెలివరీ లేదా 9542836358 కు యూపీఐ చేయవచ్చు.',
   },
   PAYMENT_SUCCESS: {
     ENGLISH: 'Your payment has been successfully verified.',
