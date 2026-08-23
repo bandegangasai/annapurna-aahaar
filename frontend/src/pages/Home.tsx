@@ -18,7 +18,6 @@ import {
   Flame,
   Heart,
 } from 'lucide-react';
-import { HeroScene } from '../components/3d/HeroScene';
 import { ProductCard3D } from '../components/product/ProductCard3D';
 import { SEOHead } from '../components/common/SEOHead';
 import { api } from '../services/api';
@@ -155,21 +154,75 @@ export const Home: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Right 3D Scene Column */}
+            {/* Right Hero Product Spread Column */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="lg:col-span-5 relative"
             >
-              <div className="relative rounded-3xl bg-gradient-to-b from-cream-100/90 to-amber-100/40 p-2 sm:p-4 border-2 border-heritage-gold/30 shadow-2xl backdrop-blur-sm">
-                <HeroScene />
-                <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-heritage-gold/30 shadow-sm flex items-center justify-between text-xs text-stone-800">
-                  <span className="flex items-center gap-1.5 font-bold text-heritage-maroon">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
-                    Traditional Stone Mill (Chakki)
-                  </span>
-                  <span className="text-heritage-antiqueGold font-bold">100% Whole Grains</span>
+              <div className="relative group rounded-3xl bg-gradient-to-b from-cream-100 to-amber-100/60 p-3 sm:p-4 border-2 border-heritage-gold/40 shadow-2xl overflow-hidden">
+                {/* Main Hero Photograph */}
+                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-amber-950/10 shadow-inner">
+                  <img
+                    src={getProductImageUrl('/images/hero-traditional-spread.webp')}
+                    alt="Annapurna Aahaar Traditional Food Spread - Sevaya, Papad, and Pure Turmeric"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                    loading="eager"
+                  />
+                  {/* Subtle Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none" />
+
+                  {/* Top Floating Badge */}
+                  <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-heritage-gold/30 shadow-md flex items-center gap-1.5 text-xs font-bold text-heritage-maroon">
+                    <Sparkles className="w-3.5 h-3.5 text-heritage-gold animate-spin-slow" />
+                    <span>Pure Handcrafted Taste</span>
+                  </div>
+
+                  {/* Top Right Badge */}
+                  <div className="absolute top-3 right-3 bg-heritage-darkMaroon/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-heritage-gold/40 shadow-md text-[11px] font-bold text-heritage-gold">
+                    Bhainsa, Telangana
+                  </div>
+
+                  {/* Bottom Image Caption */}
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
+                    <div>
+                      <p className="font-serif font-bold text-sm text-cream-50 drop-shadow-sm">
+                        Authentic Food Spread
+                      </p>
+                      <p className="text-[11px] text-cream-200">
+                        Handmade Sevaya, Papads & Pure Turmeric
+                      </p>
+                    </div>
+                    <span className="bg-heritage-gold text-heritage-darkMaroon text-[11px] font-black px-2.5 py-1 rounded-xl shadow">
+                      100% PURE
+                    </span>
+                  </div>
+                </div>
+
+                {/* Interactive Highlights Bar */}
+                <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
+                  <Link
+                    to="/products/traditional-wheat-sevaya"
+                    className="bg-white/90 hover:bg-white p-2 rounded-xl border border-heritage-gold/30 shadow-sm transition-all hover:scale-105"
+                  >
+                    <span className="font-serif font-bold text-heritage-maroon block">🌾 Sevaya</span>
+                    <span className="text-[10px] text-stone-500">Whole Wheat</span>
+                  </Link>
+                  <Link
+                    to="/products/urad-dal-papad"
+                    className="bg-white/90 hover:bg-white p-2 rounded-xl border border-heritage-gold/30 shadow-sm transition-all hover:scale-105"
+                  >
+                    <span className="font-serif font-bold text-heritage-maroon block">🍘 Papads</span>
+                    <span className="text-[10px] text-stone-500">Sun-Cured Crisp</span>
+                  </Link>
+                  <Link
+                    to="/products/pure-turmeric-powder"
+                    className="bg-white/90 hover:bg-white p-2 rounded-xl border border-heritage-gold/30 shadow-sm transition-all hover:scale-105"
+                  >
+                    <span className="font-serif font-bold text-heritage-maroon block">💛 Turmeric</span>
+                    <span className="text-[10px] text-stone-500">Golden Haldi</span>
+                  </Link>
                 </div>
               </div>
             </motion.div>
