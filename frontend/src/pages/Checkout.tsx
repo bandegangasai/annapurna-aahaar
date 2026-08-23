@@ -513,7 +513,7 @@ export const Checkout: React.FC = () => {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-6 bg-white p-5 rounded-2xl border border-amber-200 shadow-xs">
                     <div className="relative group text-center">
                       <img
-                        src="/images/annapurna-upi-qr.jpg"
+                        src={getProductImageUrl('/images/annapurna-upi-qr.jpg')}
                         alt="Annapurna Aahaar Official UPI QR Code 9542826358@ybl"
                         className="w-48 h-auto object-contain rounded-2xl border-2 border-stone-800 shadow-md mx-auto"
                       />
