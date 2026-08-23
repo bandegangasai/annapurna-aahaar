@@ -52,6 +52,10 @@ export interface OrderItem {
   variantId: string;
   productName: string;
   variantName: string;
+  productNameSnapshot?: string;
+  variantNameSnapshot?: string;
+  weight?: string;
+  unit?: string;
   unitPrice: number;
   quantity: number;
   totalPrice: number;
@@ -65,6 +69,29 @@ export interface OrderStatusHistory {
   note?: string;
   changedBy: string;
   createdAt: string;
+}
+
+export interface Payment {
+  id: string;
+  orderId: string;
+  gateway: string;
+  gatewayOrderId?: string;
+  gatewayPaymentId?: string;
+  transactionReference?: string;
+  amount: number;
+  currency: string;
+  status: 'PENDING' | 'PROCESSING' | 'PAID' | 'FAILED' | 'REFUNDED' | 'PENDING_VERIFICATION';
+  paymentMethod: string;
+  manualUpiPhone?: string;
+  manualUpiRef?: string;
+  manualUpiNotes?: string;
+  verifiedBy?: string;
+  verifiedAt?: string;
+  verificationNote?: string;
+  failureReason?: string;
+  createdAt: string;
+  updatedAt?: string;
+  order?: Order;
 }
 
 export interface Order {
@@ -84,12 +111,24 @@ export interface Order {
   subtotal: number;
   deliveryFee: number;
   total: number;
-  notes?: string;
-  paymentMethod: string; // 'OFFLINE_COD' or 'ONLINE_RAZORPAY'
-  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  deliveryAddress?: string;
+  city?: string;
+  district?: string;
+  state?: string;
+  pincode?: string;
+  customerNotes?: string;
+  notes?: string; // backward compatible alias
+  adminNotes?: string;
+  paymentMethod: string; // 'OFFLINE', 'ONLINE', 'MANUAL_UPI'
+  paymentStatus: 'PENDING' | 'PROCESSING' | 'PAID' | 'FAILED' | 'REFUNDED' | 'PENDING_VERIFICATION';
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
+  acceptedAt?: string;
+  rejectedAt?: string;
+  completedAt?: string;
+  cancelledAt?: string;
   items: OrderItem[];
+  payments?: Payment[];
   statusHistory: OrderStatusHistory[];
   createdAt: string;
   updatedAt: string;
@@ -102,16 +141,6 @@ export interface AdminUser {
   role: string;
 }
 
-export interface BusinessInfo {
-  name: string;
-  tagline: string;
-  owner: string;
-  location: string;
-  pincode: string;
-  phones: string[];
-  email: string;
-}
-
 export interface AdminStats {
   totalOrders: number;
   pendingOrders: number;
@@ -120,10 +149,58 @@ export interface AdminStats {
   deliveredOrders: number;
   rejectedOrders: number;
   paidOrdersCount: number;
+  paymentsToVerify?: number;
   totalRevenue: number;
+  onlineOrdersCount?: number;
+  offlineOrdersCount?: number;
+  manualUpiOrdersCount?: number;
   totalCustomers: number;
   unreadContacts: number;
-  business?: BusinessInfo;
+  business: {
+    name: string;
+    tagline: string;
+    owner: string;
+    location: string;
+    pincode: string;
+    phones: string[];
+    paymentMobile?: string;
+    upiId?: string | null;
+    email: string;
+  };
+}
+
+export interface CustomerSummary {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  totalOrders: number;
+  totalSpent: number;
+  firstOrder: string;
+  lastOrder: string;
+  orders: Array<{
+    id: string;
+    orderNumber: string;
+    total: number;
+    status: string;
+    createdAt: string;
+  }>;
+}
+
+export interface SalesReport {
+  totalOrders: number;
+  paidRevenue: number;
+  pendingRevenue: number;
+  totalRevenue: number;
+  topProducts: Array<{
+    name: string;
+    quantity: number;
+    revenue: number;
+  }>;
 }
 
 export interface ContactMessage {

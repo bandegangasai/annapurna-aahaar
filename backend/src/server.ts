@@ -5,6 +5,7 @@ import productRoutes from './routes/productRoutes';
 import orderRoutes from './routes/orderRoutes';
 import adminRoutes from './routes/adminRoutes';
 import contactRoutes from './routes/contactRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -23,7 +24,7 @@ app.get('/api/health', (req, res) => {
     location: ENV.BUSINESS_LOCATION,
     pincode: ENV.BUSINESS_PINCODE,
     timestamp: new Date().toISOString(),
-    version: '1.1.0',
+    version: '1.2.0',
   });
 });
 
@@ -36,6 +37,8 @@ app.get('/api/business-info', (req, res) => {
     location: ENV.BUSINESS_LOCATION,
     pincode: ENV.BUSINESS_PINCODE,
     phones: [ENV.BUSINESS_PHONE_PRIMARY, ENV.BUSINESS_PHONE_SECONDARY],
+    paymentMobile: ENV.BUSINESS_PAYMENT_MOBILE,
+    upiId: ENV.BUSINESS_UPI_ID || null,
     email: ENV.BUSINESS_EMAIL,
   });
 });
@@ -43,6 +46,7 @@ app.get('/api/business-info', (req, res) => {
 // Route registration
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 

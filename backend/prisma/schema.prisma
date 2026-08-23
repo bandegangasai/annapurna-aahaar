@@ -9,13 +9,14 @@ datasource db {
 }
 
 model AdminUser {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String     @id @default(uuid())
+  email        String     @unique
   passwordHash String
   name         String
-  role         String   @default("ADMIN")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         String     @default("ADMIN")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  auditLogs    AuditLog[]
 }
 
 model Product {
@@ -38,7 +39,7 @@ model ProductVariant {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   weight    String   // e.g. "500g", "1 kg", "2 kg", "5 kg"
   unit      String   // e.g. "kg", "g", "pack"
-  price     Float    // e.g. 150.0, 300.0, 100.0 (or 0 for Price on Request)
+  price     Float    // e.g. 150.0, 300.0, 100.0
   stock     Int      @default(100)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -56,42 +57,81 @@ model Customer {
   state     String   @default("Telangana")
   pincode   String   @default("504103")
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
   orders    Order[]
 }
 
 model Order {
-  id                String               @id @default(uuid())
-  orderNumber       String               @unique // e.g. "AA-2026-0823-1001"
-  customerId        String
-  customer          Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  status            String               @default("PENDING") // PENDING, ACCEPTED, REJECTED, PROCESSING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
-  subtotal          Float
-  deliveryFee       Float                @default(0.0)
-  total             Float
-  notes             String?
-  paymentMethod     String               @default("OFFLINE") // "OFFLINE" (Cash on Delivery) or "ONLINE" (Razorpay)
-  paymentStatus     String               @default("PENDING") // "PENDING", "PAID", "FAILED"
-  razorpayOrderId   String?
-  razorpayPaymentId String?
-  razorpaySignature String?
-  items             OrderItem[]
-  statusHistory     OrderStatusHistory[]
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  id                  String               @id @default(uuid())
+  orderNumber         String               @unique // e.g. "AA-20260823-1001"
+  customerId          String
+  customer            Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  status              String               @default("PENDING") // PENDING, ACCEPTED, REJECTED, PROCESSING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+  paymentMethod       String               @default("OFFLINE") // "OFFLINE" (Cash on Delivery), "ONLINE" (Razorpay), "MANUAL_UPI"
+  paymentStatus       String               @default("PENDING") // "PENDING", "PROCESSING", "PAID", "FAILED", "REFUNDED", "PENDING_VERIFICATION"
+  subtotal            Float
+  deliveryFee         Float                @default(0.0)
+  total               Float
+  deliveryAddress     String?
+  city                String?
+  district            String?
+  state               String?
+  pincode             String?
+  customerNotes       String?
+  adminNotes          String?
+  razorpayOrderId     String?
+  razorpayPaymentId   String?
+  razorpaySignature   String?
+  acceptedAt          DateTime?
+  rejectedAt          DateTime?
+  completedAt         DateTime?
+  cancelledAt         DateTime?
+  items               OrderItem[]
+  payments            Payment[]
+  statusHistory       OrderStatusHistory[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 }
 
 model OrderItem {
-  id          String   @id @default(uuid())
-  orderId     String
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId   String
-  variantId   String
-  productName String
-  variantName String
-  unitPrice   Float
-  quantity    Int
-  totalPrice  Float
-  createdAt   DateTime @default(now())
+  id                  String   @id @default(uuid())
+  orderId             String
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           String
+  variantId           String
+  productName         String   // backward-compatible alias
+  variantName         String   // backward-compatible alias
+  productNameSnapshot String   @default("") // frozen at time of order
+  variantNameSnapshot String   @default("") // frozen at time of order
+  weight              String?  // e.g. "500g", "1 kg"
+  unit                String?  // e.g. "kg", "g", "pack"
+  unitPrice           Float    @default(0.0) // frozen at time of order
+  quantity            Int
+  totalPrice          Float    @default(0.0) // quantity * unitPrice
+  createdAt           DateTime @default(now())
+}
+
+model Payment {
+  id                   String    @id @default(uuid())
+  orderId              String
+  order                Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  gateway              String    @default("CASH_ON_DELIVERY") // RAZORPAY, MANUAL_UPI, CASH_ON_DELIVERY
+  gatewayOrderId       String?
+  gatewayPaymentId     String?
+  transactionReference String?
+  amount               Float
+  currency             String    @default("INR")
+  status               String    @default("PENDING") // PENDING, PROCESSING, PAID, FAILED, REFUNDED, PENDING_VERIFICATION
+  paymentMethod        String    @default("OFFLINE")
+  manualUpiPhone       String?   @default("9542826358")
+  manualUpiRef         String?
+  manualUpiNotes       String?
+  verifiedBy           String?
+  verifiedAt           DateTime?
+  verificationNote     String?
+  failureReason        String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model OrderStatusHistory {
@@ -103,6 +143,17 @@ model OrderStatusHistory {
   note           String?
   changedBy      String   @default("SYSTEM") // "ADMIN", "CUSTOMER", or "SYSTEM"
   createdAt      DateTime @default(now())
+}
+
+model AuditLog {
+  id        String     @id @default(uuid())
+  adminId   String?
+  admin     AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  action    String     // e.g. "ORDER_ACCEPTED", "ORDER_REJECTED", "PRICE_UPDATED", "PAYMENT_VERIFIED"
+  entity    String     // e.g. "Order", "ProductVariant", "Payment"
+  entityId  String?
+  details   String?
+  timestamp DateTime   @default(now())
 }
 
 model ContactMessage {

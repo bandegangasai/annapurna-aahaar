@@ -725,4 +725,133 @@ export const api = {
     localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(msgs));
     return { success: true, data: msg };
   },
+
+  // Payment APIs
+  async getPaymentConfig() {
+    try {
+      const res = await fetchApi<{
+        success: boolean;
+        data: {
+          businessPaymentMobile: string;
+          businessUpiId: string | null;
+          businessName: string;
+          razorpayKeyId: string | null;
+          isLiveGatewayAvailable: boolean;
+        };
+      }>('/payments/config');
+      if (res.success && res.data) return res;
+    } catch {}
+
+    return {
+      success: true,
+      data: {
+        businessPaymentMobile: '9542826358',
+        businessUpiId: null,
+        businessName: 'Annapurna Aahaar',
+        razorpayKeyId: null,
+        isLiveGatewayAvailable: false,
+      },
+    };
+  },
+
+  async createPaymentOrder(orderId: string) {
+    return fetchApi<{
+      success: boolean;
+      data: {
+        orderId: string;
+        orderNumber: string;
+        razorpayOrderId: string;
+        amount: number;
+        currency: string;
+        keyId: string;
+        businessName: string;
+        customer: { name: string; phone: string; email: string };
+      };
+    }>('/payments/create', {
+      method: 'POST',
+      body: JSON.stringify({ orderId }),
+    });
+  },
+
+  async submitManualUpiPayment(payload: {
+    orderId: string;
+    transactionReference: string;
+    manualUpiPhone?: string;
+    notes?: string;
+  }) {
+    return fetchApi<{
+      success: boolean;
+      message: string;
+      data: { order: Order; payment: any };
+    }>('/payments/manual-upi', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  // Admin Payment & Reporting Management
+  async adminGetPayments(token?: string) {
+    const validToken = token || (await getValidJwtToken());
+    try {
+      const res = await fetchApi<{ success: boolean; data: any[] }>('/admin/payments', {}, validToken);
+      if (res.success && res.data) return res;
+    } catch {}
+    return { success: true, data: [] };
+  },
+
+  async adminVerifyManualPayment(
+    token: string,
+    paymentId: string,
+    status: 'PAID' | 'FAILED',
+    note?: string
+  ) {
+    return fetchApi<{ success: boolean; message: string; data: any }>(
+      `/admin/payments/${paymentId}/verify`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ status, note }),
+      },
+      token
+    );
+  },
+
+  async adminGetCustomers(token?: string) {
+    const validToken = token || (await getValidJwtToken());
+    try {
+      const res = await fetchApi<{ success: boolean; data: any[] }>('/admin/customers', {}, validToken);
+      if (res.success && res.data) return res;
+    } catch {}
+    return { success: true, data: [] };
+  },
+
+  async adminGetReports(token?: string) {
+    const validToken = token || (await getValidJwtToken());
+    try {
+      const res = await fetchApi<{ success: boolean; data: any }>('/admin/reports', {}, validToken);
+      if (res.success && res.data) return res;
+    } catch {}
+    return {
+      success: true,
+      data: {
+        totalOrders: 0,
+        paidRevenue: 0,
+        pendingRevenue: 0,
+        totalRevenue: 0,
+        topProducts: [],
+      },
+    };
+  },
+
+  async adminGetAuditLogs(token?: string) {
+    const validToken = token || (await getValidJwtToken());
+    try {
+      const res = await fetchApi<{ success: boolean; data: any[] }>('/admin/audit-logs', {}, validToken);
+      if (res.success && res.data) return res;
+    } catch {}
+    return { success: true, data: [] };
+  },
+
+  getExportOrdersCsvUrl(token?: string) {
+    return `${API_BASE}/admin/orders/export?token=${token || ''}`;
+  },
 };

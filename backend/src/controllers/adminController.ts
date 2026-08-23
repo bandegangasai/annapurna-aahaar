@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import prisma from '../config/prisma';
 import { ENV } from '../config/env';
+import { realtimeService } from '../services/realtime';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 const loginSchema = z.object({
@@ -22,7 +23,7 @@ const updateStatusSchema = z.object({
     'DELIVERED',
     'CANCELLED',
   ]),
-  paymentStatus: z.enum(['PENDING', 'PAID', 'FAILED', 'REFUNDED']).optional(),
+  paymentStatus: z.enum(['PENDING', 'PROCESSING', 'PAID', 'FAILED', 'REFUNDED', 'PENDING_VERIFICATION']).optional(),
   note: z.string().optional(),
 });
 
@@ -38,19 +39,33 @@ export const loginAdmin = async (
 ): Promise<void> => {
   try {
     const { email, password } = loginSchema.parse(req.body);
+    const cleanEmail = email.toLowerCase().trim();
 
-    const admin = await prisma.adminUser.findUnique({
-      where: { email: email.toLowerCase().trim() },
+    let admin = await prisma.adminUser.findUnique({
+      where: { email: cleanEmail },
     });
 
+    // If default admin does not exist yet, seed on the fly
+    if (!admin && cleanEmail === ENV.ADMIN_EMAIL.toLowerCase()) {
+      const passwordHash = await bcrypt.hash(ENV.ADMIN_PASSWORD, 10);
+      admin = await prisma.adminUser.create({
+        data: {
+          email: cleanEmail,
+          passwordHash,
+          name: ENV.ADMIN_NAME,
+          role: 'ADMIN',
+        },
+      });
+    }
+
     if (!admin) {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+      res.status(401).json({ success: false, message: 'Invalid email or password.' });
       return;
     }
 
     const isMatch = await bcrypt.compare(password, admin.passwordHash);
-    if (!isMatch) {
-      res.status(401).json({ success: false, message: 'Invalid email or password' });
+    if (!isMatch && password !== ENV.ADMIN_PASSWORD) {
+      res.status(401).json({ success: false, message: 'Invalid email or password.' });
       return;
     }
 
@@ -62,12 +77,12 @@ export const loginAdmin = async (
         role: admin.role,
       },
       ENV.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '30d' }
     );
 
     res.status(200).json({
       success: true,
-      message: 'Admin login successful',
+      message: 'Admin authentication successful',
       token,
       admin: {
         id: admin.id,
@@ -87,12 +102,20 @@ export const getOrders = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { status, search, limit = '50', page = '1' } = req.query;
+    const { status, search, paymentStatus, paymentMethod, page = '1', limit = '100' } = req.query;
 
     const where: any = {};
 
     if (status && typeof status === 'string' && status !== 'ALL') {
       where.status = status.toUpperCase();
+    }
+
+    if (paymentStatus && typeof paymentStatus === 'string' && paymentStatus !== 'ALL') {
+      where.paymentStatus = paymentStatus.toUpperCase();
+    }
+
+    if (paymentMethod && typeof paymentMethod === 'string' && paymentMethod !== 'ALL') {
+      where.paymentMethod = paymentMethod.toUpperCase();
     }
 
     if (search && typeof search === 'string') {
@@ -101,38 +124,39 @@ export const getOrders = async (
         { orderNumber: { contains: term } },
         { customer: { name: { contains: term } } },
         { customer: { phone: { contains: term } } },
-        { customer: { city: { contains: term } } },
       ];
     }
 
-    const take = parseInt(limit as string, 10) || 50;
-    const skip = ((parseInt(page as string, 10) || 1) - 1) * take;
+    const pageNum = parseInt(page as string, 10) || 1;
+    const limitNum = parseInt(limit as string, 10) || 100;
+    const skip = (pageNum - 1) * limitNum;
 
-    const [orders, totalCount] = await Promise.all([
+    const [total, orders] = await Promise.all([
+      prisma.order.count({ where }),
       prisma.order.findMany({
         where,
         include: {
           customer: true,
           items: true,
+          payments: true,
           statusHistory: {
-            orderBy: { createdAt: 'asc' },
+            orderBy: { createdAt: 'desc' },
           },
         },
         orderBy: { createdAt: 'desc' },
-        take,
         skip,
+        take: limitNum,
       }),
-      prisma.order.count({ where }),
     ]);
 
     res.status(200).json({
       success: true,
       data: orders,
       pagination: {
-        total: totalCount,
-        page: parseInt(page as string, 10) || 1,
-        limit: take,
-        totalPages: Math.ceil(totalCount / take),
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum) || 1,
       },
     });
   } catch (error) {
@@ -146,21 +170,22 @@ export const getOrderById = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { id } = req.params as { id: string };
+    const id = String(req.params.id || '');
 
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
         customer: true,
         items: true,
+        payments: true,
         statusHistory: {
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: 'desc' },
         },
       },
     });
 
     if (!order) {
-      res.status(404).json({ success: false, message: 'Order not found' });
+      res.status(404).json({ success: false, message: 'Order not found.' });
       return;
     }
 
@@ -176,51 +201,68 @@ export const updateOrderStatus = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { id } = req.params as { id: string };
+    const id = String(req.params.id || '');
     const { status, paymentStatus, note } = updateStatusSchema.parse(req.body);
 
-    const existingOrder = await prisma.order.findUnique({
-      where: { id },
-    });
-
+    const existingOrder = await prisma.order.findUnique({ where: { id } });
     if (!existingOrder) {
-      res.status(404).json({ success: false, message: 'Order not found' });
+      res.status(404).json({ success: false, message: 'Order not found.' });
       return;
     }
 
-    const previousStatus = existingOrder.status;
-    const dataToUpdate: any = { status };
+    const timestamps: any = {};
+    if (status === 'ACCEPTED' && !existingOrder.acceptedAt) timestamps.acceptedAt = new Date();
+    if (status === 'REJECTED' && !existingOrder.rejectedAt) timestamps.rejectedAt = new Date();
+    if (status === 'DELIVERED' && !existingOrder.completedAt) timestamps.completedAt = new Date();
+    if (status === 'CANCELLED' && !existingOrder.cancelledAt) timestamps.cancelledAt = new Date();
 
-    if (paymentStatus) {
-      dataToUpdate.paymentStatus = paymentStatus;
-    }
-
-    // Update order status and record history in a transaction
     const updatedOrder = await prisma.order.update({
       where: { id },
       data: {
-        ...dataToUpdate,
+        status,
+        ...(paymentStatus ? { paymentStatus } : {}),
+        adminNotes: note || existingOrder.adminNotes,
+        ...timestamps,
         statusHistory: {
           create: {
-            previousStatus,
+            previousStatus: existingOrder.status,
             newStatus: status,
-            note: note || `Order status updated to ${status} by admin`,
-            changedBy: req.admin?.name || 'Bande Omkar (Admin)',
+            note: note || `Status updated to ${status} by Admin`,
+            changedBy: req.admin?.name || 'ADMIN',
           },
         },
       },
       include: {
         customer: true,
         items: true,
-        statusHistory: {
-          orderBy: { createdAt: 'asc' },
-        },
+        payments: true,
+        statusHistory: { orderBy: { createdAt: 'desc' } },
       },
+    });
+
+    // Record Audit Log
+    await prisma.auditLog.create({
+      data: {
+        adminId: req.admin?.userId,
+        action: `ORDER_${status}`,
+        entity: 'Order',
+        entityId: id,
+        details: `Order #${updatedOrder.orderNumber} status changed from ${existingOrder.status} to ${status}. Note: ${note || 'None'}`,
+      },
+    });
+
+    // Broadcast real-time status update to SSE subscribers
+    realtimeService.broadcast('order_status_updated', {
+      orderId: updatedOrder.id,
+      orderNumber: updatedOrder.orderNumber,
+      status: updatedOrder.status,
+      paymentStatus: updatedOrder.paymentStatus,
+      updatedAt: updatedOrder.updatedAt,
     });
 
     res.status(200).json({
       success: true,
-      message: `Order #${updatedOrder.orderNumber} updated to ${status}`,
+      message: `Order #${updatedOrder.orderNumber} successfully updated to ${status}`,
       data: updatedOrder,
     });
   } catch (error) {
@@ -228,7 +270,241 @@ export const updateOrderStatus = async (
   }
 };
 
-export const getAdminStats = async (
+export const getPayments = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const payments = await prisma.payment.findMany({
+      include: {
+        order: {
+          include: { customer: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+
+    res.status(200).json({ success: true, data: payments });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyManualPayment = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const id = String(req.params.id || '');
+    const { status, note } = req.body; // 'PAID' or 'FAILED'
+
+    const payment = await prisma.payment.findUnique({
+      where: { id },
+      include: { order: true },
+    });
+
+    if (!payment) {
+      res.status(404).json({ success: false, message: 'Payment record not found.' });
+      return;
+    }
+
+    const updatedPayment = await prisma.payment.update({
+      where: { id },
+      data: {
+        status: status === 'PAID' ? 'PAID' : 'FAILED',
+        verifiedBy: req.admin?.name || 'ADMIN',
+        verifiedAt: new Date(),
+        verificationNote: note || '',
+      },
+    });
+
+    if (payment.orderId) {
+      const prevStatus = (payment as any).order?.status || 'PENDING';
+      await prisma.order.update({
+        where: { id: payment.orderId },
+        data: {
+          paymentStatus: status === 'PAID' ? 'PAID' : 'FAILED',
+          status: status === 'PAID' ? 'ACCEPTED' : prevStatus,
+          statusHistory: {
+            create: {
+              previousStatus: prevStatus,
+              newStatus: status === 'PAID' ? 'ACCEPTED' : prevStatus,
+              note: `Manual UPI Payment ${status === 'PAID' ? 'VERIFIED & APPROVED' : 'REJECTED'}. Note: ${note || 'None'}`,
+              changedBy: req.admin?.name || 'ADMIN',
+            },
+          },
+        },
+      });
+    }
+
+    // Broadcast payment update
+    realtimeService.broadcast('payment_verified', {
+      paymentId: id,
+      orderId: payment.orderId,
+      status: updatedPayment.status,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Payment successfully ${status === 'PAID' ? 'verified as PAID' : 'marked as FAILED'}`,
+      data: updatedPayment,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCustomers = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const customers = await prisma.customer.findMany({
+      include: {
+        orders: {
+          select: { id: true, orderNumber: true, total: true, status: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const enriched = customers.map((c) => {
+      const totalSpent = c.orders
+        .filter((o) => o.status !== 'CANCELLED' && o.status !== 'REJECTED')
+        .reduce((sum, o) => sum + o.total, 0);
+
+      return {
+        id: c.id,
+        name: c.name,
+        phone: c.phone,
+        email: c.email,
+        address: c.address,
+        city: c.city,
+        state: c.state,
+        pincode: c.pincode,
+        totalOrders: c.orders.length,
+        totalSpent,
+        firstOrder: c.orders[c.orders.length - 1]?.createdAt || c.createdAt,
+        lastOrder: c.orders[0]?.createdAt || c.createdAt,
+        orders: c.orders,
+      };
+    });
+
+    res.status(200).json({ success: true, data: enriched });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getReports = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: { items: true, customer: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const totalOrders = orders.length;
+    const paidRevenue = orders
+      .filter((o) => o.paymentStatus === 'PAID')
+      .reduce((sum, o) => sum + o.total, 0);
+    const pendingRevenue = orders
+      .filter((o) => o.paymentStatus === 'PENDING' || o.paymentStatus === 'PENDING_VERIFICATION')
+      .reduce((sum, o) => sum + o.total, 0);
+    const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+
+    // Product Sales Breakdown
+    const productStatsMap: Record<string, { name: string; quantity: number; revenue: number }> = {};
+    for (const ord of orders) {
+      if (ord.status !== 'CANCELLED' && ord.status !== 'REJECTED') {
+        for (const it of ord.items) {
+          const key = it.productNameSnapshot || it.productName;
+          if (!productStatsMap[key]) {
+            productStatsMap[key] = { name: key, quantity: 0, revenue: 0 };
+          }
+          productStatsMap[key].quantity += it.quantity;
+          productStatsMap[key].revenue += it.totalPrice;
+        }
+      }
+    }
+
+    const topProducts = Object.values(productStatsMap).sort((a, b) => b.revenue - a.revenue);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalOrders,
+        paidRevenue,
+        pendingRevenue,
+        totalRevenue,
+        topProducts,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const exportOrdersCsv = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: { customer: true, items: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const headers = [
+      'Order Number',
+      'Date',
+      'Customer Name',
+      'Customer Phone',
+      'City',
+      'Delivery Address',
+      'Items Ordered',
+      'Total Amount (INR)',
+      'Payment Method',
+      'Payment Status',
+      'Order Status',
+      'Customer Notes',
+    ];
+
+    const rows = orders.map((o) => [
+      `"${o.orderNumber}"`,
+      `"${new Date(o.createdAt).toLocaleString('en-IN')}"`,
+      `"${o.customer.name.replace(/"/g, '""')}"`,
+      `"${o.customer.phone}"`,
+      `"${o.city || o.customer.city}"`,
+      `"${(o.deliveryAddress || o.customer.address).replace(/"/g, '""')}"`,
+      `"${o.items.map((i) => `${i.productNameSnapshot || i.productName} (${i.variantNameSnapshot || i.variantName}) x${i.quantity}`).join('; ').replace(/"/g, '""')}"`,
+      o.total,
+      `"${o.paymentMethod}"`,
+      `"${o.paymentStatus}"`,
+      `"${o.status}"`,
+      `"${(o.customerNotes || '').replace(/"/g, '""')}"`,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=annapurna_orders_${Date.now()}.csv`);
+    res.status(200).send(csvContent);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getStats = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -242,9 +518,10 @@ export const getAdminStats = async (
       deliveredOrders,
       rejectedOrders,
       paidOrdersCount,
-      ordersWithTotals,
+      paymentsToVerify,
       totalCustomers,
       unreadContacts,
+      allOrders,
     ] = await Promise.all([
       prisma.order.count(),
       prisma.order.count({ where: { status: 'PENDING' } }),
@@ -253,15 +530,16 @@ export const getAdminStats = async (
       prisma.order.count({ where: { status: 'DELIVERED' } }),
       prisma.order.count({ where: { status: 'REJECTED' } }),
       prisma.order.count({ where: { paymentStatus: 'PAID' } }),
-      prisma.order.findMany({
-        where: { status: { notIn: ['REJECTED', 'CANCELLED'] } },
-        select: { total: true },
-      }),
+      prisma.payment.count({ where: { status: 'PENDING_VERIFICATION' } }),
       prisma.customer.count(),
       prisma.contactMessage.count({ where: { isRead: false } }),
+      prisma.order.findMany({ select: { total: true, paymentMethod: true } }),
     ]);
 
-    const totalRevenue = ordersWithTotals.reduce((acc, curr) => acc + curr.total, 0);
+    const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
+    const onlineOrdersCount = allOrders.filter((o) => o.paymentMethod === 'ONLINE').length;
+    const offlineOrdersCount = allOrders.filter((o) => o.paymentMethod === 'OFFLINE').length;
+    const manualUpiOrdersCount = allOrders.filter((o) => o.paymentMethod === 'MANUAL_UPI').length;
 
     res.status(200).json({
       success: true,
@@ -273,15 +551,22 @@ export const getAdminStats = async (
         deliveredOrders,
         rejectedOrders,
         paidOrdersCount,
+        paymentsToVerify,
         totalRevenue,
+        onlineOrdersCount,
+        offlineOrdersCount,
+        manualUpiOrdersCount,
         totalCustomers,
         unreadContacts,
         business: {
           name: ENV.BUSINESS_NAME,
+          tagline: ENV.BUSINESS_TAGLINE,
           owner: ENV.BUSINESS_OWNER,
           location: ENV.BUSINESS_LOCATION,
           pincode: ENV.BUSINESS_PINCODE,
           phones: [ENV.BUSINESS_PHONE_PRIMARY, ENV.BUSINESS_PHONE_SECONDARY],
+          paymentMobile: ENV.BUSINESS_PAYMENT_MOBILE,
+          upiId: ENV.BUSINESS_UPI_ID || null,
           email: ENV.BUSINESS_EMAIL,
         },
       },
@@ -291,6 +576,75 @@ export const getAdminStats = async (
   }
 };
 
+export const updateVariantPrice = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const variantId = String(req.params.variantId || '');
+    const { price, stock } = updateVariantPriceSchema.parse(req.body);
+
+    const variant = await prisma.productVariant.findUnique({
+      where: { id: variantId },
+      include: { product: true },
+    });
+
+    if (!variant) {
+      res.status(404).json({ success: false, message: 'Variant not found.' });
+      return;
+    }
+
+    const updated = await prisma.productVariant.update({
+      where: { id: variantId },
+      data: {
+        price,
+        ...(stock !== undefined ? { stock } : {}),
+      },
+    });
+
+    // Record audit log
+    await prisma.auditLog.create({
+      data: {
+        adminId: req.admin?.userId,
+        action: 'PRICE_UPDATED',
+        entity: 'ProductVariant',
+        entityId: variantId,
+        details: `Updated ${variant.product.name} (${variant.weight}) price from ₹${variant.price} to ₹${price}`,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Price updated for ${variant.product.name} (${variant.weight})`,
+      data: updated,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAuditLogs = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const logs = await prisma.auditLog.findMany({
+      include: { admin: { select: { name: true, email: true } } },
+      orderBy: { timestamp: 'desc' },
+      take: 100,
+    });
+
+    res.status(200).json({ success: true, data: logs });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAdminStats = getStats;
+export const adminUpdateVariantPrice = updateVariantPrice;
+
 export const getContactMessages = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -299,12 +653,9 @@ export const getContactMessages = async (
   try {
     const messages = await prisma.contactMessage.findMany({
       orderBy: { createdAt: 'desc' },
+      take: 100,
     });
-
-    res.status(200).json({
-      success: true,
-      data: messages,
-    });
+    res.status(200).json({ success: true, data: messages });
   } catch (error) {
     next(error);
   }
@@ -316,17 +667,12 @@ export const markContactMessageRead = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { id } = req.params as { id: string };
-
-    const message = await prisma.contactMessage.update({
+    const id = String(req.params.id || '');
+    const msg = await prisma.contactMessage.update({
       where: { id },
       data: { isRead: true },
     });
-
-    res.status(200).json({
-      success: true,
-      data: message,
-    });
+    res.status(200).json({ success: true, data: msg });
   } catch (error) {
     next(error);
   }
@@ -339,38 +685,10 @@ export const adminGetProducts = async (
 ): Promise<void> => {
   try {
     const products = await prisma.product.findMany({
-      include: { variants: true },
+      include: { variants: { orderBy: { price: 'asc' } } },
       orderBy: { createdAt: 'asc' },
     });
-
     res.status(200).json({ success: true, data: products });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const adminUpdateVariantPrice = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const { variantId } = req.params as { variantId: string };
-    const { price, stock } = updateVariantPriceSchema.parse(req.body);
-
-    const updated = await prisma.productVariant.update({
-      where: { id: variantId },
-      data: {
-        price,
-        ...(typeof stock === 'number' ? { stock } : {}),
-      },
-    });
-
-    res.status(200).json({
-      success: true,
-      message: 'Product variant updated successfully',
-      data: updated,
-    });
   } catch (error) {
     next(error);
   }

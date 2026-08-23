@@ -68,9 +68,9 @@ async function runE2ETests() {
         subtotal: expectedSubtotal,
         deliveryFee: expectedDelivery,
         total: expectedTotal,
-        paymentMethod: 'OFFLINE_COD',
+        paymentMethod: 'OFFLINE',
         paymentStatus: 'PENDING',
-        notes: 'Test order for E2E verification',
+        customerNotes: 'Test order for E2E verification',
         items: {
           create: [
             {

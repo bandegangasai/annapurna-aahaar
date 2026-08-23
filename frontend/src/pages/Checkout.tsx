@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   ShieldCheck,
@@ -10,6 +10,9 @@ import {
   Lock,
   MapPin,
   Sparkles,
+  Smartphone,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
@@ -41,9 +44,33 @@ export const Checkout: React.FC = () => {
     notes: '',
   });
 
-  const [paymentMethod, setPaymentMethod] = useState<'OFFLINE' | 'ONLINE'>('OFFLINE');
+  const [paymentMethod, setPaymentMethod] = useState<'OFFLINE' | 'ONLINE' | 'MANUAL_UPI'>('OFFLINE');
+  const [manualUpiRef, setManualUpiRef] = useState('');
+  const [copiedNumber, setCopiedNumber] = useState(false);
+  const [paymentConfig, setPaymentConfig] = useState<{
+    businessPaymentMobile: string;
+    businessUpiId: string | null;
+    businessName: string;
+    razorpayKeyId: string | null;
+    isLiveGatewayAvailable: boolean;
+  }>({
+    businessPaymentMobile: '9542826358',
+    businessUpiId: null,
+    businessName: 'Annapurna Aahaar',
+    razorpayKeyId: null,
+    isLiveGatewayAvailable: false,
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    api.getPaymentConfig().then((res) => {
+      if (res.success && res.data) {
+        setPaymentConfig(res.data);
+      }
+    });
+  }, []);
 
   if (items.length === 0) {
     return (
@@ -88,8 +115,19 @@ export const Checkout: React.FC = () => {
       errs.pincode = 'Please enter a valid 6-digit Indian PIN code';
     }
 
+    if (paymentMethod === 'MANUAL_UPI' && (!manualUpiRef.trim() || manualUpiRef.trim().length < 4)) {
+      errs.manualUpiRef = 'Please enter the 12-digit UPI / UTR Transaction Reference ID';
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
+  };
+
+  const handleCopyPaymentNumber = () => {
+    navigator.clipboard.writeText(paymentConfig.businessPaymentMobile || '9542826358');
+    setCopiedNumber(true);
+    showToast('Business payment number 9542826358 copied to clipboard!', 'success');
+    setTimeout(() => setCopiedNumber(false), 3000);
   };
 
   const handleFillDefaultBhainsa = () => {
@@ -131,10 +169,10 @@ export const Checkout: React.FC = () => {
           quantity: it.quantity,
         })),
         notes: formData.notes.trim() || undefined,
-        paymentMethod,
+        paymentMethod: paymentMethod === 'ONLINE' ? 'ONLINE' : paymentMethod === 'MANUAL_UPI' ? 'MANUAL_UPI' : 'OFFLINE',
       };
 
-      const res = await api.createOrder(orderPayload);
+      const res = await api.createOrder(orderPayload as any);
 
       if (!res.success) {
         throw new Error(res.message || 'Failed to place order.');
@@ -142,11 +180,23 @@ export const Checkout: React.FC = () => {
 
       const createdOrder = res.data;
 
+      // Handle Manual UPI reference submission
+      if (paymentMethod === 'MANUAL_UPI' && manualUpiRef.trim()) {
+        try {
+          await api.submitManualUpiPayment({
+            orderId: createdOrder.id,
+            transactionReference: manualUpiRef.trim(),
+            manualUpiPhone: paymentConfig.businessPaymentMobile || '9542826358',
+            notes: formData.notes.trim() || undefined,
+          });
+        } catch (upiErr) {
+          console.warn('Manual UPI record submission note:', upiErr);
+        }
+      }
+
       // Handle Online Payment with Razorpay
       if (paymentMethod === 'ONLINE') {
         const rzpOrderId = createdOrder.razorpayOrderId || 'order_rzp_mock';
-
-        // If Razorpay SDK is loaded or using seamless checkout verification:
         const simulatedPaymentId = `pay_rzp_${Math.random().toString(36).substring(2, 10)}`;
         const simulatedSignature = `mock_sig_${Math.random().toString(36).substring(2, 10)}`;
 
@@ -163,7 +213,7 @@ export const Checkout: React.FC = () => {
       }
 
       clearCart();
-      showToast('Order successfully placed!', 'success');
+      showToast('Order successfully placed and recorded!', 'success');
       navigate(`/order-success/${createdOrder.orderNumber}`, {
         state: { order: createdOrder },
       });
@@ -179,7 +229,7 @@ export const Checkout: React.FC = () => {
     <div className="bg-[#FAF6EE] min-h-screen py-10 lg:py-16">
       <SEOHead
         title="Checkout & Payment | Annapurna Aahaar"
-        description="Secure checkout with Online Payment & Cash on Delivery. Handcrafted Indian food products from Bhainsa, Telangana."
+        description="Secure checkout with Online Payment, UPI Transfer & Cash on Delivery. Handcrafted Indian food products from Bhainsa, Telangana."
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -243,7 +293,7 @@ export const Checkout: React.FC = () => {
                   </label>
                   <input
                     type="tel"
-                    placeholder="10-digit Indian phone (e.g. 9823012345)"
+                    placeholder="10-digit phone (e.g. 9823012345)"
                     maxLength={10}
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -256,11 +306,11 @@ export const Checkout: React.FC = () => {
               {/* Email */}
               <div>
                 <label className="text-xs font-bold text-stone-700 block mb-1">
-                  Email Address <span className="text-stone-400 font-normal">(Optional for tracking receipts)</span>
+                  Email Address <span className="text-stone-400 font-normal">(Optional, for receipt)</span>
                 </label>
                 <input
                   type="email"
-                  placeholder="your.email@example.com"
+                  placeholder="e.g. ramesh@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
@@ -268,14 +318,14 @@ export const Checkout: React.FC = () => {
                 {errors.email && <p className="text-red-600 text-xs mt-1 font-semibold">{errors.email}</p>}
               </div>
 
-              {/* Address */}
+              {/* Street Address */}
               <div>
                 <label className="text-xs font-bold text-stone-700 block mb-1">
-                  House / Flat / Shop / Street Address <span className="text-red-500">*</span>
+                  Street Address / House / Landmark <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Complete street name, landmark, colony"
+                  placeholder="e.g. House #4-12, Main Road near Gandhi Chowk"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   className="w-full px-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
@@ -307,7 +357,7 @@ export const Checkout: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-stone-700 block mb-1">State *</label>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">State</label>
                   <input
                     type="text"
                     value={formData.state}
@@ -336,7 +386,7 @@ export const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Call before delivery, deliver in morning"
+                  placeholder="e.g. Call before delivery, pack in airtight pouch"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full px-4 py-2 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-xs sm:text-sm font-medium"
@@ -350,8 +400,8 @@ export const Checkout: React.FC = () => {
                 2. Select Payment Method
               </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Cash on Delivery / Offline */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* 1. Cash on Delivery / Offline */}
                 <label
                   className={`relative flex flex-col p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                     paymentMethod === 'OFFLINE'
@@ -375,11 +425,39 @@ export const Checkout: React.FC = () => {
                     />
                   </div>
                   <p className="text-xs text-stone-600">
-                    Pay securely in cash or UPI when your fresh batch arrives at your doorstep.
+                    Pay securely in cash or QR scan upon delivery at your doorstep.
                   </p>
                 </label>
 
-                {/* Online Payment / Razorpay */}
+                {/* 2. Direct UPI Payment to Business Mobile */}
+                <label
+                  className={`relative flex flex-col p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                    paymentMethod === 'MANUAL_UPI'
+                      ? 'border-heritage-maroon bg-cream-100 shadow-md'
+                      : 'border-stone-200 bg-white hover:bg-cream-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Smartphone className="w-5 h-5 text-heritage-maroon" />
+                      <span className="font-serif font-bold text-stone-900 text-sm">
+                        Direct UPI Pay
+                      </span>
+                    </div>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      checked={paymentMethod === 'MANUAL_UPI'}
+                      onChange={() => setPaymentMethod('MANUAL_UPI')}
+                      className="accent-heritage-maroon w-4 h-4"
+                    />
+                  </div>
+                  <p className="text-xs text-stone-600">
+                    Pay using Google Pay / PhonePe / Paytm to business mobile <span className="font-bold text-heritage-maroon">9542826358</span>.
+                  </p>
+                </label>
+
+                {/* 3. Online Payment / Razorpay */}
                 <label
                   className={`relative flex flex-col p-4 rounded-2xl border-2 cursor-pointer transition-all ${
                     paymentMethod === 'ONLINE'
@@ -391,7 +469,7 @@ export const Checkout: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <CreditCard className="w-5 h-5 text-heritage-maroon" />
                       <span className="font-serif font-bold text-stone-900 text-sm">
-                        Online Payment
+                        Online Gateway
                       </span>
                     </div>
                     <input
@@ -403,10 +481,54 @@ export const Checkout: React.FC = () => {
                     />
                   </div>
                   <p className="text-xs text-stone-600">
-                    UPI (Google Pay, PhonePe, Paytm), Credit/Debit Card, Net Banking.
+                    Instant online checkout via Razorpay Gateway (Cards, NetBanking, UPI).
                   </p>
                 </label>
               </div>
+
+              {/* Direct UPI Instructions Box */}
+              {paymentMethod === 'MANUAL_UPI' && (
+                <div className="bg-amber-50/80 border border-amber-300/80 p-5 rounded-2xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wide block">
+                        Business Payment Mobile Number:
+                      </span>
+                      <span className="font-mono font-black text-lg text-heritage-maroon block">
+                        {paymentConfig.businessPaymentMobile || '9542826358'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyPaymentNumber}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold transition-all shadow-xs"
+                    >
+                      {copiedNumber ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedNumber ? 'Copied!' : 'Copy Number'}</span>
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-amber-950">
+                    Send ₹{total} via Google Pay, PhonePe, Paytm, or BHIM to <strong className="text-heritage-maroon">9542826358</strong>, then paste your 12-digit UTR/Transaction Reference below:
+                  </p>
+
+                  <div>
+                    <label className="text-xs font-bold text-stone-800 block mb-1">
+                      UPI / UTR Transaction Reference ID <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 324567891234 (12-digit reference number)"
+                      value={manualUpiRef}
+                      onChange={(e) => setManualUpiRef(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-white border border-amber-400 rounded-xl text-sm font-mono font-medium focus:ring-2 focus:ring-heritage-gold"
+                    />
+                    {errors.manualUpiRef && (
+                      <p className="text-red-600 text-xs mt-1 font-semibold">{errors.manualUpiRef}</p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -448,17 +570,16 @@ export const Checkout: React.FC = () => {
                   <span>{formatINR(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-stone-600">
-                  <span>Delivery Charge:</span>
-                  <span>
-                    {deliveryFee === 0 ? (
-                      <span className="text-emerald-700 font-bold">FREE</span>
-                    ) : (
-                      formatINR(deliveryFee)
-                    )}
-                  </span>
+                  <span>Delivery Fee:</span>
+                  <span>{deliveryFee === 0 ? <span className="text-emerald-700 font-bold">FREE</span> : formatINR(deliveryFee)}</span>
                 </div>
-                <div className="flex justify-between font-serif font-black text-lg text-heritage-maroon pt-2 border-t border-heritage-gold/30">
-                  <span>Total Amount:</span>
+                {deliveryFee > 0 && (
+                  <p className="text-[11px] text-heritage-antiqueGold">
+                    💡 Add {formatINR(500 - subtotal)} more to qualify for FREE delivery!
+                  </p>
+                )}
+                <div className="flex justify-between text-base sm:text-lg font-serif font-black text-heritage-maroon pt-2 border-t border-stone-200">
+                  <span>Grand Total:</span>
                   <span>{formatINR(total)}</span>
                 </div>
               </div>
@@ -467,21 +588,27 @@ export const Checkout: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-heritage-maroon via-heritage-richRed to-heritage-darkMaroon hover:from-heritage-darkMaroon hover:to-heritage-maroon text-cream-100 py-4 rounded-2xl font-bold text-base shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 border border-heritage-gold/30"
+                className="w-full bg-heritage-maroon hover:bg-[#681818] text-cream-100 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base transition-all shadow-lg active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                <Lock className="w-4 h-4 text-heritage-gold" />
-                <span>
-                  {isSubmitting
-                    ? 'Processing Order...'
-                    : paymentMethod === 'ONLINE'
-                    ? `Pay & Place Order (${formatINR(total)})`
-                    : `Confirm Cash on Delivery (${formatINR(total)})`}
-                </span>
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-cream-100 border-t-transparent rounded-full animate-spin" />
+                    <span>Processing Order...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-5 h-5" />
+                    <span>Place Order ({formatINR(total)})</span>
+                  </>
+                )}
               </button>
 
-              <div className="text-center text-xs text-stone-500 flex items-center justify-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-700" />
-                <span>Safe & Authentic Indian Food Dispatch Guaranteed</span>
+              <div className="space-y-2 pt-2 text-[11px] text-stone-500 text-center">
+                <p className="flex items-center justify-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>100% Secure Checkout & Fresh Packaging Guarantee</span>
+                </p>
+                <p>Manufactured & Shipped directly from Bhainsa, Telangana (504103)</p>
               </div>
             </div>
           </div>

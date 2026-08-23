@@ -243,16 +243,16 @@ export const OrderTrack: React.FC = () => {
                   Items Ordered
                 </h4>
                 <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
-                  {order.items.map((item) => (
+                  {(order.items || []).map((item) => (
                     <div key={item.id} className="flex justify-between items-center text-xs">
                       <div>
-                        <span className="font-bold text-stone-900">{item.productName}</span>
+                        <span className="font-bold text-stone-900">{item.productNameSnapshot || item.productName}</span>
                         <span className="text-stone-500 block">
-                          {item.variantName} × {item.quantity}
+                          {item.variantNameSnapshot || item.variantName} × {item.quantity}
                         </span>
                       </div>
                       <span className="font-bold text-stone-800">
-                        {formatINR(item.totalPrice)}
+                        {formatINR(item.totalPrice || item.unitPrice * item.quantity)}
                       </span>
                     </div>
                   ))}
@@ -270,13 +270,13 @@ export const OrderTrack: React.FC = () => {
                 </h4>
                 <div>
                   <span className="font-bold text-stone-700 block">Recipient:</span>
-                  <p className="text-stone-900 font-semibold">{order.customer.name}</p>
-                  <p className="text-stone-600">Mobile: {order.customer.phone}</p>
+                  <p className="text-stone-900 font-semibold">{order.customer?.name || 'Valued Customer'}</p>
+                  <p className="text-stone-600">Mobile: {order.customer?.phone || 'Provided at checkout'}</p>
                 </div>
                 <div>
                   <span className="font-bold text-stone-700 block">Delivery Address:</span>
                   <p className="text-stone-600">
-                    {order.customer.address}, {order.customer.city}, {order.customer.state} - {order.customer.pincode}
+                    {order.customer?.address || ''}, {order.customer?.city || 'Bhainsa'}, {order.customer?.state || 'Telangana'} - {order.customer?.pincode || '504103'}
                   </p>
                 </div>
                 <div className="pt-2 border-t border-stone-200 flex justify-between items-center">

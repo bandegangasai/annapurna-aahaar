@@ -14,13 +14,18 @@ export const ENV = {
   BUSINESS_OWNER: 'Bande Omkar',
   BUSINESS_LOCATION: 'Bhainsa, Nirmal District, Telangana',
   BUSINESS_PINCODE: '504103',
-  BUSINESS_PHONE_PRIMARY: '6305970844',
-  BUSINESS_PHONE_SECONDARY: '8688456925',
-  BUSINESS_EMAIL: 'annapurnaaahaar@gmail.com',
+  BUSINESS_PHONE_PRIMARY: process.env.BUSINESS_PHONE_1 || '6305970844',
+  BUSINESS_PHONE_SECONDARY: process.env.BUSINESS_PHONE_2 || '8688456925',
+  BUSINESS_EMAIL: process.env.BUSINESS_EMAIL || 'annapurnaaahaar@gmail.com',
+
+  // Payment Configuration
+  BUSINESS_PAYMENT_MOBILE: process.env.BUSINESS_PAYMENT_MOBILE || '9542826358',
+  BUSINESS_UPI_ID: process.env.BUSINESS_UPI_ID || '', // Actual verified VPA if set, otherwise blank
 
   // Razorpay Online Payment Credentials
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'rzp_test_placeholder_secret',
+  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || '',
 
   // Admin Credentials
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@annapurnaaahaar.in',

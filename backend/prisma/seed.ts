@@ -31,14 +31,7 @@ async function main() {
 
   console.log(`✅ Admin user seeded: ${admin.email}`);
 
-  // 2. Clear old product catalog for clean seed
-  await prisma.orderItem.deleteMany({});
-  await prisma.orderStatusHistory.deleteMany({});
-  await prisma.order.deleteMany({});
-  await prisma.productVariant.deleteMany({});
-  await prisma.product.deleteMany({});
-
-  // 3. Seed Verified Products and Variants with Exact Product Photography Assets
+  // 2. Seed Verified Products and Variants with Exact Product Photography Assets
   const productsData = [
     {
       id: 'prod-sevaya-1',
@@ -61,7 +54,7 @@ async function main() {
       slug: 'urad-dal-papad',
       category: 'Papad',
       description:
-        'Authentic round Urad Dal Papad crafted with traditional rolling techniques, black pepper, and premium asafoetida (hing). Sun-cured for signature crunch and flavor.',
+        'Crispy, spiced sun-dried papads crafted from pure urad dal flour with hand-ground black pepper, hing, and traditional Bhainsa masala blend.',
       imageUrl: '/products/urad-dal-papad.webp',
       isFeatured: true,
       variants: [
@@ -75,7 +68,7 @@ async function main() {
       slug: 'moong-dal-papad',
       category: 'Papad',
       description:
-        'Light, aromatic Moong Dal Papad made from high-grade split yellow mung bean flour. Exceptionally crunchy, gentle on digestion, and seasoned with subtle Indian spices.',
+        'Light, aromatic, and easy to digest papads made from premium moong lentils, seasoned with cumin seeds and mild spices. Perfect everyday accompaniment.',
       imageUrl: '/products/moong-dal-papad.webp',
       isFeatured: true,
       variants: [
@@ -89,12 +82,12 @@ async function main() {
       slug: 'masala-papad',
       category: 'Papad',
       description:
-        'Bold and zesty Indian papad loaded with crushed cumin, cracked black peppercorns, red chili flakes, and traditional digestive spices.',
+        'Specialty zesty papad packed with crushed red chillies, black pepper, and secret family spices for that extra crunch and punch with every meal.',
       imageUrl: '/products/masala-papad.webp',
-      isFeatured: true,
+      isFeatured: false,
       variants: [
-        { id: 'var-masala-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 150 },
-        { id: 'var-masala-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 90 },
+        { id: 'var-masala-500g', weight: '500 g', unit: '500g', price: 160.0, stock: 140 },
+        { id: 'var-masala-1kg', weight: '1 kg', unit: 'kg', price: 320.0, stock: 90 },
       ],
     },
     {
@@ -103,12 +96,12 @@ async function main() {
       slug: 'rice-papad',
       category: 'Papad',
       description:
-        'Traditional steamed and sun-dried rice flour papad with a delicate, melt-in-mouth crispiness. Seasoned with cumin and rock salt.',
+        'Delicate, melt-in-mouth sun-dried rice crisps (Biyyam Appadalu) prepared using time-honored southern village recipes. Light, golden, and delicious.',
       imageUrl: '/products/rice-papad.webp',
       isFeatured: false,
       variants: [
-        { id: 'var-rice-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 100 },
-        { id: 'var-rice-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 60 },
+        { id: 'var-rice-500g', weight: '500 g', unit: '500g', price: 140.0, stock: 160 },
+        { id: 'var-rice-1kg', weight: '1 kg', unit: 'kg', price: 280.0, stock: 100 },
       ],
     },
     {
@@ -117,12 +110,12 @@ async function main() {
       slug: 'pure-turmeric-powder',
       category: 'Spices',
       description:
-        '100% pure, natural, golden-yellow turmeric (haldi) powder with high curcumin content. Stone-ground from quality farm turmeric roots without fillers or artificial additives.',
+        '100% natural, farm-ground turmeric root powder with high curcumin content. No artificial colors, preservatives, or fillers added.',
       imageUrl: '/products/turmeric-haldi-powder.webp',
       isFeatured: true,
       variants: [
         { id: 'var-turmeric-500g', weight: '500 g', unit: '500g', price: 80.0, stock: 250 },
-        { id: 'var-turmeric-1kg', weight: '1 kg', unit: 'kg', price: 150.0, stock: 150 },
+        { id: 'var-turmeric-1kg', weight: '1 kg', unit: 'kg', price: 150.0, stock: 200 },
       ],
     },
     {
@@ -131,12 +124,12 @@ async function main() {
       slug: 'maggie',
       category: 'Noodles & Instant Foods',
       description:
-        'Classic Indian-spiced instant noodle packs with rich masala seasoning for quick family snacking. Price configurable by administration.',
+        'Family favorite delicious instant noodles with rich spice seasoning. Quick, wholesome snack for children and festive gatherings.',
       imageUrl: '/products/maggie.webp',
       isFeatured: false,
       variants: [
-        { id: 'var-maggie-420g', weight: '420g Pack', unit: 'pack', price: 85.0, stock: 200 },
-        { id: 'var-maggie-840g', weight: '840g Pack', unit: 'pack', price: 165.0, stock: 100 },
+        { id: 'var-maggie-pack4', weight: 'Pack of 4', unit: 'pack', price: 60.0, stock: 100 },
+        { id: 'var-maggie-pack12', weight: 'Family Pack (12)', unit: 'pack', price: 170.0, stock: 60 },
       ],
     },
     {
@@ -145,42 +138,48 @@ async function main() {
       slug: 'noodles',
       category: 'Noodles & Instant Foods',
       description:
-        'High-protein wheat noodles crafted for Indian-style Hakka and stir-fry preparations. Firm texture and zero chemical preservatives.',
+        'High quality wheat stir-fry noodles made for authentic desi chowmein and hakka noodles. Non-sticky, tender texture.',
       imageUrl: '/products/noodles.webp',
       isFeatured: false,
       variants: [
-        { id: 'var-noodles-500g', weight: '500g Pack', unit: 'pack', price: 95.0, stock: 140 },
-        { id: 'var-noodles-1kg', weight: '1 kg Pack', unit: 'pack', price: 180.0, stock: 75 },
+        { id: 'var-noodles-500g', weight: '500 g', unit: '500g', price: 65.0, stock: 120 },
+        { id: 'var-noodles-1kg', weight: '1 kg', unit: 'kg', price: 120.0, stock: 90 },
       ],
     },
   ];
 
-  for (const item of productsData) {
-    const { variants, ...productInfo } = item;
-    const createdProduct = await prisma.product.create({
-      data: {
-        ...productInfo,
-        variants: {
-          create: variants,
-        },
-      },
-      include: { variants: true },
+  for (const p of productsData) {
+    const { variants, ...prodData } = p;
+    await prisma.product.upsert({
+      where: { id: prodData.id },
+      update: prodData,
+      create: prodData,
     });
-    console.log(`🌾 Seeded product: ${createdProduct.name} (${createdProduct.category})`);
+
+    for (const v of variants) {
+      await prisma.productVariant.upsert({
+        where: { id: v.id },
+        update: {
+          weight: v.weight,
+          unit: v.unit,
+          price: v.price,
+          stock: v.stock,
+          productId: prodData.id,
+        },
+        create: {
+          id: v.id,
+          productId: prodData.id,
+          weight: v.weight,
+          unit: v.unit,
+          price: v.price,
+          stock: v.stock,
+        },
+      });
+    }
+    console.log(`🌾 Seeded product: ${prodData.name} (${prodData.category})`);
   }
 
-  // 4. Seed initial real business contact message
-  await prisma.contactMessage.create({
-    data: {
-      name: 'Nirmal Retailer',
-      phone: '8688456925',
-      email: 'retail@nirmalfood.in',
-      subject: 'Bulk Papad Supply in Nirmal District',
-      message: 'Hello Bande Omkar ji, requesting bulk delivery of 30kg Urad and Moong Dal Papads to Nirmal market.',
-    },
-  });
-
-  // 5. Seed verified historical orders
+  // 3. Seed verified historical orders
   const cust1 = await prisma.customer.upsert({
     where: { phone: '9823012345' },
     update: {},
@@ -203,12 +202,17 @@ async function main() {
       orderNumber: 'AA-2026-8921',
       customerId: cust1.id,
       status: 'ACCEPTED',
-      paymentMethod: 'OFFLINE_COD',
+      paymentMethod: 'OFFLINE',
       paymentStatus: 'PENDING',
       subtotal: 450,
       deliveryFee: 0,
       total: 450,
-      notes: 'Please pack in fresh moisture-proof seal.',
+      deliveryAddress: 'Main Bazar Road, Near Gandhi Chowk',
+      city: 'Bhainsa',
+      district: 'Nirmal District',
+      state: 'Telangana',
+      pincode: '504103',
+      customerNotes: 'Please pack in fresh moisture-proof seal.',
       items: {
         create: [
           {
@@ -216,6 +220,10 @@ async function main() {
             variantId: 'var-urad-500g',
             productName: 'Urad Dal Papad',
             variantName: '500 g (500g)',
+            productNameSnapshot: 'Urad Dal Papad',
+            variantNameSnapshot: '500 g (500g)',
+            weight: '500 g',
+            unit: '500g',
             unitPrice: 150,
             quantity: 2,
             totalPrice: 300,
@@ -225,11 +233,24 @@ async function main() {
             variantId: 'var-turmeric-1kg',
             productName: 'Pure Turmeric Powder',
             variantName: '1 kg (kg)',
+            productNameSnapshot: 'Pure Turmeric Powder',
+            variantNameSnapshot: '1 kg (kg)',
+            weight: '1 kg',
+            unit: 'kg',
             unitPrice: 150,
             quantity: 1,
             totalPrice: 150,
           },
         ],
+      },
+      payments: {
+        create: {
+          gateway: 'CASH_ON_DELIVERY',
+          amount: 450,
+          currency: 'INR',
+          status: 'PENDING',
+          paymentMethod: 'OFFLINE',
+        },
       },
       statusHistory: {
         create: [
@@ -271,12 +292,17 @@ async function main() {
       orderNumber: 'AA-2026-9142',
       customerId: cust2.id,
       status: 'PENDING',
-      paymentMethod: 'OFFLINE_COD',
+      paymentMethod: 'OFFLINE',
       paymentStatus: 'PENDING',
       subtotal: 300,
       deliveryFee: 40,
       total: 340,
-      notes: 'Deliver fresh morning batch',
+      deliveryAddress: 'House #4-12, Old Bus Stand',
+      city: 'Bhainsa',
+      district: 'Nirmal District',
+      state: 'Telangana',
+      pincode: '504103',
+      customerNotes: 'Deliver fresh morning batch',
       items: {
         create: [
           {
@@ -284,11 +310,24 @@ async function main() {
             variantId: 'var-sevaya-1kg',
             productName: 'Traditional Wheat Sevaya',
             variantName: '1 kg (kg)',
+            productNameSnapshot: 'Traditional Wheat Sevaya',
+            variantNameSnapshot: '1 kg (kg)',
+            weight: '1 kg',
+            unit: 'kg',
             unitPrice: 100,
             quantity: 3,
             totalPrice: 300,
           },
         ],
+      },
+      payments: {
+        create: {
+          gateway: 'CASH_ON_DELIVERY',
+          amount: 340,
+          currency: 'INR',
+          status: 'PENDING',
+          paymentMethod: 'OFFLINE',
+        },
       },
       statusHistory: {
         create: [
