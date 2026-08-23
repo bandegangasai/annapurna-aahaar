@@ -1,132 +1,174 @@
-# 🌾 ANNAPURNA AAHAAR (अन्नपूर्णा आहार)
+# 🌾 ANNAPURNA AAHAAR (अन्नपूर्णा आहार • అన్నపూర్ణ ఆహార్)
 ### *Tradition in Every Grain.*
-**Handcrafted Indian Heritage Food Products & Multilingual E-Commerce Platform**
+**Handcrafted Indian Heritage Food Products & Multilingual Voice Telephony E-Commerce Platform**
 
-[![Live Storefront](https://img.shields.io/badge/🌐_Live_Storefront-Visit_Website-173F35?style=for-the-badge&logo=google-chrome&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/)
-[![100% Free Hosting](https://img.shields.io/badge/⚡_Hosting-100%25_Free_GitHub_Pages-0C241E?style=for-the-badge&logo=github&logoColor=white)](https://bandegangasai.github.io/annapurna-aahaar/)
-[![Multilingual Support](https://img.shields.io/badge/🎙️_Multilingual_Support-4_Languages-C79A45?style=for-the-badge&logo=translate&logoColor=173F35)](#-key-highlights--architectural-features)
+---
+
+[![Live Production Storefront](https://img.shields.io/badge/🌐_Official_Storefront-Visit_Live_Website-173F35?style=for-the-badge&logo=google-chrome&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/)
+[![Multilingual Engine](https://img.shields.io/badge/🎙️_Multilingual_Support-4_Languages-C79A45?style=for-the-badge&logo=translate&logoColor=173F35)](#-multilingual-internationalization-4-languages)
+[![24/7 Voice Hotline](https://img.shields.io/badge/📞_24%2F7_Voice_Helpline-9347036152-173F35?style=for-the-badge&logo=phone&logoColor=C79A45)](tel:9347036152)
+[![100% Free Hosting](https://img.shields.io/badge/⚡_Cloud_Hosting-100%25_Free_GitHub_Pages-0C241E?style=for-the-badge&logo=github&logoColor=white)](https://bandegangasai.github.io/annapurna-aahaar/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-A65332?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🌟 100% FREE OFFICIAL PRODUCTION ACCESS
+## 🌟 OFFICIAL PRODUCTION ACCESS
 
-> ### 🚀 **Official Production Web Application (100% Free Forever):**
+> ### 🚀 **Live E-Commerce Web Application:**
 > ### 👉 **[https://bandegangasai.github.io/annapurna-aahaar/](https://bandegangasai.github.io/annapurna-aahaar/)** 👈
 
-| Destination | Access URL |
-| :--- | :--- |
-| 🛍️ **Storefront & Interactive Experience** | [https://bandegangasai.github.io/annapurna-aahaar/](https://bandegangasai.github.io/annapurna-aahaar/) |
-| 📦 **Real-Time Order Tracking** | [https://bandegangasai.github.io/annapurna-aahaar/#/track](https://bandegangasai.github.io/annapurna-aahaar/#/track) |
-| 🗺️ **XML Sitemap** | [https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml](https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml) |
-| 🤖 **Robots Directives** | [https://bandegangasai.github.io/annapurna-aahaar/robots.txt](https://bandegangasai.github.io/annapurna-aahaar/robots.txt) |
-| 🐙 **GitHub Source Repository** | [https://github.com/bandegangasai/annapurna-aahaar](https://github.com/bandegangasai/annapurna-aahaar) |
+| Gateway | Link / Endpoint | Purpose |
+| :--- | :--- | :--- |
+| 🛍️ **Interactive Web Storefront** | [https://bandegangasai.github.io/annapurna-aahaar/](https://bandegangasai.github.io/annapurna-aahaar/) | Browse products, select weights, add to cart & checkout |
+| 📦 **Real-Time Order Tracking** | [https://bandegangasai.github.io/annapurna-aahaar/#/track](https://bandegangasai.github.io/annapurna-aahaar/#/track) | Live order status tracking from kitchen to doorstep |
+| 📞 **24/7 Voice Telephony Hotline** | `tel:9347036152` | Multilingual automated telephone ordering & assistance |
+| 🗺️ **XML Sitemap** | [sitemap.xml](https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml) | Automated search engine crawl map for Google & Bing |
+| 🤖 **Robots Directives** | [robots.txt](https://bandegangasai.github.io/annapurna-aahaar/robots.txt) | Search engine indexing rules & security filters |
+| 🐙 **Source Code Repository** | [GitHub Repo](https://github.com/bandegangasai/annapurna-aahaar) | Official repository with CI/CD deployment pipelines |
 
 ---
 
-## 🏛️ Brand & Product Overview
+## 🏛️ Brand & Business Profile
 
-* **Brand Name**: **Annapurna Aahaar**
+* **Business Name**: **ANNAPURNA AAHAAR**
 * **Tagline**: *"Tradition in Every Grain."*
-* **Origin**: **Bhainsa, Nirmal District, Telangana (504103), India**
-* **Core Offerings**: Handcrafted sun-cured papads, stone-ground pure turmeric powder, whole-wheat sevaya, and traditional Indian staples.
-* **Customer Ordering Channels**: Web store checkout, live order tracking, and 24/7 multilingual telephone voice helpline (`9347036152`).
+* **Founder & Owner**: **Bande Omkar**
+* **Culinary Heritage Location**: **Bhainsa, Nirmal District, Telangana — 504103, India**
+* **Primary IVR / Voice Customer Helpline**: **`9347036152`**
+* **Payment Mobile & Support**: **`9542836358`**
+* **Official UPI ID**: **`9542836358@ybl`** *(India Post Payment Bank - 3676)*
+* **Official Business Email**: **`annapurnaaahaar@gmail.com`**
 
 ---
 
-## 🔍 100% Free Google Search Discovery & SEO Setup
+## 🍛 Handcrafted Heritage Product Catalog
 
-The entire web application is optimized for Google Search indexing without requiring any paid domain or hosting fees:
+All authentic products are prepared using time-honored traditional techniques in Bhainsa, Telangana, sun-cured, and hygienically packed with zero chemical additives:
 
-* **Official Title**: `Annapurna Aahaar | Traditional Indian Food Products`
-* **Official Meta Description**: *"Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152."*
-* **Official Free Canonical URL**: `https://bandegangasai.github.io/annapurna-aahaar/`
-* **Structured Data (Schema.org JSON-LD)**:
-  * `WebSite` Schema with brand aliases: *Annapurna Aahaar Bhainsa*, *अन्नपूर्णा आहार*, *అన్నపూర్ణ ఆహార్*.
-  * `LocalBusiness` / `Organization` Schema for Bhainsa, Nirmal, Telangana (504103).
-  * `Product` & `Offer` Schema for all 8 authentic catalog items with exact database pricing in INR.
-* **Pre-rendered Initial HTML**: Semantic HTML markup pre-rendered in `#root` for fast search spider indexing.
-
----
-
-## 🆓 Step-by-Step: How to Index on Google Search (100% Free)
-
-You do **NOT** need to pay for any domain or subscription. You can submit your free live website to Google Search Console in 2 minutes:
-
-1. Open **[Google Search Console](https://search.google.com/search-console)** (Sign in with your Google account `annapurnaaahaar@gmail.com`).
-2. Click **Add Property** ➔ Select **URL prefix** (Right option).
-3. Enter your exact free live URL:
-   ```
-   https://bandegangasai.github.io/annapurna-aahaar/
-   ```
-4. Click **Continue** (Verification is automatically approved if your GitHub and Google accounts match, or via HTML tag).
-5. In the left menu, click **Sitemaps**:
-   - Enter `sitemap.xml` and click **Submit**.
-6. In the left menu, click **URL Inspection**:
-   - Paste `https://bandegangasai.github.io/annapurna-aahaar/`
-   - Click **Test Live URL** ➔ Click **Request Indexing**.
-7. Googlebot will now crawl and index **Annapurna Aahaar** on Google Search for **₹0 (100% Free)**!
+| # | Product Name | Description | Available Packaging | Price (INR) |
+| :-: | :--- | :--- | :-: | :-: |
+| 1 | **Traditional Wheat Sevaya** | Handcrafted whole-wheat roasted vermicelli sevaya | 250g, 500g, 1kg | Starting at ₹90 |
+| 2 | **Urad Dal Papad** | Crispy black-gram urad dal papad with black pepper & cumin | 250g, 500g, 1kg | Starting at ₹150 |
+| 3 | **Moong Dal Papad** | Light, easily digestible yellow moong dal papad | 250g, 500g, 1kg | Starting at ₹160 |
+| 4 | **Masala Papad** | Spicy Indian papad bursting with red chili, ajwain & cumin | 250g, 500g, 1kg | Starting at ₹150 |
+| 5 | **Rice Papad** | Steamed & sun-dried rice flour papad with delicate crisp | 250g, 500g, 1kg | Starting at ₹150 |
+| 6 | **Pure Turmeric Powder** | 100% stone-ground golden haldi powder with high curcumin | 100g, 250g, 500g, 1kg | Starting at ₹80 |
+| 7 | **Maggie** | Classic Indian-spiced instant noodle packs | 4-Pack, 8-Pack | Starting at ₹85 |
+| 8 | **Noodles** | High-protein wheat noodles for Indian-style Hakka cooking | 300g, 500g, 1kg | Starting at ₹95 |
 
 ---
 
-## 💎 Key Highlights & Architectural Features
+## 💎 Core Platform Capabilities
 
-### 1. 🎨 Premium Indian Heritage Brand Design (60-30-10 Rule)
-* **Color System**:
-  * **Deep Forest Green (`#173F35`)** — Primary brand identity.
-  * **Warm Ivory (`#F8F3E7`)** — Authentic traditional background.
-  * **Antique Gold (`#C79A45`)** — Premium borders, badges, and accents.
-  * **Terracotta (`#A65332`)** — Indian earth tones.
-* **Typography**:
-  * English / Headings: *Playfair Display* + *Inter*
-  * Marathi / Hindi: *Noto Sans Devanagari*
-  * Telugu: *Noto Sans Telugu*
+### 1. 🎨 Premium Indian Heritage Visual Identity (60-30-10 Rule)
+* **Forest Green (`#173F35`)** — Primary brand identity and structural elegance.
+* **Warm Ivory (`#F8F3E7`)** — Authentic parchment background canvas.
+* **Antique Gold (`#C79A45`)** — Premium borders, medals, accents, and action buttons.
+* **Terracotta (`#A65332`)** — Indian clay & earth contrast tones.
+* **Typography**: *Playfair Display* (Editorial headings), *Inter* (UI/Body), *Noto Sans Devanagari* (Hindi/Marathi), and *Noto Sans Telugu* (Telugu).
 
-### 2. 🌐 Full Multilingual Internationalization (4 Languages)
-* Instant language switcher: **`[ 🌐 English ] [ मराठी ] [ हिन्दी ] [ తెలుగు ]`**.
-* Complete localization across all storefront pages, cart, checkout, tracking, and receipts.
-* Saved in `localStorage` for return visits.
+### 2. ✨ 3D Interactive Heritage Hero Experience
+* Smooth 3D perspective physics with real-time mouse tracking and parallax tilt (`rotateX`, `rotateY`, `scale3d`).
+* High-definition culinary photography showcasing crispy papads in an engraved brass thali, pure golden turmeric, whole wheat vermicelli, raw grains, and aromatic Indian spices.
 
-### 3. ✨ 3D Interactive Heritage Hero Showcase
-* Interactive 3D perspective depth physics with dynamic mouse-tracking parallax.
-* High-definition traditional Indian culinary photography featuring stacked crispy papads in an engraved brass thali, golden stone-ground turmeric, whole wheat sevaya, and aromatic spices.
+### 3. 🌐 Full Multilingual Internationalization (4 Languages)
+* Instant 1-click regional switcher across the platform: **`[ 🌐 English ] [ मराठी ] [ हिन्दी ] [ తెలుగు ]`**.
+* Complete end-to-end localization covering product cards, weight selections, cart calculations, checkout receipts, live tracking, and support channels.
+* Preference saved in `localStorage` for returning visitors.
 
-### 4. 📞 Multilingual Telephony & IVR Voice Engine
-* 24/7 automated telephone voice ordering in 4 regional languages (English, Marathi, Hindi, Telugu).
-* Strict state machine architecture with multi-step session recovery.
-* Keypad options for order placement, live tracking, order cancellation, and kitchen helpline routing.
+### 4. 📞 Multilingual Voice Telephony & IVR Engine
+* 24/7 automated telephone voice helpline at **`9347036152`** supporting English, Marathi, Hindi, and Telugu.
+* Automated keypad ordering, live order status lookup, order cancellation, and kitchen staff dispatch.
+* Robust session recovery backed by PostgreSQL state storage and Polly neural voices (*Aditi*, *Chitra*, *Kajal*).
 
-### 5. 💳 Multi-Mode Payment Architecture
-* **Cash on Delivery (COD)**: Doorstep cash settlement or delivery QR scan.
-* **Direct UPI Transfer**: Integrated 1-click UPI copy, mobile deep link support (`upi://pay`), and 12-digit transaction reference verification.
-* **Online Payment Gateway**: Secure digital checkout with support for UPI, NetBanking, and Debit/Credit Cards.
+### 5. 💳 Multi-Mode Payment Infrastructure
+* **Cash on Delivery (COD)**: Doorstep settlement upon delivery.
+* **Direct UPI Transfer**: 1-click UPI copy, mobile deep link support (`upi://pay`), and 12-digit transaction reference verification.
+* **Online Payment Gateway**: Secure digital checkout with cards, net banking, and UPI.
+
+### 6. 🔍 100% Free Google Search Engine Optimization (SEO)
+* **Google Verification**: Verified and active via Google Search Console.
+* **Schema.org Structured Data**: Integrated `WebSite`, `LocalBusiness`, `Organization`, and `Product`/`Offer` JSON-LD schemas.
+* **Pre-Rendered Fallback**: Semantic initial HTML container for non-JS web crawlers.
+* **Sitemap & Robots**: Structured `sitemap.xml` and privacy-tuned `robots.txt`.
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart TD
+    subgraph Clients["Customer Channels"]
+        WebClient["🖥️ Web Storefront (Desktop/Mobile)"]
+        VoiceClient["📞 Voice Telephone Call (9347036152)"]
+    end
+
+    subgraph CDN["Edge & Hosting (100% Free)"]
+        GHPages["⚡ GitHub Pages (HTTPS/CDN)"]
+        SitemapEngine["🗺️ XML Sitemap & Robots Engine"]
+    end
+
+    subgraph BackendAPI["Backend Cloud Service (Render)"]
+        APIGateway["Express.js / TypeScript Gateway"]
+        IVRStateMachine["🎙️ Multilingual IVR Voice Engine"]
+        OrderManager["📦 Order Processing Service"]
+        PaymentVerifier["💳 UPI & Payment Gateway"]
+    end
+
+    subgraph DataStore["Database & Storage"]
+        PostgresDB[("🐘 PostgreSQL / Prisma ORM")]
+    end
+
+    subgraph SearchEngines["Search Discovery"]
+        GoogleBot["🔍 Google Search Console & Web Crawler"]
+    end
+
+    WebClient -->|HTTPS / REST| GHPages
+    GHPages -->|API Calls| APIGateway
+    VoiceClient -->|Telephony Webhook| IVRStateMachine
+    IVRStateMachine --> APIGateway
+    APIGateway --> OrderManager
+    APIGateway --> PaymentVerifier
+    OrderManager --> PostgresDB
+    PaymentVerifier --> PostgresDB
+    GoogleBot -->|Crawls & Indexes| SitemapEngine
+    SitemapEngine --> GHPages
+```
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
+| Layer | Technologies & Frameworks |
 | :--- | :--- |
-| **Frontend UI** | React 18, TypeScript, Vite 6, Tailwind CSS 3, Framer Motion, Lucide Icons |
-| **3D & Visuals** | Three.js, React Three Fiber, Framer Motion 3D Depth Physics |
-| **Backend API** | Node.js, Express, TypeScript, Zod Validation |
+| **Frontend Framework** | React 18, TypeScript, Vite 6, Tailwind CSS 3 |
+| **Animation & 3D** | Framer Motion 3D Parallax Physics, Lucide React Icons |
+| **Backend Framework** | Node.js, Express, TypeScript, Zod Schema Validation |
 | **Database & ORM** | PostgreSQL, Prisma ORM 5 |
-| **Voice & Telephony** | TwiML XML Generator, AWS Polly TTS, Webhook Architecture |
-| **Testing** | Automated End-to-End Test Suite (`test:e2e`), IVR State Machine Test Battery (`test:ivr:e2e`) |
-| **Deployment** | GitHub Pages (100% Free Frontend), Cloud Backend Service (Render) |
+| **Voice & Telephony** | TwiML XML Response Generator, AWS Polly Multilingual TTS |
+| **Testing Suite** | Automated E-Commerce E2E Suite, Automated IVR State Machine Suite |
+| **Hosting & CI/CD** | GitHub Pages (Frontend), Cloud Backend (Render), Git Version Control |
 
 ---
 
-## ⚡ Local Development & Setup
+## ⚡ Local Development & Testing
 
 ### 1. Backend Setup
 ```bash
 cd backend
 npm install
+
+# Copy environment variables
 cp .env.example .env
+
+# Generate Prisma client & apply database migrations
 npm run prisma:generate
 npm run prisma:push
+
+# Seed authentic product catalog
 npm run prisma:seed
+
+# Start backend server
 npm run dev
 ```
 
@@ -134,13 +176,18 @@ npm run dev
 ```bash
 cd frontend
 npm install
+
+# Start Vite development server
 npm run dev
 ```
 
 ### 3. Run Automated Tests
 ```bash
+# Run End-to-End E-Commerce Test Battery
 cd backend
 npm run test:e2e
+
+# Run Multilingual IVR Telephony Test Battery
 npm run test:ivr:e2e
 ```
 
@@ -148,5 +195,5 @@ npm run test:ivr:e2e
 
 ## 📄 License & Ownership
 
-© 2026 **Annapurna Aahaar**. All rights reserved.  
-Dedicated to authentic Indian culinary heritage from **Bhainsa, Nirmal District, Telangana (504103)**.
+© 2026 **ANNAPURNA AAHAAR**. All rights reserved.  
+Founded & Managed by **Bande Omkar** — **Bhainsa, Nirmal District, Telangana (504103)**.
