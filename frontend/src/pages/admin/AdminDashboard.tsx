@@ -427,9 +427,16 @@ export const AdminDashboard: React.FC = () => {
                     ) : (
                       orders.map((ord) => {
                         const isPending = ord.status === 'PENDING';
+                        const itemCount = (ord.items || []).length;
+                        const custName = ord.customer?.name || 'Customer';
+                        const custPhone = ord.customer?.phone || 'No phone provided';
+                        const custCity = ord.customer?.city || 'Bhainsa';
+                        const custState = ord.customer?.state || 'Telangana';
+                        const custPincode = ord.customer?.pincode || '504103';
+
                         return (
                           <tr
-                            key={ord.id}
+                            key={ord.id || ord.orderNumber}
                             className={`hover:bg-cream-50/80 transition-colors ${
                               isPending ? 'bg-amber-50/50' : ''
                             }`}
@@ -443,26 +450,26 @@ export const AdminDashboard: React.FC = () => {
                                 {formatDateTime(ord.createdAt)}
                               </span>
                               <div className="text-[11px] text-stone-600 mt-1">
-                                {ord.items.length} item{ord.items.length > 1 ? 's' : ''}
+                                {itemCount} item{itemCount !== 1 ? 's' : ''}
                               </div>
                             </td>
 
                             {/* Customer */}
                             <td className="p-4">
                               <span className="font-bold text-stone-900 block">
-                                {ord.customer.name}
+                                {custName}
                               </span>
                               <span className="text-xs text-stone-600 block">
-                                📞 {ord.customer.phone}
+                                📞 {custPhone}
                               </span>
                               <span className="text-[11px] text-stone-500 block line-clamp-1">
-                                📍 {ord.customer.city}, {ord.customer.state} ({ord.customer.pincode})
+                                📍 {custCity}, {custState} ({custPincode})
                               </span>
                             </td>
 
                             {/* Total */}
                             <td className="p-4 font-serif font-bold text-base text-stone-900">
-                              {formatINR(ord.total)}
+                              {formatINR(ord.total || 0)}
                             </td>
 
                             {/* Payment */}
@@ -477,7 +484,7 @@ export const AdminDashboard: React.FC = () => {
                                     : 'bg-amber-100 text-amber-900'
                                 }`}
                               >
-                                {ord.paymentStatus}
+                                {ord.paymentStatus || 'PENDING'}
                               </span>
                             </td>
 
@@ -735,9 +742,9 @@ export const AdminDashboard: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="p-3 bg-stone-50 rounded-xl">
                 <span className="font-bold text-stone-700 block mb-1">Customer Info:</span>
-                <p className="font-semibold text-stone-900">{selectedOrder.customer.name}</p>
-                <p className="text-stone-600">Phone: {selectedOrder.customer.phone}</p>
-                {selectedOrder.customer.email && (
+                <p className="font-semibold text-stone-900">{selectedOrder.customer?.name || 'Customer'}</p>
+                <p className="text-stone-600">Phone: {selectedOrder.customer?.phone || 'No phone'}</p>
+                {selectedOrder.customer?.email && (
                   <p className="text-stone-600">Email: {selectedOrder.customer.email}</p>
                 )}
               </div>
@@ -745,9 +752,12 @@ export const AdminDashboard: React.FC = () => {
               <div className="p-3 bg-stone-50 rounded-xl">
                 <span className="font-bold text-stone-700 block mb-1">Delivery Address:</span>
                 <p className="text-stone-700">
-                  {selectedOrder.customer.address}, {selectedOrder.customer.city},{' '}
-                  {selectedOrder.customer.state} - {selectedOrder.customer.pincode}
+                  {selectedOrder.customer?.address || ''}, {selectedOrder.customer?.city || 'Bhainsa'},{' '}
+                  {selectedOrder.customer?.state || 'Telangana'} - {selectedOrder.customer?.pincode || '504103'}
                 </p>
+                {selectedOrder.notes && (
+                  <p className="text-amber-800 font-medium mt-1">Note: {selectedOrder.notes}</p>
+                )}
               </div>
             </div>
 
@@ -755,15 +765,17 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-2">
               <span className="text-xs font-bold text-stone-700 uppercase block">Items:</span>
               <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl p-3 max-h-48 overflow-y-auto">
-                {selectedOrder.items.map((it) => (
-                  <div key={it.id} className="py-2 flex justify-between text-xs">
+                {(selectedOrder.items || []).map((it) => (
+                  <div key={it.id || it.variantId} className="py-2 flex justify-between text-xs">
                     <div>
                       <span className="font-bold text-stone-900">{it.productName}</span>
                       <span className="text-stone-500 block">
                         {it.variantName} × {it.quantity}
                       </span>
                     </div>
-                    <span className="font-bold text-stone-800">{formatINR(it.totalPrice)}</span>
+                    <span className="font-serif font-bold text-stone-900">
+                      {formatINR(it.totalPrice || it.unitPrice * it.quantity)}
+                    </span>
                   </div>
                 ))}
               </div>

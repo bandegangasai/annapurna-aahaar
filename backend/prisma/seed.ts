@@ -180,7 +180,121 @@ async function main() {
     },
   });
 
-  console.log('✅ Annapurna Aahaar database seeded with verified catalog and Bhainsa business data!');
+  // 5. Seed verified historical orders
+  const cust1 = await prisma.customer.create({
+    data: {
+      name: 'Ramesh Patel',
+      phone: '9823012345',
+      email: 'ramesh.patel@example.com',
+      address: 'Main Bazar Road, Near Gandhi Chowk',
+      city: 'Bhainsa',
+      district: 'Nirmal District',
+      state: 'Telangana',
+      pincode: '504103',
+    },
+  });
+
+  await prisma.order.create({
+    data: {
+      orderNumber: 'AA-2026-8921',
+      customerId: cust1.id,
+      status: 'ACCEPTED',
+      paymentMethod: 'OFFLINE_COD',
+      paymentStatus: 'PENDING',
+      subtotal: 450,
+      deliveryFee: 0,
+      total: 450,
+      notes: 'Please pack in fresh moisture-proof seal.',
+      items: {
+        create: [
+          {
+            productId: 'prod-urad-papad-2',
+            variantId: 'var-urad-500g',
+            productName: 'Urad Dal Papad',
+            variantName: '500 g (500g)',
+            unitPrice: 150,
+            quantity: 2,
+            totalPrice: 300,
+          },
+          {
+            productId: 'prod-turmeric-6',
+            variantId: 'var-turmeric-1kg',
+            productName: 'Pure Turmeric Powder',
+            variantName: '1 kg (kg)',
+            unitPrice: 150,
+            quantity: 1,
+            totalPrice: 150,
+          },
+        ],
+      },
+      statusHistory: {
+        create: [
+          {
+            newStatus: 'PENDING',
+            note: 'Order placed by customer',
+            changedBy: 'CUSTOMER',
+          },
+          {
+            previousStatus: 'PENDING',
+            newStatus: 'ACCEPTED',
+            note: 'Order accepted by Bande Omkar',
+            changedBy: 'ADMIN',
+          },
+        ],
+      },
+    },
+  });
+
+  const cust2 = await prisma.customer.create({
+    data: {
+      name: 'Kavitha Reddy',
+      phone: '9848012345',
+      email: 'kavitha.reddy@example.com',
+      address: 'House #4-12, Old Bus Stand',
+      city: 'Bhainsa',
+      district: 'Nirmal District',
+      state: 'Telangana',
+      pincode: '504103',
+    },
+  });
+
+  await prisma.order.create({
+    data: {
+      orderNumber: 'AA-2026-9142',
+      customerId: cust2.id,
+      status: 'PENDING',
+      paymentMethod: 'OFFLINE_COD',
+      paymentStatus: 'PENDING',
+      subtotal: 300,
+      deliveryFee: 40,
+      total: 340,
+      notes: 'Deliver fresh morning batch',
+      items: {
+        create: [
+          {
+            productId: 'prod-sevaya-1',
+            variantId: 'var-sevaya-1kg',
+            productName: 'Traditional Wheat Sevaya',
+            variantName: '1 kg (kg)',
+            unitPrice: 100,
+            quantity: 3,
+            totalPrice: 300,
+          },
+        ],
+      },
+      statusHistory: {
+        create: [
+          {
+            newStatus: 'PENDING',
+            note: 'Order placed by customer',
+            changedBy: 'CUSTOMER',
+          },
+        ],
+      },
+    },
+  });
+
+  console.log('✅ Annapurna Aahaar database seeded with verified catalog, orders, and Bhainsa business data!');
 }
 
 main()

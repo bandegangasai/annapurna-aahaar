@@ -587,6 +587,9 @@ export const api = {
 
     let allOrders = Array.from(orderMap.values());
 
+    // Sort newest orders at the very top
+    allOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
     if (params?.status && params.status !== 'ALL') {
       allOrders = allOrders.filter((o) => o.status === params.status);
     }
