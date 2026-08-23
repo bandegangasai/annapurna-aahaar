@@ -32,8 +32,18 @@ function generateOrderNumber(): string {
 export const handleIncomingCall = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const callSid = String(req.body.CallSid || req.query.CallSid || `CALL_${Date.now()}`);
-    const fromPhone = String(req.body.From || req.query.From || req.body.from || '9848012345').replace(/[^0-9]/g, '').slice(-10) || '9848012345';
+    const fromPhone =
+      String(req.body.From || req.query.From || req.body.from || '9848012345')
+        .replace(/[^0-9]/g, '')
+        .slice(-10) || '9848012345';
     const toPhone = String(req.body.To || req.query.To || ENV.IVR_PHONE_NUMBER || '9347036152');
+
+    // Check if customer already has a preferred language saved from previous calls
+    const existingCustomer = await prisma.customer.findUnique({
+      where: { phone: fromPhone },
+    });
+
+    const defaultLang: IvrLanguage = (existingCustomer?.preferredLanguage as IvrLanguage) || 'ENGLISH';
 
     // Create or update call record in persistent database
     const call = await prisma.call.upsert({
@@ -43,22 +53,41 @@ export const handleIncomingCall = async (req: Request, res: Response, next: Next
         callSid,
         fromPhone,
         toPhone,
-        language: 'ENGLISH',
+        language: defaultLang,
         status: 'IN_PROGRESS',
         startTime: new Date(),
+        customerId: existingCustomer?.id,
       },
     });
 
-    // Log IVR Interaction
-    await prisma.ivrInteraction.create({
-      data: {
-        callId: call.id,
-        language: 'ENGLISH',
-        menu: 'LANGUAGE_MENU',
-        action: 'CALL_ANSWERED',
-        details: `Incoming call from ${fromPhone} on dedicated IVR line ${toPhone}`,
+    // Create or update IvrSession record
+    await prisma.ivrSession.upsert({
+      where: { callSid },
+      update: { lastActivity: new Date(), language: defaultLang },
+      create: {
+        callSid,
+        fromPhone,
+        language: defaultLang,
+        currentMenu: 'LANGUAGE_MENU',
+        currentStep: 'GREETING',
+        customerId: existingCustomer?.id,
+        sessionStatus: 'ACTIVE',
       },
     }).catch(() => {});
+
+    // Log IVR Interaction
+    await prisma.ivrInteraction
+      .create({
+        data: {
+          callId: call.id,
+          language: defaultLang,
+          menu: 'LANGUAGE_MENU',
+          action: 'CALL_ANSWERED',
+          details: `Incoming call from ${fromPhone} on dedicated IVR line ${toPhone}. Existing preferred language: ${defaultLang}`,
+          customerId: existingCustomer?.id,
+        },
+      })
+      .catch(() => {});
 
     // Broadcast live event to Admin Dashboard
     realtimeService.broadcast('new_ivr_call', {
@@ -66,14 +95,15 @@ export const handleIncomingCall = async (req: Request, res: Response, next: Next
       callSid: call.callSid,
       fromPhone: call.fromPhone,
       toPhone: call.toPhone,
+      language: defaultLang,
       startTime: call.startTime,
     });
 
-    updateSession(callSid, { fromPhone, toPhone, step: 'LANGUAGE_SELECT' });
+    updateSession(callSid, { fromPhone, toPhone, language: defaultLang, step: 'LANGUAGE_SELECT' });
 
     const twiml = buildTwimlResponse({
-      say: PROMPTS.GREETING_LANG_SELECT.ENGLISH,
-      language: 'ENGLISH',
+      say: PROMPTS.GREETING_LANG_SELECT[defaultLang] || PROMPTS.GREETING_LANG_SELECT.ENGLISH,
+      language: defaultLang,
       gatherAction: `${ENV.LIVE_SITE_URL}/api/ivr/select-language`,
       numDigits: 1,
       timeout: 8,
@@ -86,13 +116,14 @@ export const handleIncomingCall = async (req: Request, res: Response, next: Next
 };
 
 /**
- * 2. Language Selection (POST /api/ivr/select-language)
+ * 2. Language Selection & Persistence (POST /api/ivr/select-language)
  */
 export const handleSelectLanguage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const callSid = String(req.body.CallSid || req.query.CallSid || req.body.callSid || '');
     const digits = String(req.body.Digits || req.query.Digits || req.body.digits || '1').trim();
     const session = getOrCreateSession(callSid, String(req.body.From || ''));
+    const previousLanguage = session.language;
 
     let selectedLang: IvrLanguage = 'ENGLISH';
     if (digits === '2') selectedLang = 'MARATHI';
@@ -101,24 +132,37 @@ export const handleSelectLanguage = async (req: Request, res: Response, next: Ne
 
     updateSession(callSid, { language: selectedLang, step: 'MAIN_MENU' });
 
-    // Update call record in DB
+    // Update persistent call record in DB
     await prisma.call.updateMany({
       where: { callSid },
       data: { language: selectedLang },
     });
 
+    // Update customer preferred language in database if customer exists
+    if (session.fromPhone) {
+      await prisma.customer.updateMany({
+        where: { phone: session.fromPhone },
+        data: { preferredLanguage: selectedLang },
+      }).catch(() => {});
+    }
+
     const callRecord = await prisma.call.findUnique({ where: { callSid } });
     if (callRecord) {
-      await prisma.ivrInteraction.create({
-        data: {
-          callId: callRecord.id,
-          language: selectedLang,
-          menu: 'LANGUAGE_MENU',
-          dtmfInput: digits,
-          action: 'LANGUAGE_SELECTED',
-          details: `Caller selected language: ${selectedLang}`,
-        },
-      }).catch(() => {});
+      const isChange = previousLanguage && previousLanguage !== selectedLang;
+      await prisma.ivrInteraction
+        .create({
+          data: {
+            callId: callRecord.id,
+            language: selectedLang,
+            menu: 'LANGUAGE_MENU',
+            dtmfInput: digits,
+            action: isChange ? 'LANGUAGE_CHANGED' : 'LANGUAGE_SELECTED',
+            details: isChange
+              ? `Language changed from ${previousLanguage} to ${selectedLang}`
+              : `Caller selected language: ${selectedLang}`,
+          },
+        })
+        .catch(() => {});
     }
 
     const menuPrompt = PROMPTS.MAIN_MENU[selectedLang];
@@ -153,16 +197,18 @@ export const handleMainMenu = async (req: Request, res: Response, next: NextFunc
       updateSession(callSid, { step: 'PRODUCT_SELECT' });
       if (callRecord) {
         await prisma.call.update({ where: { id: callRecord.id }, data: { selectedOption: '1_ORDER' } });
-        await prisma.ivrInteraction.create({
-          data: {
-            callId: callRecord.id,
-            language: lang,
-            menu: 'MAIN_MENU',
-            dtmfInput: digits,
-            action: 'OPTION_SELECTED',
-            details: 'Caller selected Place/Confirm Order',
-          },
-        }).catch(() => {});
+        await prisma.ivrInteraction
+          .create({
+            data: {
+              callId: callRecord.id,
+              language: lang,
+              menu: 'MAIN_MENU',
+              dtmfInput: digits,
+              action: 'OPTION_SELECTED',
+              details: 'Caller selected Place/Confirm Order',
+            },
+          })
+          .catch(() => {});
       }
 
       const { text: productMenuText } = await getIvrProductMenuText(lang);
@@ -182,16 +228,18 @@ export const handleMainMenu = async (req: Request, res: Response, next: NextFunc
       updateSession(callSid, { step: 'TRACK_ORDER' });
       if (callRecord) {
         await prisma.call.update({ where: { id: callRecord.id }, data: { selectedOption: '2_TRACK' } });
-        await prisma.ivrInteraction.create({
-          data: {
-            callId: callRecord.id,
-            language: lang,
-            menu: 'MAIN_MENU',
-            dtmfInput: digits,
-            action: 'OPTION_SELECTED',
-            details: 'Caller selected Track Order',
-          },
-        }).catch(() => {});
+        await prisma.ivrInteraction
+          .create({
+            data: {
+              callId: callRecord.id,
+              language: lang,
+              menu: 'MAIN_MENU',
+              dtmfInput: digits,
+              action: 'ORDER_TRACKED',
+              details: 'Caller requested live order tracking',
+            },
+          })
+          .catch(() => {});
       }
 
       // Look up caller's recent order
@@ -202,21 +250,23 @@ export const handleMainMenu = async (req: Request, res: Response, next: NextFunc
 
       let trackMsg = '';
       if (!recentOrder) {
-        trackMsg = lang === 'TELUGU'
-          ? 'మీ ఫోన్ నంబర్ పై ఎలాంటి యాక్టివ్ ఆర్డర్ కనుగొనబడలేదు. ఆర్డర్ చేయడానికి దయచేసి 1 నొక్కండి.'
-          : lang === 'HINDI'
-          ? 'आपके फ़ोन नंबर पर कोई सक्रिय ऑर्डर नहीं मिला। ऑर्डर करने के लिए 1 दबाएँ।'
-          : lang === 'MARATHI'
-          ? 'आपल्या फोन नंबरवर कोणतीही ऑर्डर सापडली नाही. ऑर्डर करण्यासाठी 1 दाबा.'
-          : 'No active orders found for your phone number. To place a new order, press 1.';
+        trackMsg =
+          lang === 'TELUGU'
+            ? 'మీ ఫోన్ నంబర్ పై ఎలాంటి యాక్టివ్ ఆర్డర్ కనుగొనబడలేదు. ఆర్డర్ చేయడానికి దయచేసి 1 నొక్కండి.'
+            : lang === 'HINDI'
+            ? 'आपके फ़ोन नंबर पर कोई सक्रिय ऑर्डर नहीं मिला। ऑर्डर करने के लिए 1 दबाएँ।'
+            : lang === 'MARATHI'
+            ? 'आपल्या फोन नंबरवर कोणतीही ऑर्डर सापडली नाही. ऑर्डर करण्यासाठी 1 दाबा.'
+            : 'No active orders found for your phone number. To place a new order, press 1.';
       } else {
-        trackMsg = lang === 'TELUGU'
-          ? `మీ ఆర్డర్ నంబర్ ${recentOrder.orderNumber} ప్రస్తుత స్థితి: ${recentOrder.status}.`
-          : lang === 'HINDI'
-          ? `आपका ऑर्डर नंबर ${recentOrder.orderNumber} वर्तमान में ${recentOrder.status} है।`
-          : lang === 'MARATHI'
-          ? `आपली ऑर्डर नंबर ${recentOrder.orderNumber} सध्या ${recentOrder.status} स्थितीत आहे.`
-          : `Your order number ${recentOrder.orderNumber} is currently ${recentOrder.status}.`;
+        trackMsg =
+          lang === 'TELUGU'
+            ? `మీ ఆర్డర్ నంబర్ ${recentOrder.orderNumber} ప్రస్తుత స్థితి: ${recentOrder.status}.`
+            : lang === 'HINDI'
+            ? `आपका ऑर्डर नंबर ${recentOrder.orderNumber} वर्तमान में ${recentOrder.status} है।`
+            : lang === 'MARATHI'
+            ? `आपली ऑर्डर नंबर ${recentOrder.orderNumber} सध्या ${recentOrder.status} स्थितीत आहे.`
+            : `Your order number ${recentOrder.orderNumber} is currently ${recentOrder.status}.`;
       }
 
       const twiml = buildTwimlResponse({
@@ -246,13 +296,14 @@ export const handleMainMenu = async (req: Request, res: Response, next: NextFunc
       });
 
       if (!cancellableOrder) {
-        const noCancelMsg = lang === 'TELUGU'
-          ? 'మీ ఫోన్ నంబర్ పై రద్దు చేయగల ఆర్డర్లు ఏవీ లేవు.'
-          : lang === 'HINDI'
-          ? 'आपके नंबर पर कोई रद्द करने योग्य ऑर्डर नहीं है।'
-          : lang === 'MARATHI'
-          ? 'आपल्या नंबरवर कोणतीही रद्द करण्यायोग्य ऑर्डर नाही.'
-          : 'You have no cancellable orders pending at this time.';
+        const noCancelMsg =
+          lang === 'TELUGU'
+            ? 'మీ ఫోన్ నంబర్ పై రద్దు చేయగల ఆర్డర్లు ఏవీ లేవు.'
+            : lang === 'HINDI'
+            ? 'आपके नंबर पर कोई रद्द करने योग्य ऑर्डर नहीं है।'
+            : lang === 'MARATHI'
+            ? 'आपल्या नंबरवर कोणतीही रद्द करण्यायोग्य ऑर्डर नाही.'
+            : 'You have no cancellable orders pending at this time.';
 
         const twiml = buildTwimlResponse({
           say: `${noCancelMsg} ${PROMPTS.MAIN_MENU[lang]}`,
@@ -266,13 +317,14 @@ export const handleMainMenu = async (req: Request, res: Response, next: NextFunc
 
       updateSession(callSid, { orderNumberToCancel: cancellableOrder.orderNumber });
 
-      const confirmCancelMsg = lang === 'TELUGU'
-        ? `మీరు ఆర్డర్ నంబర్ ${cancellableOrder.orderNumber} ను రద్దు చేయాలనుకుంటున్నారా? రద్దు చేయడానికి 1 నొక్కండి. ఉంచడానికి 2 నొక్కండి.`
-        : lang === 'HINDI'
-        ? `क्या आप ऑर्डर नंबर ${cancellableOrder.orderNumber} रद्द करना चाहते हैं? पुष्टि के लिए 1 दबाएँ। रखने के लिए 2 दबाएँ।`
-        : lang === 'MARATHI'
-        ? `आपण ऑर्डर नंबर ${cancellableOrder.orderNumber} रद्द करू इच्छिता? पुष्टीसाठी 1 दाबा. ऑर्डर ठेवण्यासाठी 2 दाबा.`
-        : `Do you want to cancel order number ${cancellableOrder.orderNumber}? Press 1 to confirm cancellation. Press 2 to keep your order.`;
+      const confirmCancelMsg =
+        lang === 'TELUGU'
+          ? `మీరు ఆర్డర్ నంబర్ ${cancellableOrder.orderNumber} ను రద్దు చేయాలనుకుంటున్నారా? రద్దు చేయడానికి 1 నొక్కండి. ఉంచడానికి 2 నొక్కండి.`
+          : lang === 'HINDI'
+          ? `क्या आप ऑर्डर नंबर ${cancellableOrder.orderNumber} रद्द करना चाहते हैं? पुष्टि के लिए 1 दबाएँ। रखने के लिए 2 दबाएँ।`
+          : lang === 'MARATHI'
+          ? `आपण ऑर्डर नंबर ${cancellableOrder.orderNumber} रद्द करू इच्छिता? पुष्टीसाठी 1 दाबा. ऑर्डर ठेवण्यासाठी 2 दाबा.`
+          : `Do you want to cancel order number ${cancellableOrder.orderNumber}? Press 1 to confirm cancellation. Press 2 to keep your order.`;
 
       const twiml = buildTwimlResponse({
         say: confirmCancelMsg,
@@ -288,23 +340,53 @@ export const handleMainMenu = async (req: Request, res: Response, next: NextFunc
     if (digits === '4') {
       if (callRecord) {
         await prisma.call.update({ where: { id: callRecord.id }, data: { selectedOption: '4_SUPPORT' } });
-        await prisma.ivrInteraction.create({
-          data: {
-            callId: callRecord.id,
-            language: lang,
-            menu: 'MAIN_MENU',
-            dtmfInput: digits,
-            action: 'SUPPORT_REQUESTED',
-            details: 'Caller requested live customer care agent transfer',
-          },
-        }).catch(() => {});
+        await prisma.ivrInteraction
+          .create({
+            data: {
+              callId: callRecord.id,
+              language: lang,
+              menu: 'MAIN_MENU',
+              dtmfInput: digits,
+              action: 'CUSTOMER_SUPPORT_REQUESTED',
+              details: 'Caller requested live customer care agent transfer',
+            },
+          })
+          .catch(() => {});
       }
 
-      const agentPhone = ENV.AGENT_PHONE_PRIMARY || '6305970844';
       const twiml = buildTwimlResponse({
         say: PROMPTS.SUPPORT_TRANSFER[lang],
         language: lang,
-        dialNumber: agentPhone,
+        dialNumber: ENV.AGENT_PHONE_PRIMARY || ENV.BUSINESS_PHONE_PRIMARY || '6305970844',
+      });
+      res.type('text/xml').send(twiml);
+      return;
+    }
+
+    // Option 9: Change Language
+    if (digits === '9') {
+      updateSession(callSid, { step: 'LANGUAGE_SELECT' });
+      if (callRecord) {
+        await prisma.ivrInteraction
+          .create({
+            data: {
+              callId: callRecord.id,
+              language: lang,
+              menu: 'MAIN_MENU',
+              dtmfInput: digits,
+              action: 'LANGUAGE_CHANGED',
+              details: `Caller requested language change from ${lang}`,
+            },
+          })
+          .catch(() => {});
+      }
+
+      const twiml = buildTwimlResponse({
+        say: PROMPTS.GREETING_LANG_SELECT[lang] || PROMPTS.GREETING_LANG_SELECT.ENGLISH,
+        language: lang,
+        gatherAction: `${ENV.LIVE_SITE_URL}/api/ivr/select-language`,
+        numDigits: 1,
+        timeout: 8,
       });
       res.type('text/xml').send(twiml);
       return;
@@ -368,16 +450,18 @@ export const handleSelectProduct = async (req: Request, res: Response, next: Nex
 
     const callRecord = await prisma.call.findUnique({ where: { callSid } });
     if (callRecord) {
-      await prisma.ivrInteraction.create({
-        data: {
-          callId: callRecord.id,
-          language: lang,
-          menu: 'PRODUCT_MENU',
-          dtmfInput: digits,
-          action: 'PRODUCT_SELECTED',
-          details: `Caller selected product: ${selectedProduct.name}`,
-        },
-      }).catch(() => {});
+      await prisma.ivrInteraction
+        .create({
+          data: {
+            callId: callRecord.id,
+            language: lang,
+            menu: 'PRODUCT_MENU',
+            dtmfInput: digits,
+            action: 'PRODUCT_SELECTED',
+            details: `Caller selected product: ${selectedProduct.name}`,
+          },
+        })
+        .catch(() => {});
     }
 
     const variantMenu = await getIvrVariantMenuText(selectedProduct.id, lang);
@@ -457,6 +541,22 @@ export const handleSelectVariant = async (req: Request, res: Response, next: Nex
       selectedQuantity: quantity,
       step: 'CONFIRM_ORDER',
     });
+
+    const callRecord = await prisma.call.findUnique({ where: { callSid } });
+    if (callRecord) {
+      await prisma.ivrInteraction
+        .create({
+          data: {
+            callId: callRecord.id,
+            language: lang,
+            menu: 'VARIANT_MENU',
+            dtmfInput: digits,
+            action: 'WEIGHT_SELECTED',
+            details: `Caller selected weight: ${selectedVariant.weight} (₹${selectedVariant.price})`,
+          },
+        })
+        .catch(() => {});
+    }
 
     const confirmSpeech = getIvrOrderConfirmationText({
       productName: product.name,
@@ -540,13 +640,14 @@ export const handleConfirmOrder = async (req: Request, res: Response, next: Next
       const total = subtotal + deliveryFee;
       const orderNumber = generateOrderNumber();
 
-      // Find or create customer
+      // Find or create customer and persist preferred language
       const customer = await prisma.customer.upsert({
         where: { phone: session.fromPhone },
-        update: {},
+        update: { preferredLanguage: lang },
         create: {
           name: `Phone Customer (${session.fromPhone.slice(-4)})`,
           phone: session.fromPhone,
+          preferredLanguage: lang,
           address: 'Delivery address via phone caller ID, Bhainsa',
           city: 'Bhainsa',
           district: 'Nirmal District',
@@ -558,7 +659,7 @@ export const handleConfirmOrder = async (req: Request, res: Response, next: Next
       // Find call record
       const callRecord = await prisma.call.findUnique({ where: { callSid } });
 
-      // Create Order atomically in PostgreSQL database
+      // Create Order atomically in PostgreSQL database with exact language & source='IVR'
       const createdOrder = await prisma.order.create({
         data: {
           orderNumber,
@@ -623,21 +724,23 @@ export const handleConfirmOrder = async (req: Request, res: Response, next: Next
       if (callRecord) {
         await prisma.call.update({
           where: { id: callRecord.id },
-          data: { orderId: createdOrder.id },
+          data: { orderId: createdOrder.id, customerId: customer.id },
         });
 
-        await prisma.ivrInteraction.create({
-          data: {
-            callId: callRecord.id,
-            language: lang,
-            menu: 'CONFIRM_MENU',
-            dtmfInput: '1',
-            action: 'ORDER_CONFIRMED',
-            details: `Order #${createdOrder.orderNumber} successfully created via phone IVR`,
-            orderId: createdOrder.id,
-            customerId: customer.id,
-          },
-        }).catch(() => {});
+        await prisma.ivrInteraction
+          .create({
+            data: {
+              callId: callRecord.id,
+              language: lang,
+              menu: 'CONFIRM_MENU',
+              dtmfInput: '1',
+              action: 'ORDER_CONFIRMED',
+              details: `Order #${createdOrder.orderNumber} successfully created via phone IVR (${lang})`,
+              orderId: createdOrder.id,
+              customerId: customer.id,
+            },
+          })
+          .catch(() => {});
       }
 
       // Real-Time SSE Broadcaster update for Admin Dashboard
@@ -728,6 +831,23 @@ export const handleCancelConfirm = async (req: Request, res: Response, next: Nex
           },
         });
 
+        const callRecord = await prisma.call.findUnique({ where: { callSid } });
+        if (callRecord) {
+          await prisma.ivrInteraction
+            .create({
+              data: {
+                callId: callRecord.id,
+                language: lang,
+                menu: 'CANCEL_MENU',
+                dtmfInput: '1',
+                action: 'ORDER_CANCELLED',
+                details: `Order #${order.orderNumber} cancelled by caller via IVR (${lang})`,
+                orderId: order.id,
+              },
+            })
+            .catch(() => {});
+        }
+
         // Broadcast to Admin
         realtimeService.broadcast('order_status_updated', {
           orderId: order.id,
@@ -735,13 +855,14 @@ export const handleCancelConfirm = async (req: Request, res: Response, next: Nex
           status: 'CANCELLED',
         });
 
-        const cancelSuccess = lang === 'TELUGU'
-          ? `మీ ఆర్డర్ ${order.orderNumber} విజయవంతంగా రద్దు చేయబడింది.`
-          : lang === 'HINDI'
-          ? `आपका ऑर्डर ${order.orderNumber} सफलतापूर्वक रद्द कर दिया गया है।`
-          : lang === 'MARATHI'
-          ? `आपली ऑर्डर ${order.orderNumber} यशस्वीरित्या रद्द करण्यात आली आहे.`
-          : `Your order ${order.orderNumber} has been successfully cancelled.`;
+        const cancelSuccess =
+          lang === 'TELUGU'
+            ? `మీ ఆర్డర్ ${order.orderNumber} విజయవంతంగా రద్దు చేయబడింది.`
+            : lang === 'HINDI'
+            ? `आपका ऑर्डर ${order.orderNumber} सफलतापूर्वक रद्द कर दिया गया है।`
+            : lang === 'MARATHI'
+            ? `आपली ऑर्डर ${order.orderNumber} यशस्वीरित्या रद्द करण्यात आली आहे.`
+            : `Your order ${order.orderNumber} has been successfully cancelled.`;
 
         const twiml = buildTwimlResponse({
           say: `${cancelSuccess} ${PROMPTS.MAIN_MENU[lang]}`,
@@ -769,11 +890,11 @@ export const handleCancelConfirm = async (req: Request, res: Response, next: Nex
 /**
  * 8. Status Callback (POST /api/ivr/status-callback)
  */
-export const handleStatusCallback = async (req: Request, res: Response): Promise<void> => {
+export const handleStatusCallback = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const callSid = String(req.body.CallSid || req.query.CallSid || '');
     const callDuration = parseInt(String(req.body.CallDuration || req.query.CallDuration || '0'), 10);
-    const callStatus = String(req.body.CallStatus || req.query.CallStatus || 'COMPLETED').toUpperCase();
+    const callStatus = String(req.body.CallStatus || req.query.CallStatus || 'COMPLETED');
 
     if (callSid) {
       await prisma.call.updateMany({
@@ -784,6 +905,14 @@ export const handleStatusCallback = async (req: Request, res: Response): Promise
           status: callStatus === 'COMPLETED' ? 'COMPLETED' : 'DISCONNECTED',
         },
       });
+
+      await prisma.ivrSession
+        .updateMany({
+          where: { callSid },
+          data: { sessionStatus: 'COMPLETED', lastActivity: new Date() },
+        })
+        .catch(() => {});
+
       ivrSessions.delete(callSid);
     }
 
@@ -798,10 +927,18 @@ export const handleStatusCallback = async (req: Request, res: Response): Promise
  */
 export const handleSimulateIvr = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { action, callSid = `SIM_${Date.now()}`, fromPhone = '9848012345', digits = '1', language = 'ENGLISH' } = req.body;
+    const {
+      action,
+      callSid = `SIM_${Date.now()}`,
+      fromPhone = '9848012345',
+      digits = '1',
+      language = 'ENGLISH',
+      productId,
+      variantId,
+    } = req.body;
 
     const session = getOrCreateSession(callSid, fromPhone);
-    session.language = language;
+    if (language) session.language = language;
 
     if (action === 'INCOMING') {
       const call = await prisma.call.upsert({
@@ -819,7 +956,7 @@ export const handleSimulateIvr = async (req: Request, res: Response, next: NextF
       res.status(200).json({
         success: true,
         callSid,
-        prompt: PROMPTS.GREETING_LANG_SELECT.ENGLISH,
+        prompt: (PROMPTS.GREETING_LANG_SELECT as any)[language] || PROMPTS.GREETING_LANG_SELECT.ENGLISH,
         step: 'LANGUAGE_SELECT',
       });
       return;
@@ -831,8 +968,28 @@ export const handleSimulateIvr = async (req: Request, res: Response, next: NextF
       else if (digits === '3') selectedLang = 'HINDI';
       else if (digits === '4') selectedLang = 'TELUGU';
 
+      const prevLang = session.language;
       session.language = selectedLang;
+      updateSession(callSid, { language: selectedLang });
+
       await prisma.call.updateMany({ where: { callSid }, data: { language: selectedLang } });
+      await prisma.customer.updateMany({ where: { phone: fromPhone }, data: { preferredLanguage: selectedLang } }).catch(() => {});
+
+      const callRecord = await prisma.call.findUnique({ where: { callSid } });
+      if (callRecord) {
+        await prisma.ivrInteraction
+          .create({
+            data: {
+              callId: callRecord.id,
+              language: selectedLang,
+              menu: 'LANGUAGE_MENU',
+              dtmfInput: digits,
+              action: prevLang && prevLang !== selectedLang ? 'LANGUAGE_CHANGED' : 'LANGUAGE_SELECTED',
+              details: `Caller selected language: ${selectedLang}`,
+            },
+          })
+          .catch(() => {});
+      }
 
       res.status(200).json({
         success: true,
@@ -847,10 +1004,14 @@ export const handleSimulateIvr = async (req: Request, res: Response, next: NextF
       const products = await prisma.product.findMany({
         where: { isActive: true },
         include: { variants: { where: { isActive: true }, orderBy: { price: 'asc' } } },
+        orderBy: { createdAt: 'asc' },
       });
 
-      const selectedProduct = products[0]; // Wheat Sevaya or Urad Dal Papad
-      const selectedVariant = selectedProduct.variants[0];
+      const selectedProduct = productId ? products.find((p) => p.id === productId) || products[0] : products[0];
+      const selectedVariant = variantId
+        ? selectedProduct.variants.find((v) => v.id === variantId) || selectedProduct.variants[0]
+        : selectedProduct.variants[0];
+
       const subtotal = selectedVariant.price;
       const deliveryFee = subtotal >= 500 ? 0.0 : 40.0;
       const total = subtotal + deliveryFee;
@@ -858,10 +1019,11 @@ export const handleSimulateIvr = async (req: Request, res: Response, next: NextF
 
       const customer = await prisma.customer.upsert({
         where: { phone: fromPhone },
-        update: {},
+        update: { preferredLanguage: language },
         create: {
           name: `Phone Customer (${fromPhone.slice(-4)})`,
           phone: fromPhone,
+          preferredLanguage: language,
           address: 'Main Road near Gandhi Chowk, Bhainsa',
           city: 'Bhainsa',
           district: 'Nirmal District',
@@ -928,6 +1090,28 @@ export const handleSimulateIvr = async (req: Request, res: Response, next: NextF
         include: { customer: true, items: true, payments: true },
       });
 
+      if (callRecord) {
+        await prisma.call.update({
+          where: { id: callRecord.id },
+          data: { orderId: createdOrder.id, customerId: customer.id },
+        });
+
+        await prisma.ivrInteraction
+          .create({
+            data: {
+              callId: callRecord.id,
+              language,
+              menu: 'CONFIRM_MENU',
+              dtmfInput: '1',
+              action: 'ORDER_CONFIRMED',
+              details: `Order #${createdOrder.orderNumber} confirmed via simulation (${language})`,
+              orderId: createdOrder.id,
+              customerId: customer.id,
+            },
+          })
+          .catch(() => {});
+      }
+
       realtimeService.broadcast('new_order', {
         orderId: createdOrder.id,
         orderNumber: createdOrder.orderNumber,
@@ -946,6 +1130,51 @@ export const handleSimulateIvr = async (req: Request, res: Response, next: NextF
         message: 'IVR Order successfully created and stored in PostgreSQL database!',
         data: createdOrder,
       });
+      return;
+    }
+
+    if (action === 'TRACK_ORDER') {
+      const recentOrder = await prisma.order.findFirst({
+        where: { customer: { phone: fromPhone } },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      res.status(200).json({
+        success: true,
+        language,
+        data: recentOrder,
+        step: 'TRACK_ORDER',
+      });
+      return;
+    }
+
+    if (action === 'CANCEL_ORDER') {
+      const cancellableOrder = await prisma.order.findFirst({
+        where: { customer: { phone: fromPhone }, status: { in: ['PENDING', 'ACCEPTED'] } },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (cancellableOrder) {
+        const cancelled = await prisma.order.update({
+          where: { id: cancellableOrder.id },
+          data: { status: 'CANCELLED', cancelledAt: new Date() },
+        });
+
+        realtimeService.broadcast('order_status_updated', {
+          orderId: cancelled.id,
+          orderNumber: cancelled.orderNumber,
+          status: 'CANCELLED',
+        });
+
+        res.status(200).json({
+          success: true,
+          message: 'Order cancelled successfully',
+          data: cancelled,
+        });
+        return;
+      }
+
+      res.status(404).json({ success: false, message: 'No cancellable order found' });
       return;
     }
 

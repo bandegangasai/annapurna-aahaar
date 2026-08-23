@@ -226,6 +226,7 @@ export interface CustomerSummary {
   name: string;
   phone: string;
   email?: string;
+  preferredLanguage?: string;
   address: string;
   city: string;
   state: string;
@@ -257,6 +258,7 @@ export interface SalesReport {
   onlineRevenue?: number;
   offlineRevenue?: number;
   manualUpiRevenue?: number;
+  salesByLanguage?: Record<string, { count: number; total: number }>;
   topProducts: Array<{
     name: string;
     quantity: number;

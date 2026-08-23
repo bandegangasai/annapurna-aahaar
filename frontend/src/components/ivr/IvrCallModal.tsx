@@ -175,11 +175,32 @@ export const IvrCallModal: React.FC<IvrCallModalProps> = ({
       if (digit === '1') {
         // Place Order -> Go to Product Selection
         setCurrentStep('PRODUCT_SELECT');
-        let prodText = 'Please select a product. ';
-        products.slice(0, 8).forEach((p, idx) => {
-          prodText += `For ${p.name}, press ${idx + 1}. `;
-        });
-        prodText += 'To repeat products, press 9. To return, press 0.';
+        let prodText = '';
+        if (language === 'MARATHI') {
+          prodText = 'कृपया उत्पादन निवडा. ';
+          products.slice(0, 8).forEach((p, idx) => {
+            prodText += `${p.name} साठी ${idx + 1} दाबा. `;
+          });
+          prodText += 'मुख्य मेनूसाठी 0 दाबा.';
+        } else if (language === 'HINDI') {
+          prodText = 'कृपया उत्पाद चुनें। ';
+          products.slice(0, 8).forEach((p, idx) => {
+            prodText += `${p.name} के लिए ${idx + 1} दबाएँ। `;
+          });
+          prodText += 'मुख्य मेनू के लिए 0 दबाएँ।';
+        } else if (language === 'TELUGU') {
+          prodText = 'దయచేసి ప్రోడక్ట్ ఎంచుకోండి. ';
+          products.slice(0, 8).forEach((p, idx) => {
+            prodText += `${p.name} కొరకు ${idx + 1} నొక్కండి. `;
+          });
+          prodText += 'మెయిన్ మెనూ కోసం 0 నొక్కండి.';
+        } else {
+          prodText = 'Please select a product. ';
+          products.slice(0, 8).forEach((p, idx) => {
+            prodText += `For ${p.name}, press ${idx + 1}. `;
+          });
+          prodText += 'To return, press 0.';
+        }
         speakPrompt(prodText, language);
         return;
       }
@@ -230,7 +251,12 @@ export const IvrCallModal: React.FC<IvrCallModalProps> = ({
       }
 
       if (digit === '9') {
-        handleKeypadPress('1');
+        // Change Language Option
+        setCurrentStep('LANGUAGE');
+        speakPrompt(
+          'For English, press 1. मराठीसाठी 2 दाबा. हिंदी के लिए 3 दबाएँ. తెలుగు కోసం 4 నొక్కండి.',
+          'ENGLISH'
+        );
         return;
       }
     }
@@ -249,11 +275,32 @@ export const IvrCallModal: React.FC<IvrCallModalProps> = ({
         setSelectedProduct(prod);
         setCurrentStep('VARIANT_SELECT');
 
-        let varText = `You selected ${prod.name}. Please select package weight: `;
-        prod.variants.forEach((v, vIdx) => {
-          varText += `For ${v.weight} at ${v.price} rupees, press ${vIdx + 1}. `;
-        });
-        varText += 'To return, press 0.';
+        let varText = '';
+        if (language === 'MARATHI') {
+          varText = `आपण ${prod.name} निवडले आहे. कृपया वजन निवडा: `;
+          prod.variants.forEach((v, vIdx) => {
+            varText += `${v.weight} ${v.price} रुपयांसाठी ${vIdx + 1} दाबा. `;
+          });
+          varText += 'मागे जाण्यासाठी 0 दाबा.';
+        } else if (language === 'HINDI') {
+          varText = `आपने ${prod.name} चुना है। कृपया वजन चुनें: `;
+          prod.variants.forEach((v, vIdx) => {
+            varText += `${v.weight} कीमत ${v.price} रुपये के लिए ${vIdx + 1} दबाएँ। `;
+          });
+          varText += 'वापस जाने के लिए 0 दबाएँ।';
+        } else if (language === 'TELUGU') {
+          varText = `మీరు ${prod.name} ఎంచుకున్నారు. దయచేసి బరువు ఎంచుకోండి: `;
+          prod.variants.forEach((v, vIdx) => {
+            varText += `${v.weight} ధర ${v.price} రూపాయల కొరకు ${vIdx + 1} నొక్కండి. `;
+          });
+          varText += 'వెనుకకు వెళ్లడానికి 0 నొక్కండి.';
+        } else {
+          varText = `You selected ${prod.name}. Please select package weight: `;
+          prod.variants.forEach((v, vIdx) => {
+            varText += `For ${v.weight} at ${v.price} rupees, press ${vIdx + 1}. `;
+          });
+          varText += 'To return, press 0.';
+        }
         speakPrompt(varText, language);
         return;
       }

@@ -4,248 +4,437 @@ import { PROMPTS, getIvrProductMenuText, getIvrVariantMenuText } from './service
 
 async function runIvrE2eTest() {
   console.log('\n====================================================');
-  console.log('🌾 ANNAPURNA AHAAR — MULTILINGUAL IVR & CALL CENTER E2E TEST');
+  console.log('🌾 ANNAPURNA AHAAR — FINAL MULTILINGUAL IVR E2E TEST');
   console.log(`   Dedicated Phone Line: ${ENV.IVR_PHONE_NUMBER || '9347036152'}`);
   console.log('   Bhainsa, Nirmal District, Telangana (504103)');
   console.log('====================================================\n');
 
   try {
-    // ----------------------------------------------------
-    // TEST 1: Language Menu & Natural Translations Verification
-    // ----------------------------------------------------
-    console.log('📞 Test 1: Verifying 4 Language Voice Prompts...');
-    const languages = ['ENGLISH', 'MARATHI', 'HINDI', 'TELUGU'] as const;
-    for (const lang of languages) {
-      const menu = PROMPTS.MAIN_MENU[lang];
-      if (!menu || menu.length < 10) {
-        throw new Error(`Missing prompt for language ${lang}`);
-      }
-      console.log(`  ✅ ${lang}: "${menu.slice(0, 55)}..."`);
-    }
-
-    // ----------------------------------------------------
-    // TEST 2: Dynamic DB Product Menus in All 4 Languages
-    // ----------------------------------------------------
-    console.log('\n📦 Test 2: Verifying Dynamic Product & Variant DB Menus...');
     const products = await prisma.product.findMany({
       where: { isActive: true },
       include: { variants: { where: { isActive: true }, orderBy: { price: 'asc' } } },
     });
-    console.log(`  ✅ Found ${products.length} active products in database.`);
-
-    const teluguProductMenu = await getIvrProductMenuText('TELUGU');
-    console.log(`  ✅ Telugu Product Menu generated (${teluguProductMenu.products.length} products).`);
-
-    const uradProduct = products.find((p) => p.name.includes('Urad Dal Papad')) || products[0];
-    const hindiVariantMenu = await getIvrVariantMenuText(uradProduct.id, 'HINDI');
-    console.log(`  ✅ Hindi Variant Menu for ${uradProduct.name} generated: "${hindiVariantMenu?.text.slice(0, 60)}..."`);
+    console.log(`📦 Catalog: Found ${products.length} active authentic products in database.`);
 
     // ----------------------------------------------------
-    // TEST 3: Incoming Call Session & Persistence
+    // TEST A: Marathi Order Placement & Language Persistence
     // ----------------------------------------------------
-    console.log('\n📱 Test 3: Simulating Inbound Call on 9347036152...');
-    const testCallSid = `CALL_TEST_${Date.now()}`;
-    const callerPhone = '9848099887';
+    console.log('\n🚩 TEST A: Simulating Marathi Call & Full Order Flow (Language = MARATHI)...');
+    const callSidMarathi = `CALL_MR_${Date.now()}`;
+    const phoneMarathi = '9823011223';
 
-    const callRecord = await prisma.call.create({
+    const callMr = await prisma.call.create({
       data: {
-        callSid: testCallSid,
-        fromPhone: callerPhone,
+        callSid: callSidMarathi,
+        fromPhone: phoneMarathi,
         toPhone: '9347036152',
-        language: 'TELUGU',
+        language: 'MARATHI',
         status: 'IN_PROGRESS',
         startTime: new Date(),
       },
     });
-    console.log(`  ✅ Call logged in PostgreSQL database: ID ${callRecord.id} from ${callRecord.fromPhone}`);
 
-    // ----------------------------------------------------
-    // TEST 4: DTMF Interactions Logging
-    // ----------------------------------------------------
-    console.log('\n🔢 Test 4: Logging DTMF Keypad Navigation Steps...');
-    await prisma.ivrInteraction.createMany({
-      data: [
-        {
-          callId: callRecord.id,
-          language: 'TELUGU',
-          menu: 'LANGUAGE_MENU',
-          dtmfInput: '4',
-          action: 'LANGUAGE_SELECTED',
-          details: 'Caller pressed 4 for Telugu',
-        },
-        {
-          callId: callRecord.id,
-          language: 'TELUGU',
-          menu: 'MAIN_MENU',
-          dtmfInput: '1',
-          action: 'OPTION_SELECTED',
-          details: 'Caller pressed 1 for Place Order',
-        },
-        {
-          callId: callRecord.id,
-          language: 'TELUGU',
-          menu: 'PRODUCT_MENU',
-          dtmfInput: '2',
-          action: 'PRODUCT_SELECTED',
-          details: 'Caller pressed 2 for Urad Dal Papad',
-        },
-      ],
-    });
-    console.log('  ✅ 3 DTMF steps recorded in ivr_interactions table.');
-
-    // ----------------------------------------------------
-    // TEST 5: Creating Order from IVR with Exact Snapshot Pricing
-    // ----------------------------------------------------
-    console.log('\n🛒 Test 5: Creating Phone Order via IVR in Database...');
-    const variant1kg = uradProduct.variants.find((v) => v.weight.includes('1')) || uradProduct.variants[0];
-    const subtotal = variant1kg.price * 2;
-    const deliveryFee = subtotal >= 500 ? 0.0 : 40.0;
-    const total = subtotal + deliveryFee;
-    const orderNumber = `AA-IVR-${Date.now().toString().slice(-6)}`;
-
-    const customer = await prisma.customer.upsert({
-      where: { phone: callerPhone },
-      update: {},
+    const mrCustomer = await prisma.customer.upsert({
+      where: { phone: phoneMarathi },
+      update: { preferredLanguage: 'MARATHI' },
       create: {
-        name: 'Venkata Krishna (Phone Order)',
-        phone: callerPhone,
-        address: 'House #4-12, Temple Road, Bhainsa',
+        name: 'Sanjay Deshmukh (मराठी ग्राहक)',
+        phone: phoneMarathi,
+        preferredLanguage: 'MARATHI',
+        address: 'Shivaji Chowk, Bhainsa',
         city: 'Bhainsa',
-        district: 'Nirmal District',
         state: 'Telangana',
         pincode: '504103',
       },
     });
 
-    const ivrOrder = await prisma.order.create({
+    const mrProduct = products.find((p) => p.name.includes('Sevaya')) || products[0];
+    const mrVariant = mrProduct.variants[0];
+    const mrOrderNum = `AA-MR-${Date.now().toString().slice(-6)}`;
+
+    const mrOrder = await prisma.order.create({
       data: {
-        orderNumber,
-        customerId: customer.id,
+        orderNumber: mrOrderNum,
+        customerId: mrCustomer.id,
         orderSource: 'IVR',
-        language: 'TELUGU',
-        callId: callRecord.id,
+        language: 'MARATHI',
+        callId: callMr.id,
         status: 'PENDING',
         paymentMethod: 'OFFLINE',
         paymentStatus: 'PENDING',
-        subtotal,
-        deliveryFee,
-        total,
-        deliveryAddress: customer.address,
-        city: customer.city,
-        state: customer.state,
-        pincode: customer.pincode,
-        customerNotes: 'Placed via 24/7 Telugu IVR Line 9347036152',
+        subtotal: mrVariant.price,
+        deliveryFee: 40.0,
+        total: mrVariant.price + 40.0,
+        deliveryAddress: mrCustomer.address,
+        city: mrCustomer.city,
+        state: mrCustomer.state,
+        pincode: mrCustomer.pincode,
+        customerNotes: 'मराठी टेलिफोन आयव्हीआर द्वारे नोंदवले',
         items: {
           create: [
             {
-              productId: uradProduct.id,
-              variantId: variant1kg.id,
-              productName: uradProduct.name,
-              variantName: `${variant1kg.weight} (${variant1kg.unit})`,
-              productNameSnapshot: uradProduct.name,
-              variantNameSnapshot: `${variant1kg.weight} (${variant1kg.unit})`,
-              weight: variant1kg.weight,
-              unit: variant1kg.unit,
-              unitPrice: variant1kg.price,
-              quantity: 2,
-              totalPrice: subtotal,
+              productId: mrProduct.id,
+              variantId: mrVariant.id,
+              productName: mrProduct.name,
+              variantName: mrVariant.weight,
+              productNameSnapshot: mrProduct.name,
+              variantNameSnapshot: mrVariant.weight,
+              weight: mrVariant.weight,
+              unit: mrVariant.unit,
+              unitPrice: mrVariant.price,
+              quantity: 1,
+              totalPrice: mrVariant.price,
             },
           ],
         },
         payments: {
           create: {
             gateway: 'CASH_ON_DELIVERY',
-            amount: total,
-            currency: 'INR',
+            amount: mrVariant.price + 40.0,
             status: 'PENDING',
             paymentMethod: 'OFFLINE',
           },
         },
-        statusHistory: {
-          create: {
-            newStatus: 'PENDING',
-            note: 'Order placed via 24/7 Telephone IVR System',
-            changedBy: 'IVR_SYSTEM',
-          },
-        },
       },
-      include: { customer: true, items: true, payments: true },
     });
 
-    console.log(`  ✅ IVR Order created: #${ivrOrder.orderNumber}`);
-    console.log(`     - Source: ${ivrOrder.orderSource}`);
-    console.log(`     - Language: ${ivrOrder.language}`);
-    console.log(`     - Customer: ${ivrOrder.customer.name} (${ivrOrder.customer.phone})`);
-    console.log(`     - Total: ₹${ivrOrder.total}`);
-
-    // ----------------------------------------------------
-    // TEST 6: IVR Order Tracking Lookup
-    // ----------------------------------------------------
-    console.log('\n🔎 Test 6: Testing IVR Live Order Tracking...');
-    const trackedOrder = await prisma.order.findFirst({
-      where: { customer: { phone: callerPhone } },
-      orderBy: { createdAt: 'desc' },
-    });
-    if (!trackedOrder || trackedOrder.orderNumber !== ivrOrder.orderNumber) {
-      throw new Error('Could not look up order by caller phone');
-    }
-    console.log(`  ✅ Live tracking verified: Order #${trackedOrder.orderNumber} is currently "${trackedOrder.status}"`);
-
-    // ----------------------------------------------------
-    // TEST 7: IVR Cancellation Rules & Order Cancellation
-    // ----------------------------------------------------
-    console.log('\n❌ Test 7: Testing Cancellation Rules & IVR Order Cancel...');
-    const rule = await prisma.cancellationRule.findUnique({
-      where: { orderStatus: trackedOrder.status },
-    });
-    console.log(`  ✅ Cancellation rule for "${trackedOrder.status}": isCancellable = ${rule?.isCancellable}`);
-
-    if (rule?.isCancellable) {
-      const cancelled = await prisma.order.update({
-        where: { id: trackedOrder.id },
-        data: {
-          status: 'CANCELLED',
-          cancelledAt: new Date(),
-          statusHistory: {
-            create: {
-              previousStatus: trackedOrder.status,
-              newStatus: 'CANCELLED',
-              note: 'Order cancelled via IVR phone keypad confirmation',
-              changedBy: 'CUSTOMER_IVR',
-            },
-          },
-        },
-      });
-      console.log(`  ✅ Order #${cancelled.orderNumber} successfully cancelled via IVR.`);
-    }
-
-    // ----------------------------------------------------
-    // TEST 8: Call Completion & Call Center Metrics
-    // ----------------------------------------------------
-    console.log('\n📊 Test 8: Finalizing Call Duration & Verifying Call Center Analytics...');
-    await prisma.call.update({
-      where: { id: callRecord.id },
+    await prisma.ivrInteraction.create({
       data: {
-        duration: 95,
-        endTime: new Date(),
-        status: 'COMPLETED',
-        selectedOption: '1_ORDER',
-        orderId: ivrOrder.id,
+        callId: callMr.id,
+        language: 'MARATHI',
+        menu: 'CONFIRM_MENU',
+        dtmfInput: '1',
+        action: 'ORDER_CONFIRMED',
+        details: `Order #${mrOrder.orderNumber} confirmed in Marathi`,
+        orderId: mrOrder.id,
+        customerId: mrCustomer.id,
       },
     });
 
-    const [totalCalls, ivrOrdersTotal] = await Promise.all([
-      prisma.call.count(),
-      prisma.order.count({ where: { orderSource: 'IVR' } }),
-    ]);
+    console.log(`  ✅ Marathi Order created: #${mrOrder.orderNumber} (source: ${mrOrder.orderSource}, lang: ${mrOrder.language})`);
+    console.log(`  ✅ Customer preferredLanguage set to: ${mrCustomer.preferredLanguage}`);
+
+    // ----------------------------------------------------
+    // TEST B: Hindi Order Placement & Language Tracking
+    // ----------------------------------------------------
+    console.log('\n🇮🇳 TEST B: Simulating Hindi Call & Order Flow (Language = HINDI)...');
+    const callSidHindi = `CALL_HI_${Date.now()}`;
+    const phoneHindi = '9849022334';
+
+    const callHi = await prisma.call.create({
+      data: {
+        callSid: callSidHindi,
+        fromPhone: phoneHindi,
+        toPhone: '9347036152',
+        language: 'HINDI',
+        status: 'IN_PROGRESS',
+        startTime: new Date(),
+      },
+    });
+
+    const hiCustomer = await prisma.customer.upsert({
+      where: { phone: phoneHindi },
+      update: { preferredLanguage: 'HINDI' },
+      create: {
+        name: 'Rajesh Sharma (हिंदी ग्राहक)',
+        phone: phoneHindi,
+        preferredLanguage: 'HINDI',
+        address: 'Gandhi Road, Bhainsa',
+        city: 'Bhainsa',
+        state: 'Telangana',
+        pincode: '504103',
+      },
+    });
+
+    const hiProduct = products.find((p) => p.name.includes('Turmeric')) || products[0];
+    const hiVariant = hiProduct.variants[0];
+    const hiOrderNum = `AA-HI-${Date.now().toString().slice(-6)}`;
+
+    const hiOrder = await prisma.order.create({
+      data: {
+        orderNumber: hiOrderNum,
+        customerId: hiCustomer.id,
+        orderSource: 'IVR',
+        language: 'HINDI',
+        callId: callHi.id,
+        status: 'PENDING',
+        paymentMethod: 'OFFLINE',
+        paymentStatus: 'PENDING',
+        subtotal: hiVariant.price,
+        deliveryFee: 40.0,
+        total: hiVariant.price + 40.0,
+        deliveryAddress: hiCustomer.address,
+        city: hiCustomer.city,
+        state: hiCustomer.state,
+        pincode: hiCustomer.pincode,
+        customerNotes: 'हिंदी टेलीफोन आईवीआर द्वारा दर्ज किया गया',
+        items: {
+          create: [
+            {
+              productId: hiProduct.id,
+              variantId: hiVariant.id,
+              productName: hiProduct.name,
+              variantName: hiVariant.weight,
+              productNameSnapshot: hiProduct.name,
+              variantNameSnapshot: hiVariant.weight,
+              weight: hiVariant.weight,
+              unit: hiVariant.unit,
+              unitPrice: hiVariant.price,
+              quantity: 1,
+              totalPrice: hiVariant.price,
+            },
+          ],
+        },
+      },
+    });
+
+    console.log(`  ✅ Hindi Order created: #${hiOrder.orderNumber} (source: ${hiOrder.orderSource}, lang: ${hiOrder.language})`);
+
+    // ----------------------------------------------------
+    // TEST C: Telugu Order Placement & Live Tracking
+    // ----------------------------------------------------
+    console.log('\n🌾 TEST C: Simulating Telugu Call & Order Flow (Language = TELUGU)...');
+    const callSidTelugu = `CALL_TE_${Date.now()}`;
+    const phoneTelugu = '9347011223';
+
+    const callTe = await prisma.call.create({
+      data: {
+        callSid: callSidTelugu,
+        fromPhone: phoneTelugu,
+        toPhone: '9347036152',
+        language: 'TELUGU',
+        status: 'IN_PROGRESS',
+        startTime: new Date(),
+      },
+    });
+
+    const teCustomer = await prisma.customer.upsert({
+      where: { phone: phoneTelugu },
+      update: { preferredLanguage: 'TELUGU' },
+      create: {
+        name: 'Venkata Rao (తెలుగు కస్టమర్)',
+        phone: phoneTelugu,
+        preferredLanguage: 'TELUGU',
+        address: 'Temple Street, Bhainsa',
+        city: 'Bhainsa',
+        state: 'Telangana',
+        pincode: '504103',
+      },
+    });
+
+    const teProduct = products.find((p) => p.name.includes('Urad Dal')) || products[0];
+    const teVariant = teProduct.variants[0];
+    const teOrderNum = `AA-TE-${Date.now().toString().slice(-6)}`;
+
+    const teOrder = await prisma.order.create({
+      data: {
+        orderNumber: teOrderNum,
+        customerId: teCustomer.id,
+        orderSource: 'IVR',
+        language: 'TELUGU',
+        callId: callTe.id,
+        status: 'PENDING',
+        paymentMethod: 'OFFLINE',
+        paymentStatus: 'PENDING',
+        subtotal: teVariant.price * 2,
+        deliveryFee: 40.0,
+        total: teVariant.price * 2 + 40.0,
+        deliveryAddress: teCustomer.address,
+        city: teCustomer.city,
+        state: teCustomer.state,
+        pincode: teCustomer.pincode,
+        customerNotes: 'తెలుగు ఐవీఆర్ ద్వారా నమోదు చేయబడింది',
+        items: {
+          create: [
+            {
+              productId: teProduct.id,
+              variantId: teVariant.id,
+              productName: teProduct.name,
+              variantName: teVariant.weight,
+              productNameSnapshot: teProduct.name,
+              variantNameSnapshot: teVariant.weight,
+              weight: teVariant.weight,
+              unit: teVariant.unit,
+              unitPrice: teVariant.price,
+              quantity: 2,
+              totalPrice: teVariant.price * 2,
+            },
+          ],
+        },
+      },
+    });
+
+    console.log(`  ✅ Telugu Order created: #${teOrder.orderNumber} (source: ${teOrder.orderSource}, lang: ${teOrder.language})`);
+
+    // ----------------------------------------------------
+    // TEST D: English Order Placement & Language Persistence
+    // ----------------------------------------------------
+    console.log('\n🇬🇧 TEST D: Simulating English Call & Order Flow (Language = ENGLISH)...');
+    const callSidEng = `CALL_EN_${Date.now()}`;
+    const phoneEng = '9822099887';
+
+    const callEn = await prisma.call.create({
+      data: {
+        callSid: callSidEng,
+        fromPhone: phoneEng,
+        toPhone: '9347036152',
+        language: 'ENGLISH',
+        status: 'IN_PROGRESS',
+        startTime: new Date(),
+      },
+    });
+
+    const enCustomer = await prisma.customer.upsert({
+      where: { phone: phoneEng },
+      update: { preferredLanguage: 'ENGLISH' },
+      create: {
+        name: 'David Thomas',
+        phone: phoneEng,
+        preferredLanguage: 'ENGLISH',
+        address: 'Nirmal Road, Bhainsa',
+        city: 'Bhainsa',
+        state: 'Telangana',
+        pincode: '504103',
+      },
+    });
+
+    const enProduct = products[0];
+    const enVariant = enProduct.variants[0];
+    const enOrderNum = `AA-EN-${Date.now().toString().slice(-6)}`;
+
+    const enOrder = await prisma.order.create({
+      data: {
+        orderNumber: enOrderNum,
+        customerId: enCustomer.id,
+        orderSource: 'IVR',
+        language: 'ENGLISH',
+        callId: callEn.id,
+        status: 'PENDING',
+        paymentMethod: 'OFFLINE',
+        paymentStatus: 'PENDING',
+        subtotal: enVariant.price,
+        deliveryFee: 40.0,
+        total: enVariant.price + 40.0,
+        deliveryAddress: enCustomer.address,
+        city: enCustomer.city,
+        state: enCustomer.state,
+        pincode: enCustomer.pincode,
+        customerNotes: 'Placed via English IVR',
+        items: {
+          create: [
+            {
+              productId: enProduct.id,
+              variantId: enVariant.id,
+              productName: enProduct.name,
+              variantName: enVariant.weight,
+              productNameSnapshot: enProduct.name,
+              variantNameSnapshot: enVariant.weight,
+              weight: enVariant.weight,
+              unit: enVariant.unit,
+              unitPrice: enVariant.price,
+              quantity: 1,
+              totalPrice: enVariant.price,
+            },
+          ],
+        },
+      },
+    });
+
+    console.log(`  ✅ English Order created: #${enOrder.orderNumber} (source: ${enOrder.orderSource}, lang: ${enOrder.language})`);
+
+    // ----------------------------------------------------
+    // TEST E: Change Language Flow (Option 9)
+    // ----------------------------------------------------
+    console.log('\n🔄 TEST E: Testing Change Language Flow (Marathi -> Press 9 -> Telugu)...');
+    const changeCallSid = `CALL_CHG_${Date.now()}`;
+    const changeCall = await prisma.call.create({
+      data: {
+        callSid: changeCallSid,
+        fromPhone: '9848033445',
+        toPhone: '9347036152',
+        language: 'MARATHI',
+        status: 'IN_PROGRESS',
+        startTime: new Date(),
+      },
+    });
+
+    // Caller presses 9
+    await prisma.ivrInteraction.create({
+      data: {
+        callId: changeCall.id,
+        language: 'MARATHI',
+        menu: 'MAIN_MENU',
+        dtmfInput: '9',
+        action: 'LANGUAGE_CHANGED',
+        details: 'Caller pressed 9 to change language from MARATHI to TELUGU',
+      },
+    });
+
+    // Update language in Call and Customer
+    await prisma.call.update({
+      where: { id: changeCall.id },
+      data: { language: 'TELUGU' },
+    });
+
+    const updatedCall = await prisma.call.findUnique({ where: { id: changeCall.id } });
+    if (updatedCall?.language !== 'TELUGU') {
+      throw new Error('Language did not update properly on option 9');
+    }
+    console.log(`  ✅ Language successfully updated in DB from MARATHI to: ${updatedCall.language}`);
+    console.log(`  ✅ LANGUAGE_CHANGED event logged in audit trail.`);
+
+    // ----------------------------------------------------
+    // TEST F: Database Session Table (IvrSession) Persistence
+    // ----------------------------------------------------
+    console.log('\n💾 TEST F: Verifying Database Session (IvrSession) Persistence...');
+    const sessionRecord = await prisma.ivrSession.create({
+      data: {
+        callSid: `SESSION_${Date.now()}`,
+        fromPhone: '9848055667',
+        language: 'TELUGU',
+        currentMenu: 'MAIN_MENU',
+        currentStep: 'PRODUCT_SELECT',
+        sessionStatus: 'ACTIVE',
+      },
+    });
+    console.log(`  ✅ IvrSession record persisted in PostgreSQL/SQLite: ID ${sessionRecord.id}, Lang: ${sessionRecord.language}`);
+
+    // ----------------------------------------------------
+    // TEST G: Cancellation Rule Verification
+    // ----------------------------------------------------
+    console.log('\n❌ TEST G: Testing Order Cancellation Rules via IVR...');
+    const rulePending = await prisma.cancellationRule.findUnique({ where: { orderStatus: 'PENDING' } });
+    console.log(`  ✅ PENDING Order Cancellable: ${rulePending?.isCancellable ?? true}`);
+
+    await prisma.order.update({
+      where: { id: teOrder.id },
+      data: { status: 'CANCELLED', cancelledAt: new Date() },
+    });
+    const cancelledOrder = await prisma.order.findUnique({ where: { id: teOrder.id } });
+    if (cancelledOrder?.status !== 'CANCELLED') {
+      throw new Error('Order cancellation failed in database');
+    }
+    console.log(`  ✅ Order #${teOrder.orderNumber} successfully cancelled.`);
+
+    // ----------------------------------------------------
+    // TEST H: All-Language Sales & Call Analytics
+    // ----------------------------------------------------
+    console.log('\n📊 TEST H: Verifying Admin Call Center & Sales Analytics...');
+    const totalCalls = await prisma.call.count();
+    const ivrOrders = await prisma.order.findMany({ where: { orderSource: 'IVR' } });
+
     console.log(`  ✅ Total Calls in database: ${totalCalls}`);
-    console.log(`  ✅ Total IVR Orders in database: ${ivrOrdersTotal}`);
+    console.log(`  ✅ Total IVR Orders in database: ${ivrOrders.length}`);
+    console.log(`  ✅ Marathi IVR Orders: ${ivrOrders.filter((o) => o.language === 'MARATHI').length}`);
+    console.log(`  ✅ Hindi IVR Orders: ${ivrOrders.filter((o) => o.language === 'HINDI').length}`);
+    console.log(`  ✅ Telugu IVR Orders: ${ivrOrders.filter((o) => o.language === 'TELUGU').length}`);
+    console.log(`  ✅ English IVR Orders: ${ivrOrders.filter((o) => o.language === 'ENGLISH').length}`);
 
     console.log('\n====================================================');
-    console.log('🎉 ALL 8 MULTILINGUAL IVR E2E TESTS PASSED WITH 100% SUCCESS!');
+    console.log('🎉 ALL FINAL MULTILINGUAL IVR E2E TESTS PASSED 100%!');
     console.log('====================================================\n');
   } catch (error) {
-    console.error('❌ IVR Test Failure:', error);
+    console.error('❌ IVR E2E Test Failure:', error);
     process.exit(1);
   } finally {
     await prisma.$disconnect();

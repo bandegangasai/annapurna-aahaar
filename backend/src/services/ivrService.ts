@@ -21,6 +21,9 @@ export interface IvrSessionData {
 // Memory session cache with 1-hour TTL
 export const ivrSessions = new Map<string, IvrSessionData>();
 
+/**
+ * Retrieve or initialize call session (backed by PostgreSQL / SQLite IvrSession)
+ */
 export function getOrCreateSession(callSid: string, fromPhone: string): IvrSessionData {
   let session = ivrSessions.get(callSid);
   if (!session) {
@@ -32,32 +35,72 @@ export function getOrCreateSession(callSid: string, fromPhone: string): IvrSessi
       step: 'LANGUAGE_SELECT',
     };
     ivrSessions.set(callSid, session);
+
+    // Asynchronously upsert to database table ivr_sessions
+    prisma.ivrSession
+      .upsert({
+        where: { callSid },
+        update: { lastActivity: new Date() },
+        create: {
+          callSid,
+          fromPhone: session.fromPhone,
+          language: session.language,
+          currentMenu: 'LANGUAGE_MENU',
+          currentStep: session.step,
+          sessionStatus: 'ACTIVE',
+        },
+      })
+      .catch(() => {});
   }
   return session;
 }
 
+/**
+ * Update call session in memory and sync with database
+ */
 export function updateSession(callSid: string, updates: Partial<IvrSessionData>): IvrSessionData {
   const session = getOrCreateSession(callSid, updates.fromPhone || '');
   Object.assign(session, updates);
   ivrSessions.set(callSid, session);
+
+  // Sync to database
+  prisma.ivrSession
+    .updateMany({
+      where: { callSid },
+      data: {
+        language: session.language,
+        currentStep: session.step,
+        lastActivity: new Date(),
+      },
+    })
+    .catch(() => {});
+
   return session;
 }
 
 /**
- * Multilingual Voice Prompt Dictionary
+ * Multilingual Voice Prompt Dictionary across all 4 Languages
  */
 export const PROMPTS = {
   GREETING_LANG_SELECT: {
-    ENGLISH: 'Welcome to Annapurna Aahaar, Bhainsa, Telangana. For English, press 1. मराठीसाठी 2 दाबा. हिंदी के लिए 3 दबाएँ. తెలుగు కోసం 4 నొక్కండి.',
-    MARATHI: 'अन्नपूर्णा आहार मध्ये आपले स्वागत आहे. मराठीसाठी 2 दाबा. हिंदी के लिए 3 दबाएँ. తెలుగు కోసం 4 నొక్కండి. For English, press 1.',
-    HINDI: 'अन्नपूर्णा आहार में आपका स्वागत है। हिंदी के लिए 3 दबाएँ। मराठीसाठी 2 दाबा। తెలుగు కోసం 4 నొక్కండి। For English, press 1.',
-    TELUGU: 'అన్నపూర్ణ ఆహార్ కు స్వాగతం. తెలుగు కోసం 4 నొక్కండి. For English, press 1. मराठीसाठी 2 दाबा. हिंदी के लिए 3 दबाएँ.',
+    ENGLISH:
+      'Welcome to Annapurna Aahaar, Bhainsa, Telangana. For English, press 1. मराठीसाठी 2 दाबा. हिंदी के लिए 3 दबाएँ. తెలుగు కోసం 4 నొక్కండి.',
+    MARATHI:
+      'अन्नपूर्णा आहार मध्ये आपले स्वागत आहे. मराठीसाठी 2 दाबा. हिंदी के लिए 3 दबाएँ. తెలుగు కోసం 4 నొక్కండి. For English, press 1.',
+    HINDI:
+      'अन्नपूर्णा आहार में आपका स्वागत है। हिंदी के लिए 3 दबाएँ। मराठीसाठी 2 दाबा। తెలుగు కోసం 4 నొక్కండి। For English, press 1.',
+    TELUGU:
+      'అన్నపూర్ణ ఆహార్ కు స్వాగతం. తెలుగు కోసం 4 నొక్కండి. For English, press 1. मराठीसाठी 2 दाबा. हिंदी के लिए 3 दबाएँ.',
   },
   MAIN_MENU: {
-    ENGLISH: 'Welcome to Annapurna Aahaar. For placing or confirming an order, press 1. For tracking your order, press 2. For cancelling an order, press 3. To speak with customer support, press 4. To repeat this menu, press 9.',
-    MARATHI: 'अन्नपूर्णा आहार मध्ये आपले स्वागत आहे. नवीन ऑर्डर करण्यासाठी किंवा पुष्टी करण्यासाठी 1 दाबा. आपली ऑर्डर ट्रॅक करण्यासाठी 2 दाबा. ऑर्डर रद्द करण्यासाठी 3 दाबा. ग्राहक सेवेशी बोलण्यासाठी 4 दाबा. हा मेनू पुन्हा ऐकण्यासाठी 9 दाबा.',
-    HINDI: 'अन्नपूर्णा आहार में आपका स्वागत है। ऑर्डर करने या ऑर्डर की पुष्टि करने के लिए 1 दबाएँ। ऑर्डर ट्रैक करने के लिए 2 दबाएँ। ऑर्डर कैंसल करने के लिए 3 दबाएँ। ग्राहक सहायता के लिए 4 दबाएँ। मेनू दोबारा सुनने के लिए 9 दबाएँ।',
-    TELUGU: 'అన్నపూర్ణ ఆహార్ కు స్వాగతం. ఆర్డర్ చేయడానికి లేదా ఆర్డర్ నిర్ధారించడానికి 1 నొక్కండి. మీ ఆర్డర్ను ట్రాక్ చేయడానికి 2 నొక్కండి. ఆర్డర్ను రద్దు చేయడానికి 3 నొక్కండి. కస్టమర్ సహాయం కోసం 4 నొక్కండి. మెనూను మళ్లీ వినడానికి 9 నొక్కండి.',
+    ENGLISH:
+      'Welcome to Annapurna Aahaar. For placing or confirming an order, press 1. For tracking your order, press 2. For cancelling an order, press 3. To speak with customer support, press 4. To change language, press 9.',
+    MARATHI:
+      'अन्नपूर्णा आहार मध्ये आपले स्वागत आहे. नवीन ऑर्डर करण्यासाठी किंवा पुष्टी करण्यासाठी 1 दाबा. आपली ऑर्डर ट्रॅक करण्यासाठी 2 दाबा. ऑर्डर रद्द करण्यासाठी 3 दाबा. ग्राहक सेवेशी बोलण्यासाठी 4 दाबा. भाषा बदलण्यासाठी 9 दाबा.',
+    HINDI:
+      'अन्नपूर्णा आहार में आपका स्वागत है। ऑर्डर करने या ऑर्डर की पुष्टि करने के लिए 1 दबाएँ। ऑर्डर ट्रैक करने के लिए 2 दबाएँ। ऑर्डर कैंसल करने के लिए 3 दबाएँ। ग्राहक सहायता के लिए 4 दबाएँ। भाषा बदलने के लिए 9 दबाएँ।',
+    TELUGU:
+      'అన్నపూర్ణ ఆహార్ కు స్వాగతం. ఆర్డర్ చేయడానికి లేదా ఆర్డర్ నిర్ధారించడానికి 1 నొక్కండి. మీ ఆర్డర్ను ట్రాక్ చేయడానికి 2 నొక్కండి. ఆర్డర్ను రద్దు చేయడానికి 3 నొక్కండి. కస్టమర్ సహాయం కోసం 4 నొక్కండి. భాష మార్చడానికి 9 నొక్కండి.',
   },
   INVALID_OPTION: {
     ENGLISH: 'Sorry, that is not a valid option. Please try again.',
@@ -66,21 +109,31 @@ export const PROMPTS = {
     TELUGU: 'క్షమించండి, అది సరైన ఎంపిక కాదు. దయచేసి మళ్లీ ప్రయత్నించండి.',
   },
   SUPPORT_TRANSFER: {
-    ENGLISH: `Please hold while we transfer your call to our customer support manager at Annapurna Aahaar Bhainsa.`,
-    MARATHI: `कृपया थांबा, आम्ही आपला कॉल अन्नपूर्णा आहार ग्राहक प्रतिनिधीकडे ट्रान्सफर करत आहोत.`,
-    HINDI: `कृपया प्रतीक्षा करें, हम आपका कॉल अन्नपूर्णा आहार ग्राहक सहायता प्रतिनिधि को ट्रांसफर कर रहे हैं।`,
-    TELUGU: `దయచేసి వేచి ఉండండి, మీ కాల్ ను అన్నపూర్ణ ఆహార్ కస్టమర్ కేర్ ప్రతినిధికి బదిలీ చేస్తున్నాము.`,
+    ENGLISH: 'Please hold while we transfer your call to our customer support manager at Annapurna Aahaar Bhainsa.',
+    MARATHI: 'कृपया थांबा, आम्ही आपला कॉल अन्नपूर्णा आहार ग्राहक प्रतिनिधीकडे ट्रान्सफर करत आहोत.',
+    HINDI: 'कृपया प्रतीक्षा करें, हम आपका कॉल अन्नपूर्णा आहार ग्राहक सहायता प्रतिनिधि को ट्रांसफर कर रहे हैं।',
+    TELUGU: 'దయచేసి వేచి ఉండండి, మీ కాల్ ను అన్నపూర్ణ ఆహార్ కస్టమర్ కేర్ ప్రతినిధికి బదిలీ చేస్తున్నాము.',
   },
   SUPPORT_LEAVE_MESSAGE: {
-    ENGLISH: 'All our lines are currently busy. Please state your name and message after the beep, and we will call you back shortly.',
-    MARATHI: 'आमचे सर्व प्रतिनिधी व्यस्त आहेत. कृपया बीप नंतर आपले नाव आणि संदेश रेकॉर्ड करा.',
-    HINDI: 'हमारे सभी प्रतिनिधि व्यस्त हैं। कृपया बीप के बाद अपना नाम और संदेश रिकॉर्ड करें।',
-    TELUGU: 'మా ప్రతినిధులు అందరూ బిజీగా ఉన్నారు. దయచేసి బీప్ శబ్దం తర్వాత మీ పేరు మరియు సందేశాన్ని రికార్డ్ చేయండి.',
+    ENGLISH:
+      'All our lines are currently busy. Please state your name and message after the beep, and we will call you back shortly.',
+    MARATHI:
+      'आमचे सर्व प्रतिनिधी व्यस्त आहेत. कृपया बीप नंतर आपले नाव आणि संदेश रेकॉर्ड करा.',
+    HINDI:
+      'हमारे सभी प्रतिनिधि व्यस्त हैं। कृपया बीप के बाद अपना नाम और संदेश रिकॉर्ड करें।',
+    TELUGU:
+      'మా ప్రతినిధులు అందరూ బిజీగా ఉన్నారు. దయచేసి బీప్ శబ్దం తర్వాత మీ పేరు మరియు సందేశాన్ని రికార్డ్ చేయండి.',
+  },
+  LANGUAGE_CHANGED_SUCCESS: {
+    ENGLISH: 'Your language has been set to English.',
+    MARATHI: 'आपली भाषा मराठी म्हणून निवडली गेली आहे.',
+    HINDI: 'आपकी भाषा हिंदी के रूप में सेट कर दी गई है।',
+    TELUGU: 'మీ భాష తెలుగుగా మార్చబడింది.',
   },
 };
 
 /**
- * Standard Telephony TwiML/VoiceXML Generator
+ * Standard Telephony TwiML/VoiceXML Generator with Polly voices
  */
 export function buildTwimlResponse(options: {
   say: string;
@@ -92,9 +145,10 @@ export function buildTwimlResponse(options: {
   recordAction?: string;
   redirectUrl?: string;
 }): string {
-  const { say, language = 'ENGLISH', gatherAction, numDigits = 1, timeout = 6, dialNumber, recordAction, redirectUrl } = options;
+  const { say, language = 'ENGLISH', gatherAction, numDigits = 1, timeout = 6, dialNumber, recordAction, redirectUrl } =
+    options;
 
-  let voice = 'Polly.Aditi'; // High-quality Indian bilingual voice
+  let voice = 'Polly.Aditi';
   let langCode = 'en-IN';
   if (language === 'HINDI') {
     voice = 'Polly.Aditi';
@@ -145,7 +199,7 @@ function escapeXml(unsafe: string): string {
 }
 
 /**
- * Fetch and construct dynamic Product List in caller's language
+ * Fetch and construct dynamic Product List in caller's exact chosen language
  */
 export async function getIvrProductMenuText(language: IvrLanguage): Promise<{ text: string; products: any[] }> {
   const products = await prisma.product.findMany({
@@ -185,7 +239,7 @@ export async function getIvrProductMenuText(language: IvrLanguage): Promise<{ te
 }
 
 /**
- * Fetch and construct dynamic Variant List in caller's language
+ * Fetch and construct dynamic Variant List in caller's exact chosen language
  */
 export async function getIvrVariantMenuText(
   productId: string,
@@ -206,19 +260,19 @@ export async function getIvrVariantMenuText(
     });
     prompt += 'To cancel and return, press 0.';
   } else if (language === 'MARATHI') {
-    prompt = `आपण ${product.name} निवडले आहे. कृपया वजन निवडा: `;
+    prompt = `आपण ${product.name} निवडले आहे. कृपया पॅकेजचे वजन निवडा: `;
     product.variants.forEach((v, idx) => {
       prompt += `${v.weight} ${v.price} रुपयांसाठी ${idx + 1} दाबा. `;
     });
     prompt += 'रद्द करण्यासाठी 0 दाबा.';
   } else if (language === 'HINDI') {
-    prompt = `आपने ${product.name} चुना है। कृपया वजन चुनें: `;
+    prompt = `आपने ${product.name} चुना है। कृपया पैकेट का वजन चुनें: `;
     product.variants.forEach((v, idx) => {
       prompt += `${v.weight} कीमत ${v.price} रुपये के लिए ${idx + 1} दबाएँ। `;
     });
     prompt += 'रद्द करने के लिए 0 दबाएँ।';
   } else if (language === 'TELUGU') {
-    prompt = `మీరు ${product.name} ఎంచుకున్నారు. దయచేసి బరువు ఎంచుకోండి: `;
+    prompt = `మీరు ${product.name} ఎంచుకున్నారు. దయచేసి ప్యాకెట్ బరువు ఎంచుకోండి: `;
     product.variants.forEach((v, idx) => {
       prompt += `${v.weight} ధర ${v.price} రూపాయల కొరకు ${idx + 1} నొక్కండి. `;
     });
@@ -229,7 +283,7 @@ export async function getIvrVariantMenuText(
 }
 
 /**
- * Format order confirmation speech
+ * Format order confirmation speech strictly in caller's language
  */
 export function getIvrOrderConfirmationText(options: {
   productName: string;
@@ -244,7 +298,9 @@ export function getIvrOrderConfirmationText(options: {
   const { productName, weight, quantity, total, deliveryFee, language } = options;
 
   if (language === 'ENGLISH') {
-    return `You have selected ${quantity} pack of ${productName} ${weight}. Total payable is ${total} rupees${deliveryFee === 0 ? ' with free delivery' : ''}. Payment mode is Cash on Delivery. To confirm this order, press 1. To change, press 2. To cancel, press 3.`;
+    return `You have selected ${quantity} pack of ${productName} ${weight}. Total payable is ${total} rupees${
+      deliveryFee === 0 ? ' with free delivery' : ''
+    }. Payment mode is Cash on Delivery. To confirm this order, press 1. To change, press 2. To cancel, press 3.`;
   } else if (language === 'MARATHI') {
     return `आपण ${productName} ${weight} चे ${quantity} पॅक निवडले आहे. एकूण देय रक्कम ${total} रुपये आहे. डिलिव्हरीवर रोख रक्कम स्वीकारली जाईल. ऑर्डर कन्फर्म करण्यासाठी 1 दाबा. बदलण्यासाठी 2 दाबा. रद्द करण्यासाठी 3 दाबा.`;
   } else if (language === 'HINDI') {

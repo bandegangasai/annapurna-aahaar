@@ -121,6 +121,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
   // Filters & State
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [sourceFilter, setSourceFilter] = useState<string>('ALL');
+  const [orderLangFilter, setOrderLangFilter] = useState<string>('ALL');
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
@@ -381,9 +382,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
 
   const pendingVerificationPayments = payments.filter((p) => p.status === 'PENDING_VERIFICATION');
 
-  // Filter orders by source
+  // Filter orders by source and language
   const filteredOrders = orders.filter((o) => {
     if (sourceFilter !== 'ALL' && o.orderSource !== sourceFilter) return false;
+    if (orderLangFilter !== 'ALL' && o.language !== orderLangFilter) return false;
     return true;
   });
 
@@ -696,6 +698,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
                   <option value="WEBSITE">🌐 Website Orders</option>
                   <option value="IVR">📞 Telephone IVR Orders</option>
                   <option value="PHONE">📱 Phone Orders</option>
+                </select>
+
+                {/* Language Filter */}
+                <select
+                  value={orderLangFilter}
+                  onChange={(e) => setOrderLangFilter(e.target.value)}
+                  className="px-3 py-2 bg-[#FAF6EE] border border-stone-300 rounded-2xl text-xs font-semibold focus:outline-none"
+                >
+                  <option value="ALL">All Languages</option>
+                  <option value="ENGLISH">🇬🇧 English</option>
+                  <option value="MARATHI">🚩 मराठी (Marathi)</option>
+                  <option value="HINDI">🇮🇳 हिंदी (Hindi)</option>
+                  <option value="TELUGU">🌾 తెలుగు (Telugu)</option>
                 </select>
               </div>
 
@@ -1282,6 +1297,61 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
                   {formatINR(reports?.websiteSales || orders.filter((o) => o.orderSource === 'WEBSITE').reduce((sum, o) => sum + o.total, 0))}
                 </div>
                 <span className="text-[10px] text-stone-500">Online storefront checkout</span>
+              </div>
+            </div>
+
+            {/* Sales & Revenue by Language */}
+            <div className="bg-white p-6 rounded-3xl border border-heritage-gold/25 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <Languages className="w-5 h-5 text-heritage-gold" />
+                  <h3 className="font-serif font-bold text-lg text-heritage-maroon">
+                    Sales & Orders by Language
+                  </h3>
+                </div>
+                <div className="text-xs text-stone-500">Calculated from actual database orders</div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 bg-cream-50 rounded-2xl border border-stone-200">
+                  <div className="text-xs font-bold text-stone-600">🇬🇧 English</div>
+                  <div className="font-serif font-black text-xl text-stone-900 mt-1">
+                    {formatINR(reports?.salesByLanguage?.ENGLISH?.total || 0)}
+                  </div>
+                  <span className="text-[10px] text-stone-500">
+                    {reports?.salesByLanguage?.ENGLISH?.count || 0} orders
+                  </span>
+                </div>
+
+                <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                  <div className="text-xs font-bold text-amber-900">🚩 मराठी (Marathi)</div>
+                  <div className="font-serif font-black text-xl text-amber-950 mt-1">
+                    {formatINR(reports?.salesByLanguage?.MARATHI?.total || 0)}
+                  </div>
+                  <span className="text-[10px] text-amber-700">
+                    {reports?.salesByLanguage?.MARATHI?.count || 0} orders
+                  </span>
+                </div>
+
+                <div className="p-4 bg-orange-50 rounded-2xl border border-orange-200">
+                  <div className="text-xs font-bold text-orange-900">🇮🇳 हिंदी (Hindi)</div>
+                  <div className="font-serif font-black text-xl text-orange-950 mt-1">
+                    {formatINR(reports?.salesByLanguage?.HINDI?.total || 0)}
+                  </div>
+                  <span className="text-[10px] text-orange-700">
+                    {reports?.salesByLanguage?.HINDI?.count || 0} orders
+                  </span>
+                </div>
+
+                <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-200">
+                  <div className="text-xs font-bold text-indigo-900">🌾 తెలుగు (Telugu)</div>
+                  <div className="font-serif font-black text-xl text-indigo-950 mt-1">
+                    {formatINR(reports?.salesByLanguage?.TELUGU?.total || 0)}
+                  </div>
+                  <span className="text-[10px] text-indigo-700">
+                    {reports?.salesByLanguage?.TELUGU?.count || 0} orders
+                  </span>
+                </div>
               </div>
             </div>
 

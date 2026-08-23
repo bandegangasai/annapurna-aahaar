@@ -459,6 +459,20 @@ export const getReports = async (
     const offlineRevenue = orders.filter((o) => o.paymentMethod === 'OFFLINE').reduce((sum, o) => sum + o.total, 0);
     const manualUpiRevenue = orders.filter((o) => o.paymentMethod === 'MANUAL_UPI').reduce((sum, o) => sum + o.total, 0);
 
+    // Sales by Language Breakdown
+    const salesByLanguage: Record<string, { count: number; total: number }> = {
+      ENGLISH: { count: 0, total: 0 },
+      MARATHI: { count: 0, total: 0 },
+      HINDI: { count: 0, total: 0 },
+      TELUGU: { count: 0, total: 0 },
+    };
+    for (const o of orders) {
+      const l = o.language || 'ENGLISH';
+      if (!salesByLanguage[l]) salesByLanguage[l] = { count: 0, total: 0 };
+      salesByLanguage[l].count++;
+      salesByLanguage[l].total += o.total;
+    }
+
     // Product Sales Breakdown
     const productStatsMap: Record<string, { name: string; quantity: number; revenue: number }> = {};
     for (const ord of orders) {
@@ -489,6 +503,7 @@ export const getReports = async (
         onlineRevenue,
         offlineRevenue,
         manualUpiRevenue,
+        salesByLanguage,
         topProducts,
       },
     });

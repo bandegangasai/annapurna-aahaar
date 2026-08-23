@@ -47,18 +47,19 @@ model ProductVariant {
 }
 
 model Customer {
-  id        String   @id @default(uuid())
-  name      String
-  phone     String   @unique
-  email     String?
-  address   String
-  city      String
-  district  String?  @default("Nirmal District")
-  state     String   @default("Telangana")
-  pincode   String   @default("504103")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  orders    Order[]
+  id                String   @id @default(uuid())
+  name              String
+  phone             String   @unique
+  email             String?
+  preferredLanguage String   @default("ENGLISH") // "ENGLISH", "MARATHI", "HINDI", "TELUGU"
+  address           String
+  city              String
+  district          String?  @default("Nirmal District")
+  state             String   @default("Telangana")
+  pincode           String   @default("504103")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
+  orders            Order[]
 }
 
 model Order {
@@ -161,6 +162,7 @@ model Call {
   status         String           @default("IN_PROGRESS") // "RINGING", "IN_PROGRESS", "COMPLETED", "BUSY", "FAILED", "NO_ANSWER", "DISCONNECTED"
   selectedOption String?          // "1_ORDER", "2_TRACK", "3_CANCEL", "4_SUPPORT", "9_REPEAT"
   orderId        String?
+  customerId     String?
   orders         Order[]
   recordingUrl   String?
   interactions   IvrInteraction[]
@@ -175,11 +177,28 @@ model IvrInteraction {
   language   String   @default("ENGLISH")
   menu       String   // "LANGUAGE_MENU", "MAIN_MENU", "PRODUCT_MENU", "VARIANT_MENU", "CONFIRM_MENU", "TRACK_MENU", "CANCEL_MENU", "SUPPORT_MENU"
   dtmfInput  String?  // Digits pressed (e.g. "1", "2", "3", "4", "9", "0")
-  action     String   // e.g. "LANGUAGE_SELECTED", "PRODUCT_SELECTED", "ORDER_CONFIRMED", "ORDER_CANCELLED", "ORDER_TRACKED", "SUPPORT_REQUESTED"
+  action     String   // e.g. "LANGUAGE_SELECTED", "PRODUCT_SELECTED", "ORDER_CONFIRMED", "ORDER_CANCELLED", "ORDER_TRACKED", "SUPPORT_REQUESTED", "LANGUAGE_CHANGED"
   details    String?  // Human-readable summary of the step
   orderId    String?
   customerId String?
   timestamp  DateTime @default(now())
+}
+
+model IvrSession {
+  id            String   @id @default(uuid())
+  callSid       String   @unique
+  fromPhone     String
+  language      String   @default("ENGLISH") // "ENGLISH", "MARATHI", "HINDI", "TELUGU"
+  currentMenu   String   @default("LANGUAGE_MENU")
+  currentStep   String   @default("GREETING")
+  customerId    String?
+  orderId       String?
+  cartData      String?  // JSON-serialized cart payload
+  paymentMethod String?  @default("OFFLINE")
+  sessionStatus String   @default("ACTIVE") // "ACTIVE", "COMPLETED", "ABANDONED"
+  lastActivity  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model CancellationRule {
