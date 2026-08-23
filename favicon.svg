@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Outer Gold Mandala Ring -->
+  <circle cx="50" cy="50" r="46" stroke="#D97706" stroke-width="2.5" stroke-dasharray="4 2" />
+  <circle cx="50" cy="50" r="42" fill="#78350F" />
+  
+  <!-- Sacred Grain & Pot Motif -->
+  <path d="M50 20 C40 32, 38 48, 50 62 C62 48, 60 32, 50 20 Z" fill="#FBBF24" />
+  <path d="M50 24 C43 34, 42 46, 50 56 C58 46, 57 34, 50 24 Z" fill="#D97706" />
+  
+  <!-- Wheat Stalks -->
+  <path d="M36 42 C30 38, 28 30, 32 25 C36 29, 38 35, 36 42 Z" fill="#FDE68A" />
+  <path d="M64 42 C70 38, 72 30, 68 25 C64 29, 62 35, 64 42 Z" fill="#FDE68A" />
+  
+  <!-- Base Bowl / Vessel -->
+  <path d="M30 60 C30 76, 70 76, 70 60 Z" fill="#F59E0B" />
+  <path d="M33 60 C38 72, 62 72, 67 60 Z" fill="#B45309" />
+  
+  <!-- Decorative Star/Sun Dot -->
+  <circle cx="50" cy="36" r="3" fill="#FFFBEB" />
+</svg>

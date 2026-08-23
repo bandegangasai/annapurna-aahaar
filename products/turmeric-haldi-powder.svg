@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="haldiBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFDF0"/>
+      <stop offset="65%" stop-color="#FCE6B1"/>
+      <stop offset="100%" stop-color="#E5BE6C"/>
+    </radialGradient>
+    
+    <!-- Brass / Kansa Bowl Gradient -->
+    <linearGradient id="brassBowl" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9E29D"/>
+      <stop offset="40%" stop-color="#D4AF37"/>
+      <stop offset="70%" stop-color="#9A781E"/>
+      <stop offset="100%" stop-color="#5E4307"/>
+    </linearGradient>
+
+    <!-- Radiant Golden Curcumin Haldi Mound -->
+    <radialGradient id="turmericMound" cx="45%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#FFF44F"/>
+      <stop offset="25%" stop-color="#FFD700"/>
+      <stop offset="60%" stop-color="#F59E0B"/>
+      <stop offset="85%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#9A5205"/>
+    </radialGradient>
+
+    <!-- Turmeric Root Rhizome Gradient -->
+    <linearGradient id="rootSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C2873E"/>
+      <stop offset="50%" stop-color="#92591B"/>
+      <stop offset="100%" stop-color="#5E3309"/>
+    </linearGradient>
+
+    <filter id="bowlShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#4D2B05" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="600" fill="url(#haldiBg)"/>
+  <circle cx="300" cy="285" r="255" stroke="#C89B3C" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.4"/>
+
+  <!-- Traditional Golden Indian Brass Bowl & Turmeric Powder -->
+  <g filter="url(#bowlShadow)">
+    <!-- Brass Bowl Outer Body -->
+    <path d="M160 310 C160 410, 440 410, 440 310 Z" fill="url(#brassBowl)"/>
+    <ellipse cx="300" cy="310" rx="140" ry="25" fill="#B28C22" stroke="#FDE68A" stroke-width="2"/>
+
+    <!-- Heap / Mound of Vibrant Golden Turmeric Powder -->
+    <path d="M170 310 C180 230, 240 160, 300 150 C360 160, 420 230, 430 310 Z" fill="url(#turmericMound)"/>
+    
+    <!-- Top Peak / Soft Powder Texture Highlights -->
+    <ellipse cx="300" cy="180" rx="45" ry="20" fill="#FFF885" opacity="0.65"/>
+    <path d="M220 280 Q300 210 380 280" stroke="#FFDF00" stroke-width="4" fill="none" opacity="0.4"/>
+    <path d="M200 300 Q300 240 400 300" stroke="#E67E00" stroke-width="6" fill="none" opacity="0.3"/>
+
+    <!-- Subtle Fine Powder Grains / Texture -->
+    <g fill="#FFFDE0" opacity="0.7">
+      <circle cx="280" cy="170" r="1.5"/>
+      <circle cx="310" cy="165" r="2.0"/>
+      <circle cx="295" cy="190" r="1.8"/>
+      <circle cx="260" cy="210" r="2.2"/>
+      <circle cx="340" cy="205" r="1.8"/>
+      <circle cx="230" cy="250" r="2.5"/>
+      <circle cx="370" cy="245" r="2.0"/>
+    </g>
+  </g>
+
+  <!-- Real Whole Turmeric Roots (Kachi Haldi Rhizomes) in Foreground -->
+  <g filter="url(#bowlShadow)">
+    <!-- Root 1 (Left to Center) -->
+    <path d="M120 400 C150 370, 200 385, 230 375 C245 370, 255 385, 240 395 C205 410, 160 425, 120 400 Z" fill="url(#rootSkin)"/>
+    <!-- Root Knots / Rings -->
+    <path d="M150 380 Q155 395 160 408" stroke="#D9822B" stroke-width="2.5" fill="none"/>
+    <path d="M185 380 Q190 395 195 405" stroke="#D9822B" stroke-width="2.5" fill="none"/>
+    <path d="M215 375 Q220 388 225 395" stroke="#D9822B" stroke-width="2.5" fill="none"/>
+
+    <!-- Cut Slice showing Intense Orange Core -->
+    <ellipse cx="120" cy="400" rx="14" ry="18" fill="#F59E0B" stroke="#8C4A10" stroke-width="2.5" transform="rotate(-20 120 400)"/>
+    <ellipse cx="120" cy="400" rx="9" ry="13" fill="#EA580C" transform="rotate(-20 120 400)"/>
+
+    <!-- Root 2 (Right) -->
+    <path d="M370 385 C400 375, 450 390, 480 375 C490 380, 485 398, 470 405 C430 420, 390 410, 370 385 Z" fill="url(#rootSkin)"/>
+    <path d="M405 380 Q410 395 415 405" stroke="#D9822B" stroke-width="2.5" fill="none"/>
+    <path d="M440 380 Q445 395 450 405" stroke="#D9822B" stroke-width="2.5" fill="none"/>
+  </g>
+
+  <!-- Premium Label / Emblem -->
+  <g transform="translate(300, 520)">
+    <rect x="-135" y="-22" width="270" height="44" rx="22" fill="#4A0E17" stroke="#C89B3C" stroke-width="2"/>
+    <text x="0" y="6" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="bold" font-size="16" fill="#FDF8F0" letter-spacing="1.5">
+      PURE TURMERIC POWDER
+    </text>
+  </g>
+</svg>

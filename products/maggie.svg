@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="maggieBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFDF2"/>
+      <stop offset="65%" stop-color="#FAE8B8"/>
+      <stop offset="100%" stop-color="#E2BD6D"/>
+    </radialGradient>
+    <linearGradient id="terracottaBowl" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C25A2B"/>
+      <stop offset="60%" stop-color="#9A3412"/>
+      <stop offset="100%" stop-color="#5C1D06"/>
+    </linearGradient>
+    <linearGradient id="noodleCake" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF2A3"/>
+      <stop offset="50%" stop-color="#F5B942"/>
+      <stop offset="100%" stop-color="#C98218"/>
+    </linearGradient>
+    <filter id="maggieShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#4D1F05" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#maggieBg)"/>
+  <circle cx="300" cy="285" r="255" stroke="#C89B3C" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.4"/>
+
+  <!-- Terracotta Clay Bowl with Wavy Instant Noodle Cake -->
+  <g filter="url(#maggieShadow)">
+    <circle cx="300" cy="310" r="170" fill="url(#terracottaBowl)"/>
+    <circle cx="300" cy="310" r="155" fill="#421303" stroke="#C89B3C" stroke-width="2.5"/>
+    <circle cx="300" cy="310" r="140" fill="#240A01"/>
+
+    <!-- Wavy Instant Noodle Cake Mesh -->
+    <g stroke="url(#noodleCake)" stroke-width="4.5" stroke-linecap="round" fill="none">
+      <path d="M200 290 Q220 260 240 290 T280 290 T320 290 T360 290 T400 290" />
+      <path d="M190 310 Q210 280 230 310 T270 310 T310 310 T350 310 T390 310 T410 310" />
+      <path d="M195 330 Q215 300 235 330 T275 330 T315 330 T355 330 T395 330" />
+      <path d="M210 350 Q230 320 250 350 T290 350 T330 350 T370 350 T390 350" />
+      <path d="M210 270 Q230 240 250 270 T290 270 T330 270 T370 270 T390 270" />
+      <path d="M230 250 Q250 220 270 250 T310 250 T350 250 T370 250" />
+      <path d="M230 370 Q250 340 270 370 T310 370 T350 370 T370 370" />
+
+      <!-- Cross Interlocking Wavy Strands -->
+      <path d="M260 230 Q290 260 260 290 T260 350 T260 390" stroke-width="3.5" stroke="#FFE785"/>
+      <path d="M300 220 Q330 250 300 280 T300 340 T300 395" stroke-width="3.5" stroke="#FFE785"/>
+      <path d="M340 230 Q370 260 340 290 T340 350 T340 390" stroke-width="3.5" stroke="#FFE785"/>
+    </g>
+
+    <!-- Masala Seasoning Dusting -->
+    <g fill="#D97706" opacity="0.8">
+      <circle cx="270" cy="280" r="2"/>
+      <circle cx="320" cy="310" r="2.5"/>
+      <circle cx="290" cy="340" r="2"/>
+      <circle cx="340" cy="270" r="2"/>
+      <circle cx="240" cy="320" r="1.5"/>
+      <circle cx="360" cy="330" r="2"/>
+    </g>
+  </g>
+
+  <!-- Premium Label / Emblem -->
+  <g transform="translate(300, 520)">
+    <rect x="-105" y="-22" width="210" height="44" rx="22" fill="#4A0E17" stroke="#C89B3C" stroke-width="2"/>
+    <text x="0" y="6" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="bold" font-size="16" fill="#FDF8F0" letter-spacing="1.5">
+      MAGGIE NOODLES
+    </text>
+  </g>
+</svg>
