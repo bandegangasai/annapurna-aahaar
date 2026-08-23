@@ -7,6 +7,7 @@ export async function fetchApi<T>(
 ): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'bypass-tunnel-reminder': '1',
     ...(options.headers as Record<string, string>),
   };
 
