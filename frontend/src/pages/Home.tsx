@@ -167,15 +167,9 @@ export const Home: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="lg:col-span-6 relative"
+              className="lg:col-span-6 relative flex justify-center"
             >
-              <div className="relative rounded-3xl bg-white/60 backdrop-blur-sm p-4 sm:p-6 border-2 border-[#C79A45]/35 shadow-card-lift overflow-hidden">
-                <HeroScene />
-                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-[#C79A45]/30 shadow-xs flex items-center gap-1.5 text-xs font-bold text-[#173F35]">
-                  <Sparkles className="w-3.5 h-3.5 text-[#C79A45] animate-spin-slow" />
-                  <span>Interactive Heritage View</span>
-                </div>
-              </div>
+              <HeroScene />
             </motion.div>
           </div>
         </div>
