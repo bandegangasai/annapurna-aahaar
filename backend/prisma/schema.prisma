@@ -1,0 +1,120 @@
+// Prisma Schema for Annapurna Aahaar
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          String           @id @default(uuid())
+  name        String
+  slug        String           @unique
+  description String
+  category    String           // e.g. "Papad", "Flours & Grains", "Spices", "Noodles"
+  imageUrl    String
+  rating      Float            @default(4.9)
+  isFeatured  Boolean          @default(false)
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  variants    ProductVariant[]
+}
+
+model ProductVariant {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  weight    String   // e.g. "500g", "1kg", "2kg", "420g"
+  unit      String   // e.g. "kg", "g", "pack"
+  price     Float    // e.g. 150.0, 300.0, 100.0
+  stock     Int      @default(100)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  email     String?
+  address   String
+  city      String
+  state     String
+  pincode   String
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Order {
+  id            String               @id @default(uuid())
+  orderNumber   String               @unique // e.g. "AA-2026-0823-1001"
+  customerId    String
+  customer      Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  status        String               @default("PENDING") // PENDING, ACCEPTED, REJECTED, PROCESSING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+  subtotal      Float
+  deliveryFee   Float                @default(0.0)
+  total         Float
+  notes         String?
+  paymentMethod String               @default("CASH_ON_DELIVERY")
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  variantId   String
+  productName String
+  variantName String
+  unitPrice   Float
+  quantity    Int
+  totalPrice  Float
+  createdAt   DateTime @default(now())
+}
+
+model OrderStatusHistory {
+  id             String   @id @default(uuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  previousStatus String?
+  newStatus      String
+  note           String?
+  changedBy      String   @default("SYSTEM") // "ADMIN" or "SYSTEM"
+  createdAt      DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  email     String?
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}

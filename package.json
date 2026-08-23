@@ -1,0 +1,25 @@
+{
+  "name": "annapurna-aahaar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Annapurna Aahaar — Premium Full-Stack 3D E-Commerce Platform",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "prisma:seed": "cd backend && npm run prisma:seed",
+    "test:e2e": "cd backend && npm run test:e2e"
+  },
+  "keywords": [
+    "annapurna-aahaar",
+    "ecommerce",
+    "threejs",
+    "react",
+    "express",
+    "prisma",
+    "indian-food"
+  ],
+  "author": "Annapurna Aahaar",
+  "license": "MIT"
+}
