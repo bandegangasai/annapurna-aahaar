@@ -91,7 +91,7 @@ export const Products: React.FC = () => {
       <SEOHead
         title="Products Catalogue | Annapurna Aahaar"
         description="Explore handcrafted Indian food products from Annapurna Aahaar: Urad Dal Papad, Moong Dal Papad, Masala Papad, Rice Papad, Whole Wheat Sevaya, Pure Turmeric Powder, and Noodles. Order online or call 9347036152."
-        url="https://annapurnaaahaar.in/#/products"
+        url="https://bandegangasai.github.io/annapurna-aahaar/#/products"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

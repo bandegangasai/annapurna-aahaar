@@ -1,77 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Main Storefront -->
+  <!-- Main 100% Free Production Storefront -->
   <url>
-    <loc>https://annapurnaaahaar.in/</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Handcrafted Food Products -->
   <url>
-    <loc>https://annapurnaaahaar.in/products/traditional-wheat-sevaya</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/traditional-wheat-sevaya</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products/urad-dal-papad</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/urad-dal-papad</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products/moong-dal-papad</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/moong-dal-papad</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products/masala-papad</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/masala-papad</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products/rice-papad</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/rice-papad</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products/pure-turmeric-powder</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/pure-turmeric-powder</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products/maggie</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/maggie</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/products/noodles</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/products/noodles</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Company & Contact Pages -->
   <url>
-    <loc>https://annapurnaaahaar.in/our-story</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/our-story</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/why-us</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/why-us</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/contact</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://annapurnaaahaar.in/track</loc>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/track</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

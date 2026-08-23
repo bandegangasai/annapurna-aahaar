@@ -96,7 +96,7 @@ export const ProductDetail: React.FC = () => {
     '@context': 'https://schema.org/',
     '@type': 'Product',
     name: `${localized.name} | Annapurna Aahaar`,
-    image: `https://annapurnaaahaar.in${getProductImageUrl(product.imageUrl)}`,
+    image: `https://bandegangasai.github.io/annapurna-aahaar${getProductImageUrl(product.imageUrl)}`,
     description: `${localized.name} from Annapurna Aahaar, Bhainsa, Nirmal District, Telangana.`,
     brand: {
       '@type': 'Brand',
@@ -104,7 +104,7 @@ export const ProductDetail: React.FC = () => {
     },
     offers: {
       '@type': 'Offer',
-      url: `https://annapurnaaahaar.in/#/products/${product.slug}`,
+      url: `https://bandegangasai.github.io/annapurna-aahaar/#/products/${product.slug}`,
       priceCurrency: 'INR',
       price: selectedVariant ? selectedVariant.price.toFixed(2) : (product.variants[0]?.price.toFixed(2) || '100.00'),
       availability: 'https://schema.org/InStock',
@@ -120,8 +120,8 @@ export const ProductDetail: React.FC = () => {
       <SEOHead
         title={`${localized.name} | Annapurna Aahaar`}
         description={`${localized.name} from Annapurna Aahaar, Bhainsa, Nirmal District, Telangana. Handcrafted traditional quality. Call 9347036152 to order.`}
-        url={`https://annapurnaaahaar.in/#/products/${product.slug}`}
-        image={`https://annapurnaaahaar.in${getProductImageUrl(product.imageUrl)}`}
+        url={`https://bandegangasai.github.io/annapurna-aahaar/#/products/${product.slug}`}
+        image={`https://bandegangasai.github.io/annapurna-aahaar${getProductImageUrl(product.imageUrl)}`}
         jsonLd={productJsonLd}
       />
 
