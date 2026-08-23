@@ -185,20 +185,29 @@ model IvrInteraction {
 }
 
 model IvrSession {
-  id            String   @id @default(uuid())
-  callSid       String   @unique
-  fromPhone     String
-  language      String   @default("ENGLISH") // "ENGLISH", "MARATHI", "HINDI", "TELUGU"
-  currentMenu   String   @default("LANGUAGE_MENU")
-  currentStep   String   @default("GREETING")
-  customerId    String?
-  orderId       String?
-  cartData      String?  // JSON-serialized cart payload
-  paymentMethod String?  @default("OFFLINE")
-  sessionStatus String   @default("ACTIVE") // "ACTIVE", "COMPLETED", "ABANDONED"
-  lastActivity  DateTime @default(now())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  callSid            String   @unique
+  fromPhone          String
+  toPhone            String   @default("9347036152")
+  language           String   @default("ENGLISH") // "ENGLISH", "MARATHI", "HINDI", "TELUGU"
+  currentState       String   @default("LANGUAGE_SELECTION") // State Machine Current State
+  previousState      String?
+  currentMenu        String   @default("LANGUAGE_MENU")
+  currentStep        String   @default("GREETING")
+  customerId         String?
+  orderId            String?
+  selectedProductId  String?
+  selectedVariantId  String?
+  selectedQuantity   Int      @default(1)
+  cartData           String?  // JSON-serialized cart payload
+  deliveryAddress    String?
+  paymentMethod      String?  @default("OFFLINE")
+  lastInput          String?
+  retryCount         Int      @default(0)
+  sessionStatus      String   @default("ACTIVE") // "ACTIVE", "COMPLETED", "ABANDONED", "FAILED"
+  lastActivity       DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model CancellationRule {

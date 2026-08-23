@@ -7,6 +7,7 @@ import adminRoutes from './routes/adminRoutes';
 import contactRoutes from './routes/contactRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import ivrRoutes from './routes/ivrRoutes';
+import healthRoutes from './routes/healthRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -16,19 +17,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    service: 'Annapurna Aahaar API',
-    owner: ENV.BUSINESS_OWNER,
-    location: ENV.BUSINESS_LOCATION,
-    pincode: ENV.BUSINESS_PINCODE,
-    ivrNumber: ENV.IVR_PHONE_NUMBER || '9347036152',
-    timestamp: new Date().toISOString(),
-    version: '2.0.0',
-  });
-});
+// Health check endpoints (mounted at /health and /api/health for provider compatibility)
+app.use('/health', healthRoutes);
+app.use('/api/health', healthRoutes);
 
 // Business Profile Endpoint (Verified)
 app.get('/api/business-info', (req, res) => {

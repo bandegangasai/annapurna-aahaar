@@ -8,6 +8,8 @@ export const ENV = {
   JWT_SECRET: process.env.JWT_SECRET || 'annapurna_secret_key_change_in_production_2026',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
   LIVE_SITE_URL: process.env.LIVE_SITE_URL || 'https://bandegangasai.github.io/annapurna-aahaar',
+  BACKEND_URL: process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || 'https://annapurna-aahaar-1.onrender.com',
+  IVR_BASE_URL: process.env.IVR_BASE_URL || process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || 'https://annapurna-aahaar-1.onrender.com',
 
   // Real Verified Business Information
   BUSINESS_NAME: 'Annapurna Aahaar',
