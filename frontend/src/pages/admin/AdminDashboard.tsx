@@ -67,7 +67,7 @@ export const AdminDashboard: React.FC = () => {
     try {
       // 1. Fetch Orders
       try {
-        const ordersRes = await api.adminGetOrders(token, {
+        const ordersRes = await api.adminGetOrders(token || undefined, {
           status: statusFilter !== 'ALL' ? statusFilter : undefined,
           search: searchQuery || undefined,
         });
@@ -80,7 +80,7 @@ export const AdminDashboard: React.FC = () => {
 
       // 2. Fetch Stats
       try {
-        const statsRes = await api.adminGetStats(token);
+        const statsRes = await api.adminGetStats(token || undefined);
         if (statsRes.success && statsRes.data) {
           setStats(statsRes.data);
         }
@@ -90,7 +90,7 @@ export const AdminDashboard: React.FC = () => {
 
       // 3. Fetch Contacts
       try {
-        const contactsRes = await api.adminGetContactMessages(token);
+        const contactsRes = await api.adminGetContactMessages(token || undefined);
         if (contactsRes.success && Array.isArray(contactsRes.data)) {
           setContacts(contactsRes.data);
         }
