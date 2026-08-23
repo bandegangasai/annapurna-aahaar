@@ -1,20 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-  <!-- Outer Gold Mandala Ring -->
-  <circle cx="50" cy="50" r="46" stroke="#D97706" stroke-width="2.5" stroke-dasharray="4 2" />
-  <circle cx="50" cy="50" r="42" fill="#78350F" />
-  
-  <!-- Sacred Grain & Pot Motif -->
-  <path d="M50 20 C40 32, 38 48, 50 62 C62 48, 60 32, 50 20 Z" fill="#FBBF24" />
-  <path d="M50 24 C43 34, 42 46, 50 56 C58 46, 57 34, 50 24 Z" fill="#D97706" />
-  
-  <!-- Wheat Stalks -->
-  <path d="M36 42 C30 38, 28 30, 32 25 C36 29, 38 35, 36 42 Z" fill="#FDE68A" />
-  <path d="M64 42 C70 38, 72 30, 68 25 C64 29, 62 35, 64 42 Z" fill="#FDE68A" />
-  
-  <!-- Base Bowl / Vessel -->
-  <path d="M30 60 C30 76, 70 76, 70 60 Z" fill="#F59E0B" />
-  <path d="M33 60 C38 72, 62 72, 67 60 Z" fill="#B45309" />
-  
-  <!-- Decorative Star/Sun Dot -->
-  <circle cx="50" cy="36" r="3" fill="#FFFBEB" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="28" fill="#173F35"/>
+  <rect x="6" y="6" width="116" height="116" rx="22" fill="none" stroke="#C79A45" stroke-width="3" stroke-opacity="0.8"/>
+  <circle cx="64" cy="64" r="50" fill="none" stroke="#C79A45" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <text x="64" y="77" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="46" font-weight="900" fill="#C79A45" text-anchor="middle" letter-spacing="2">AA</text>
+  <path d="M48 94 Q64 99 80 94" fill="none" stroke="#DFC17B" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="64" cy="28" r="3.5" fill="#DFC17B"/>
 </svg>

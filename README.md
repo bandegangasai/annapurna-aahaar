@@ -3,20 +3,24 @@
 **Handcrafted Indian Heritage Food Products & Multilingual E-Commerce Platform**
 
 [![Live Storefront](https://img.shields.io/badge/🌐_Live_Storefront-Visit_Website-173F35?style=for-the-badge&logo=google-chrome&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/)
+[![Canonical Domain](https://img.shields.io/badge/🌐_Target_Domain-annapurnaaahaar.in-C79A45?style=for-the-badge&logo=internet-explorer&logoColor=173F35)](https://annapurnaaahaar.in/)
 [![Multilingual Support](https://img.shields.io/badge/🎙️_Multilingual_Support-4_Languages-C79A45?style=for-the-badge&logo=translate&logoColor=173F35)](#-key-highlights--architectural-features)
 [![License: MIT](https://img.shields.io/badge/License-MIT-A65332?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🌟 LIVE APPLICATION LINK
+## 🌟 LIVE APPLICATION ACCESS
 
 > ### 🚀 **Official Production Web Application:**
 > ### 👉 **[https://bandegangasai.github.io/annapurna-aahaar/](https://bandegangasai.github.io/annapurna-aahaar/)** 👈
+> *(Target Canonical Domain: **[https://annapurnaaahaar.in/](https://annapurnaaahaar.in/)**)*
 
 | Destination | Access URL |
 | :--- | :--- |
 | 🛍️ **Storefront & Interactive Experience** | [https://bandegangasai.github.io/annapurna-aahaar/](https://bandegangasai.github.io/annapurna-aahaar/) |
 | 📦 **Real-Time Order Tracking** | [https://bandegangasai.github.io/annapurna-aahaar/#/track](https://bandegangasai.github.io/annapurna-aahaar/#/track) |
+| 🗺️ **XML Sitemap** | [https://annapurnaaahaar.in/sitemap.xml](https://annapurnaaahaar.in/sitemap.xml) |
+| 🤖 **Robots Directives** | [https://annapurnaaahaar.in/robots.txt](https://annapurnaaahaar.in/robots.txt) |
 | 🐙 **GitHub Source Repository** | [https://github.com/bandegangasai/annapurna-aahaar](https://github.com/bandegangasai/annapurna-aahaar) |
 
 ---
@@ -27,7 +31,22 @@
 * **Tagline**: *"Tradition in Every Grain."*
 * **Origin**: **Bhainsa, Nirmal District, Telangana (504103), India**
 * **Core Offerings**: Handcrafted sun-cured papads, stone-ground pure turmeric powder, whole-wheat sevaya, and traditional Indian staples.
-* **Customer Channels**: Web store checkout, live order tracking, and integrated phone ordering support.
+* **Customer Ordering Channels**: Web store checkout, live order tracking, and 24/7 multilingual telephone voice helpline (`9347036152`).
+
+---
+
+## 🔍 Google Search Discovery & SEO Configuration
+
+The website is engineered for Google Search discoverability, Schema.org semantic crawling, and lightning-fast Core Web Vitals:
+
+* **Official Title**: `Annapurna Aahaar | Traditional Indian Food Products`
+* **Official Meta Description**: *"Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152."*
+* **Target Canonical URL**: `https://annapurnaaahaar.in/`
+* **Structured Data (JSON-LD)**:
+  * `WebSite` Schema with alternate brand names: *Annapurna Aahaar Bhainsa*, *अन्नपूर्णा आहार*, *అన్నపూర్ణ ఆహార్*.
+  * `LocalBusiness` / `Organization` Schema linked to Bhainsa, Nirmal, Telangana (504103).
+  * `Product` & `Offer` Schema for all 8 authentic catalog items with exact database pricing in INR.
+* **Pre-rendered Initial HTML**: Semantic server-like HTML container inside `#root` so search engine spiders index content immediately without relying solely on client JavaScript execution.
 
 ---
 
@@ -85,58 +104,43 @@
 
 ---
 
-## 📂 Project Structure
+## 🌐 Custom Domain & Google Search Console Setup Guide
 
-```
-annapurna-aahaar/
-├── frontend/                     # React + Vite + TypeScript Storefront
-│   ├── public/                   # Static assets, robots.txt, sitemap.xml
-│   │   ├── images/               # Authentic photography & brand graphics
-│   │   ├── products/             # Product catalog images
-│   │   ├── robots.txt            # Search engine indexing directives
-│   │   └── sitemap.xml           # Canonical XML sitemap
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── 3d/               # HeroScene.tsx (3D Interactive Perspective Hero)
-│   │   │   ├── cart/             # CartDrawer.tsx (Slide-out basket)
-│   │   │   ├── common/           # Navbar.tsx, Footer.tsx, SEOHead.tsx
-│   │   │   ├── ivr/              # IvrCallModal.tsx (Voice ordering simulator)
-│   │   │   └── product/          # ProductCard3D.tsx (Interactive product card)
-│   │   ├── context/
-│   │   │   ├── AuthContext.tsx   # Session authentication state
-│   │   │   ├── CartContext.tsx   # Shopping cart state & persistence
-│   │   │   ├── LanguageContext.tsx # 4-Language i18n Dictionary & Switcher
-│   │   │   └── ToastContext.tsx  # Toast notification system
-│   │   ├── pages/                # Home, Products, ProductDetail, Cart, Checkout, OrderSuccess, OrderTrack, OurStory, WhyUs, Contact, AdminLogin, AdminDashboard
-│   │   ├── services/api.ts       # Unified API client & resilient offline fallback cache
-│   │   └── utils/formatters.ts   # Currency (INR ₹), DateTime, and image helpers
-│   ├── index.html                # Preloads, SEO meta tags, Schema.org LocalBusiness JSON-LD
-│   └── tailwind.config.js        # Forest Green, Antique Gold, Warm Ivory, Terracotta palette
-│
-├── backend/                      # Express REST API & IVR Telephony Service
-│   ├── prisma/
-│   │   ├── schema.prisma         # Database schema (Orders, Customer, Products, Calls, IvrSession, Payments)
-│   │   └── seed.ts               # Database seed (Products, Variants, Admin)
-│   ├── src/
-│   │   ├── config/               # Prisma client, Environment configuration
-│   │   ├── controllers/          # orderController, paymentController, ivrController, adminController
-│   │   ├── routes/               # ivrRoutes, orderRoutes, productRoutes, healthRoutes, adminRoutes
-│   │   ├── services/             # ivrStateMachine, promptService, notificationService, razorpay
-│   │   ├── test-e2e.ts           # E-Commerce automated test suite
-│   │   ├── test-ivr-e2e.ts       # Multilingual IVR state machine test battery
-│   │   └── server.ts             # Express entry point
-│   └── tsconfig.json
-│
-└── README.md                     # Documentation & project guide
-```
+### Phase 1: Custom Domain (`annapurnaaahaar.in`) DNS Setup
+When you purchase `annapurnaaahaar.in` from any domain registrar (e.g. GoDaddy, Namecheap, Hostinger):
+
+1. **Add Apex `A` Records** (Pointing to GitHub Pages):
+   ```
+   Type: A  | Host: @ | Value: 185.199.108.153
+   Type: A  | Host: @ | Value: 185.199.109.153
+   Type: A  | Host: @ | Value: 185.199.110.153
+   Type: A  | Host: @ | Value: 185.199.111.153
+   ```
+2. **Add `www` CNAME Record**:
+   ```
+   Type: CNAME | Host: www | Value: bandegangasai.github.io
+   ```
+3. **GitHub Pages Custom Domain**:
+   - Go to GitHub Repository **Settings** ➔ **Pages** ➔ **Custom domain** ➔ Enter `annapurnaaahaar.in` ➔ Check **Enforce HTTPS**.
+
+---
+
+### Phase 2: Google Search Console Verification & Indexing
+To enable customers to find **Annapurna Aahaar** directly on Google Search:
+
+1. Go to **[Google Search Console](https://search.google.com/search-console)**.
+2. Click **Add Property** ➔ Select **Domain** ➔ Enter `annapurnaaahaar.in`.
+3. Copy the provided TXT record and add it to your DNS settings on your domain registrar to verify ownership.
+4. Once verified, open **Sitemaps** in Google Search Console:
+   - Enter `sitemap.xml` and click **Submit**.
+5. Go to **URL Inspection**:
+   - Paste `https://annapurnaaahaar.in/`
+   - Click **Test Live URL** ➔ Click **Request Indexing**.
+6. Googlebot will crawl the sitemap, index the structured data, and register *Annapurna Aahaar* in Google Search results.
 
 ---
 
 ## ⚡ Local Development & Setup
-
-### Prerequisites
-* Node.js v18+ & npm
-* PostgreSQL database instance (or SQLite / Local Postgres)
 
 ### 1. Backend Setup
 ```bash

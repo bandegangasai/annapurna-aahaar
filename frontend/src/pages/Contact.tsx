@@ -57,8 +57,9 @@ export const Contact: React.FC = () => {
   return (
     <div className="bg-[#F8F3E7] min-h-screen py-10 lg:py-16 text-[#252525]">
       <SEOHead
-        title="Contact Us & Business Enquiries | Annapurna Aahaar — Bhainsa, Telangana"
-        description="Contact Bande Omkar at Annapurna Aahaar in Bhainsa, Nirmal District, Telangana (504103). 24/7 Telephone Hotline: 9347036152. Kitchen: 6305970844. Email: annapurnaaahaar@gmail.com."
+        title="Contact Us | Annapurna Aahaar"
+        description="Contact Annapurna Aahaar in Bhainsa, Nirmal District, Telangana (504103). 24/7 Telephone Helpline: 9347036152. Email: annapurnaaahaar@gmail.com."
+        url="https://annapurnaaahaar.in/#/contact"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -79,8 +79,9 @@ export const Home: React.FC = () => {
   return (
     <div className="overflow-hidden bg-[#F8F3E7] text-[#252525]">
       <SEOHead
-        title="Annapurna Aahaar | Tradition in Every Grain | Handcrafted Indian Foods"
-        description="Annapurna Aahaar — authentic Indian food products from Bhainsa, Nirmal District, Telangana (504103). Handcrafted papads, sun-dried wheat sevaya, and pure turmeric powder. Call 9347036152 to order."
+        title="Annapurna Aahaar | Traditional Indian Food Products"
+        description="Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152."
+        url="https://annapurnaaahaar.in/"
       />
 
       {/* 1. HERO SECTION WITH 3D HERITAGE COMPOSITION */}

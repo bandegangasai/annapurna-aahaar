@@ -89,8 +89,9 @@ export const Products: React.FC = () => {
   return (
     <div className="bg-[#F8F3E7] min-h-screen py-10 lg:py-16 text-[#252525]">
       <SEOHead
-        title="Authentic Product Catalogue | Annapurna Aahaar — Bhainsa, Telangana"
-        description="Explore authentic Indian food products from Annapurna Aahaar: Urad Dal Papad, Moong Dal Papad, Masala Papad, Rice Papad, Whole Wheat Sevaya, Pure Turmeric Powder, and Noodles. Call 9347036152 to order."
+        title="Products Catalogue | Annapurna Aahaar"
+        description="Explore handcrafted Indian food products from Annapurna Aahaar: Urad Dal Papad, Moong Dal Papad, Masala Papad, Rice Papad, Whole Wheat Sevaya, Pure Turmeric Powder, and Noodles. Order online or call 9347036152."
+        url="https://annapurnaaahaar.in/#/products"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -97,7 +97,8 @@ export const OrderTrack: React.FC = () => {
     <div className="bg-[#F8F3E7] min-h-screen py-10 lg:py-16 text-[#252525]">
       <SEOHead
         title="Live Order Tracking | Annapurna Aahaar"
-        description="Track your Annapurna Aahaar food orders in real-time. Direct dispatch from Bhainsa, Nirmal District, Telangana (504103)."
+        description="Track your Annapurna Aahaar food orders in real-time. Direct dispatch from Bhainsa, Nirmal District, Telangana (504103). Call 9347036152."
+        url="https://annapurnaaahaar.in/#/track"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

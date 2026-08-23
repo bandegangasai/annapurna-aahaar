@@ -17,8 +17,9 @@ export const OurStory: React.FC = () => {
   return (
     <div className="bg-[#F8F3E7] min-h-screen py-10 lg:py-16 text-[#252525]">
       <SEOHead
-        title="Our Story & Heritage | Annapurna Aahaar — Bhainsa, Telangana"
-        description="Learn about Annapurna Aahaar, founded by Bande Omkar in Bhainsa, Nirmal District, Telangana (504103). Preserving authentic Indian food traditions."
+        title="Our Story & Heritage | Annapurna Aahaar"
+        description="Learn about Annapurna Aahaar, founded by Bande Omkar in Bhainsa, Nirmal District, Telangana (504103). Preserving authentic Indian food traditions. Call 9347036152."
+        url="https://annapurnaaahaar.in/#/our-story"
       />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
