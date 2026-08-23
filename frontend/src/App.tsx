@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -40,7 +40,7 @@ export function App() {
     <AuthProvider>
       <CartProvider>
         <ToastProvider>
-          <BrowserRouter>
+          <HashRouter>
             <AppLayout>
               <Routes>
                 {/* Storefront Routes */}
@@ -65,7 +65,7 @@ export function App() {
                 <Route path="*" element={<Home />} />
               </Routes>
             </AppLayout>
-          </BrowserRouter>
+          </HashRouter>
         </ToastProvider>
       </CartProvider>
     </AuthProvider>
