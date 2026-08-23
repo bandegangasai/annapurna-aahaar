@@ -46,7 +46,7 @@ async function main() {
       category: 'Flours & Grains',
       description:
         'Pure, sun-dried traditional whole wheat sevaya (vermicelli) prepared with authentic grain milling techniques. Ideal for authentic sweet kheer, breakfast upma, and festive celebrations.',
-      imageUrl: '/products/sevaya.svg',
+      imageUrl: '/products/sevaya.webp',
       isFeatured: true,
       variants: [
         { weight: '1 kg', unit: 'kg', price: 100.0, stock: 150 },
@@ -60,7 +60,7 @@ async function main() {
       category: 'Papad',
       description:
         'Authentic round Urad Dal Papad crafted with traditional rolling techniques, black pepper, and premium asafoetida (hing). Sun-cured for signature crunch and flavor.',
-      imageUrl: '/products/urad-dal-papad.svg',
+      imageUrl: '/products/urad-dal-papad.webp',
       isFeatured: true,
       variants: [
         { weight: '500 g', unit: '500g', price: 150.0, stock: 200 },
@@ -73,7 +73,7 @@ async function main() {
       category: 'Papad',
       description:
         'Light, aromatic Moong Dal Papad made from high-grade split yellow mung bean flour. Exceptionally crunchy, gentle on digestion, and seasoned with subtle Indian spices.',
-      imageUrl: '/products/moong-dal-papad.svg',
+      imageUrl: '/products/moong-dal-papad.webp',
       isFeatured: true,
       variants: [
         { weight: '500 g', unit: '500g', price: 150.0, stock: 180 },
@@ -86,7 +86,7 @@ async function main() {
       category: 'Papad',
       description:
         'Bold and zesty Indian papad loaded with crushed cumin, cracked black peppercorns, red chili flakes, and traditional digestive spices.',
-      imageUrl: '/products/masala-papad.svg',
+      imageUrl: '/products/masala-papad.webp',
       isFeatured: true,
       variants: [
         { weight: '500 g', unit: '500g', price: 150.0, stock: 150 },
@@ -99,7 +99,7 @@ async function main() {
       category: 'Papad',
       description:
         'Traditional steamed and sun-dried rice flour papad with a delicate, melt-in-mouth crispiness. Seasoned with cumin and rock salt.',
-      imageUrl: '/products/rice-papad.svg',
+      imageUrl: '/products/rice-papad.webp',
       isFeatured: false,
       variants: [
         { weight: '500 g', unit: '500g', price: 150.0, stock: 100 },
@@ -112,7 +112,7 @@ async function main() {
       category: 'Spices',
       description:
         '100% pure, natural, golden-yellow turmeric (haldi) powder with high curcumin content. Stone-ground from quality farm turmeric roots without fillers or artificial additives.',
-      imageUrl: '/products/turmeric-haldi-powder.svg',
+      imageUrl: '/products/turmeric-haldi-powder.webp',
       isFeatured: true,
       variants: [
         { weight: '500 g', unit: '500g', price: 80.0, stock: 250 },
@@ -125,7 +125,7 @@ async function main() {
       category: 'Noodles & Instant Foods',
       description:
         'Classic Indian-spiced instant noodle packs with rich masala seasoning for quick family snacking. Price configurable by administration.',
-      imageUrl: '/products/maggie.svg',
+      imageUrl: '/products/maggie.webp',
       isFeatured: false,
       variants: [
         { weight: '420g Pack', unit: 'pack', price: 85.0, stock: 200 },
@@ -138,7 +138,7 @@ async function main() {
       category: 'Noodles & Instant Foods',
       description:
         'High-protein wheat noodles crafted for Indian-style Hakka and stir-fry preparations. Firm texture and zero chemical preservatives.',
-      imageUrl: '/products/noodles.svg',
+      imageUrl: '/products/noodles.webp',
       isFeatured: false,
       variants: [
         { weight: '500g Pack', unit: 'pack', price: 95.0, stock: 140 },

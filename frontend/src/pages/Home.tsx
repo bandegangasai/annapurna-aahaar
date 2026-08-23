@@ -360,7 +360,7 @@ export const Home: React.FC = () => {
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden border-2 border-heritage-gold/40 shadow-2xl bg-cream-100 p-4">
                 <img
-                  src="/products/turmeric-haldi-powder.svg"
+                  src="/products/turmeric-haldi-powder.webp"
                   alt="Pure Turmeric Powder and Traditional Indian Milling"
                   className="w-full h-80 sm:h-96 object-contain"
                 />

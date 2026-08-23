@@ -26,7 +26,7 @@ async function runE2ETests() {
       `✅ Sample Product: "${sampleProduct.name}" has ${sampleProduct.variants.length} variant(s).`
     );
 
-    // Verify Turmeric image is NOT broccoli and points to /products/turmeric-haldi-powder.svg
+    // Verify Turmeric image is NOT broccoli and points to /products/turmeric-haldi-powder.webp
     const turmeric = products.find((p) => p.slug === 'pure-turmeric-powder');
     if (!turmeric || !turmeric.imageUrl.includes('turmeric')) {
       throw new Error('Turmeric product image is invalid!');
