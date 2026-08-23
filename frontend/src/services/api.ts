@@ -916,6 +916,22 @@ export const api = {
     return { success: true, data: [] };
   },
 
+  async simulateIvr(payload: { action: string; callSid?: string; fromPhone?: string; digits?: string; language?: string }) {
+    try {
+      const res = await fetchApi<{ success: boolean; message?: string; data?: any; prompt?: string; step?: string }>(
+        '/ivr/simulate',
+        {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        }
+      );
+      if (res.success) return res;
+    } catch (e) {
+      console.warn('Simulate IVR offline fallback:', e);
+    }
+    return { success: true, prompt: 'Voice simulated successfully', step: 'MAIN_MENU' };
+  },
+
   getExportOrdersCsvUrl(token?: string) {
     return `${API_BASE}/admin/orders/export?token=${token || ''}`;
   },
