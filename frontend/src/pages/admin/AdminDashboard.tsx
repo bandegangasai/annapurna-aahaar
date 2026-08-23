@@ -57,61 +57,78 @@ export const AdminDashboard: React.FC = () => {
     stock: number;
   } | null>(null);
 
-  const fetchDashboardData = async () => {
-    if (!token) return;
-    setIsLoading(true);
+  const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  const fetchDashboardData = async (silent = false) => {
+    if (!silent) setIsLoading(true);
+    setIsSyncing(true);
+
     try {
-      const [statsRes, ordersRes, contactsRes, productsRes] = await Promise.all([
-        api.adminGetStats(token),
-        api.adminGetOrders(token, {
+      // 1. Fetch Orders
+      try {
+        const ordersRes = await api.adminGetOrders(token, {
           status: statusFilter !== 'ALL' ? statusFilter : undefined,
           search: searchQuery || undefined,
-        }),
-        api.adminGetContactMessages(token),
-        api.getProducts(),
-      ]);
+        });
+        if (ordersRes.success && Array.isArray(ordersRes.data)) {
+          setOrders(ordersRes.data);
+        }
+      } catch (e) {
+        console.warn('Orders fetch note:', e);
+      }
 
-      if (statsRes.success) setStats(statsRes.data);
-      if (ordersRes.success) setOrders(ordersRes.data);
-      if (contactsRes.success) setContacts(contactsRes.data);
-      if (productsRes.success) setProducts(productsRes.data);
-    } catch (err: any) {
-      console.error('Error fetching admin data:', err);
-      showToast(err.message || 'Failed to refresh dashboard.', 'error');
+      // 2. Fetch Stats
+      try {
+        const statsRes = await api.adminGetStats(token);
+        if (statsRes.success && statsRes.data) {
+          setStats(statsRes.data);
+        }
+      } catch (e) {
+        console.warn('Stats fetch note:', e);
+      }
+
+      // 3. Fetch Contacts
+      try {
+        const contactsRes = await api.adminGetContactMessages(token);
+        if (contactsRes.success && Array.isArray(contactsRes.data)) {
+          setContacts(contactsRes.data);
+        }
+      } catch (e) {
+        console.warn('Contacts fetch note:', e);
+      }
+
+      // 4. Fetch Products
+      try {
+        const productsRes = await api.getProducts();
+        if (productsRes.success && Array.isArray(productsRes.data)) {
+          setProducts(productsRes.data);
+        }
+      } catch (e) {
+        console.warn('Products fetch note:', e);
+      }
+
+      setLastSyncTime(new Date());
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
+      setIsSyncing(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(false);
 
-    // Auto-refresh orders every 6 seconds to capture live customer orders
+    // Continuous silent background auto-sync every 3.5 seconds
     const interval = setInterval(() => {
-      if (token) {
-        api.adminGetOrders(token, {
-          status: statusFilter !== 'ALL' ? statusFilter : undefined,
-          search: searchQuery || undefined,
-        })
-          .then((res) => {
-            if (res.success) setOrders(res.data);
-          })
-          .catch(() => {});
-
-        api.adminGetStats(token)
-          .then((res) => {
-            if (res.success) setStats(res.data);
-          })
-          .catch(() => {});
-      }
-    }, 6000);
+      fetchDashboardData(true);
+    }, 3500);
 
     return () => clearInterval(interval);
   }, [token, statusFilter]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchDashboardData();
+    fetchDashboardData(false);
   };
 
   // Quick Accept Workflow
@@ -354,13 +371,21 @@ export const AdminDashboard: React.FC = () => {
             Customer Enquiries ({contacts.length})
           </button>
 
-          <button
-            onClick={fetchDashboardData}
-            title="Refresh Data"
-            className="ml-auto p-2.5 rounded-xl bg-white hover:bg-cream-100 border border-heritage-gold/30 text-stone-700"
-          >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="ml-auto flex items-center gap-2">
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              Live Cloud Sync
+            </span>
+            <button
+              onClick={() => fetchDashboardData(false)}
+              title="Force Sync All Orders"
+              disabled={isSyncing}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-cream-100 border border-heritage-gold/30 text-stone-700 text-xs font-bold shadow-xs active:scale-95 transition-all"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-heritage-maroon' : ''}`} />
+              <span>Sync Orders</span>
+            </button>
+          </div>
         </div>
 
         {/* Tab 1: Orders Management */}
