@@ -2,24 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
+  ShoppingBag,
   Sparkles,
-  ArrowRight,
   ShieldCheck,
   Award,
+  Truck,
+  RotateCcw,
+  ArrowRight,
+  Star,
+  CheckCircle2,
+  ChevronRight,
+  PhoneCall,
+  MapPin,
   Sun,
   Flame,
-  CheckCircle2,
   Heart,
-  ChevronRight,
-  Package,
-  MapPin,
-  Phone,
 } from 'lucide-react';
 import { HeroScene } from '../components/3d/HeroScene';
 import { ProductCard3D } from '../components/product/ProductCard3D';
 import { SEOHead } from '../components/common/SEOHead';
 import { api } from '../services/api';
 import { Product } from '../types';
+import { getProductImageUrl } from '../utils/formatters';
 
 export const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -360,7 +364,7 @@ export const Home: React.FC = () => {
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden border-2 border-heritage-gold/40 shadow-2xl bg-cream-100 p-4">
                 <img
-                  src="/products/turmeric-haldi-powder.webp"
+                  src={getProductImageUrl('/products/turmeric-haldi-powder.webp')}
                   alt="Pure Turmeric Powder and Traditional Indian Milling"
                   className="w-full h-80 sm:h-96 object-contain"
                 />

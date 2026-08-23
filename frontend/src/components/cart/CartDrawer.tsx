@@ -11,7 +11,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { formatINR } from '../../utils/formatters';
+import { formatINR, getProductImageUrl } from '../../utils/formatters';
 
 export const CartDrawer: React.FC = () => {
   const {
@@ -126,7 +126,7 @@ export const CartDrawer: React.FC = () => {
                   className="bg-white p-4 rounded-2xl border border-heritage-gold/20 shadow-sm flex items-center gap-3"
                 >
                   <img
-                    src={item.imageUrl}
+                    src={getProductImageUrl(item.imageUrl)}
                     alt={item.productName}
                     className="w-14 h-14 object-contain rounded-xl bg-cream-100 p-1 border border-stone-200 shrink-0"
                   />

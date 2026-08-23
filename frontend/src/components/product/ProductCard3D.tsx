@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Check, Sparkles, ShieldCheck } from 'lucide-react';
 import { Product, ProductVariant } from '../../types';
-import { formatINR } from '../../utils/formatters';
+import { formatINR, getProductImageUrl } from '../../utils/formatters';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -52,7 +52,7 @@ export const ProductCard3D: React.FC<ProductCard3DProps> = ({ product }) => {
         className="relative block overflow-hidden bg-gradient-to-b from-[#FAF6EE] to-[#F3EBD9] aspect-square p-4 flex items-center justify-center border-b border-heritage-gold/15"
       >
         <img
-          src={product.imageUrl}
+          src={getProductImageUrl(product.imageUrl)}
           alt={product.name}
           className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"

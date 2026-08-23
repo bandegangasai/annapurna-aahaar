@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { SEOHead } from '../components/common/SEOHead';
-import { formatINR } from '../utils/formatters';
+import { formatINR, getProductImageUrl } from '../utils/formatters';
 
 export const Cart: React.FC = () => {
   const {
@@ -105,7 +105,7 @@ export const Cart: React.FC = () => {
                     >
                       <div className="flex items-center gap-4">
                         <img
-                          src={item.imageUrl}
+                          src={getProductImageUrl(item.imageUrl)}
                           alt={item.productName}
                           className="w-16 h-16 object-contain rounded-2xl bg-cream-100 p-1.5 border border-stone-200 shrink-0"
                         />

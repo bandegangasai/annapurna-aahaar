@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '../components/common/SEOHead';
 import { ProductCard3D } from '../components/product/ProductCard3D';
-import { formatINR } from '../utils/formatters';
+import { formatINR, getProductImageUrl } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { api } from '../services/api';
@@ -115,7 +115,7 @@ export const ProductDetail: React.FC = () => {
           <div className="lg:col-span-6 flex items-center justify-center">
             <div className="relative w-full aspect-square max-w-md bg-gradient-to-b from-[#FAF6EE] to-[#F3EBD9] rounded-3xl p-6 border-2 border-heritage-gold/30 shadow-inner flex items-center justify-center overflow-hidden">
               <img
-                src={product.imageUrl}
+                src={getProductImageUrl(product.imageUrl)}
                 alt={product.name}
                 className="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
               />

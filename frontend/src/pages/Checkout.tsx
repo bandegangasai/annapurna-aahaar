@@ -14,7 +14,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { SEOHead } from '../components/common/SEOHead';
-import { formatINR } from '../utils/formatters';
+import { formatINR, getProductImageUrl } from '../utils/formatters';
 import { api } from '../services/api';
 import { CartItem } from '../types';
 
@@ -423,7 +423,7 @@ export const Checkout: React.FC = () => {
                   <div key={`${it.productId}-${it.variantId}`} className="flex items-center justify-between text-xs sm:text-sm">
                     <div className="flex items-center gap-3">
                       <img
-                        src={it.imageUrl}
+                        src={getProductImageUrl(it.imageUrl)}
                         alt={it.productName}
                         className="w-10 h-10 object-contain rounded-xl bg-cream-100 p-1 border border-stone-200"
                       />

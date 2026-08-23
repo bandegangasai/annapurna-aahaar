@@ -91,13 +91,6 @@ export const STATUS_CONFIG: Record<
     border: 'border-purple-200',
     desc: 'Your order is out on the delivery vehicle and will arrive at your address today.',
   },
-  DELIVERED: {
-    label: 'Delivered',
-    bg: 'bg-green-50',
-    text: 'text-green-800',
-    border: 'border-green-300',
-    desc: 'Your package has been successfully delivered. Enjoy authentic taste!',
-  },
   CANCELLED: {
     label: 'Cancelled',
     bg: 'bg-stone-100',
@@ -106,3 +99,28 @@ export const STATUS_CONFIG: Record<
     desc: 'This order was cancelled.',
   },
 };
+
+/**
+ * Helper to resolve product image paths correctly on GitHub Pages subpaths,
+ * custom domains, mobile browsers, and local development.
+ */
+export function getProductImageUrl(url?: string | null): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  const cleanPath = url.startsWith('/') ? url.slice(1) : url;
+
+  // On GitHub Pages (pathname contains /annapurna-aahaar or host github.io)
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.pathname.includes('/annapurna-aahaar') ||
+      window.location.hostname.includes('github.io'))
+  ) {
+    return `/annapurna-aahaar/${cleanPath}`;
+  }
+
+  const baseUrl = import.meta.env.BASE_URL || './';
+  const prefix = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  return `${prefix}${cleanPath}`;
+}
