@@ -4,6 +4,8 @@
   "private": true,
   "description": "Annapurna Aahaar — Premium Full-Stack 3D E-Commerce Platform",
   "scripts": {
+    "build": "cd backend && npm install && npx prisma generate && npx prisma db push --accept-data-loss && npx tsx prisma/seed.ts && npm run build",
+    "start": "cd backend && npm start",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "build:backend": "cd backend && npm run build",
