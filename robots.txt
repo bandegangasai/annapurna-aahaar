@@ -1,22 +1,19 @@
-# Robots.txt for Annapurna Aahaar (https://annapurnaaahaar.in/)
+# Robots.txt for Annapurna Aahaar (100% Free Production URL)
 User-agent: *
 Allow: /
-Allow: /products
-Allow: /products/*
-Allow: /our-story
-Allow: /why-us
-Allow: /contact
-Allow: /track
+Allow: /#/products
+Allow: /#/our-story
+Allow: /#/why-us
+Allow: /#/contact
+Allow: /#/track
 
 # Disallow Private and Admin Sections
-Disallow: /admin
-Disallow: /admin/*
-Disallow: /checkout
-Disallow: /checkout/*
+Disallow: /#/admin
+Disallow: /#/admin/*
+Disallow: /#/checkout
+Disallow: /#/checkout/*
 Disallow: /api/
 Disallow: /api/*
-Disallow: /order-success/
-Disallow: /payment/
 
-# Canonical XML Sitemap
-Sitemap: https://annapurnaaahaar.in/sitemap.xml
+# XML Sitemap
+Sitemap: https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml
