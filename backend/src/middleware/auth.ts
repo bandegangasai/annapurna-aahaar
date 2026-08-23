@@ -25,6 +25,7 @@ export const authenticateAdmin = (
       req.admin = {
         userId: 'admin-bande-omkar-1',
         email: 'admin@annapurnaaahaar.in',
+        name: 'Bande Omkar (Admin)',
         role: 'ADMIN',
       };
       next();
