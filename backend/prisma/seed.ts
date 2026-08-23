@@ -181,8 +181,10 @@ async function main() {
   });
 
   // 5. Seed verified historical orders
-  const cust1 = await prisma.customer.create({
-    data: {
+  const cust1 = await prisma.customer.upsert({
+    where: { phone: '9823012345' },
+    update: {},
+    create: {
       name: 'Ramesh Patel',
       phone: '9823012345',
       email: 'ramesh.patel@example.com',
@@ -194,8 +196,10 @@ async function main() {
     },
   });
 
-  await prisma.order.create({
-    data: {
+  await prisma.order.upsert({
+    where: { orderNumber: 'AA-2026-8921' },
+    update: {},
+    create: {
       orderNumber: 'AA-2026-8921',
       customerId: cust1.id,
       status: 'ACCEPTED',
@@ -245,8 +249,10 @@ async function main() {
     },
   });
 
-  const cust2 = await prisma.customer.create({
-    data: {
+  const cust2 = await prisma.customer.upsert({
+    where: { phone: '9848012345' },
+    update: {},
+    create: {
       name: 'Kavitha Reddy',
       phone: '9848012345',
       email: 'kavitha.reddy@example.com',
@@ -258,8 +264,10 @@ async function main() {
     },
   });
 
-  await prisma.order.create({
-    data: {
+  await prisma.order.upsert({
+    where: { orderNumber: 'AA-2026-9142' },
+    update: {},
+    create: {
       orderNumber: 'AA-2026-9142',
       customerId: cust2.id,
       status: 'PENDING',
