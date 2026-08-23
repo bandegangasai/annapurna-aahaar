@@ -20,7 +20,8 @@ export const ENV = {
 
   // Payment Configuration
   BUSINESS_PAYMENT_MOBILE: process.env.BUSINESS_PAYMENT_MOBILE || '9542826358',
-  BUSINESS_UPI_ID: process.env.BUSINESS_UPI_ID || '', // Actual verified VPA if set, otherwise blank
+  BUSINESS_UPI_ID: process.env.BUSINESS_UPI_ID || '9542826358@ybl', // Verified PhonePe / IPPB VPA
+  BUSINESS_UPI_BANK: 'India Post Payment Bank - 3676',
 
   // Razorpay Online Payment Credentials
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder_key',

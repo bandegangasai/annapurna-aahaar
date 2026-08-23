@@ -746,7 +746,7 @@ export const api = {
       success: true,
       data: {
         businessPaymentMobile: '9542826358',
-        businessUpiId: null,
+        businessUpiId: '9542826358@ybl',
         businessName: 'Annapurna Aahaar',
         razorpayKeyId: null,
         isLiveGatewayAvailable: false,

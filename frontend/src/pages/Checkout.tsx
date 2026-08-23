@@ -47,6 +47,7 @@ export const Checkout: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'OFFLINE' | 'ONLINE' | 'MANUAL_UPI'>('OFFLINE');
   const [manualUpiRef, setManualUpiRef] = useState('');
   const [copiedNumber, setCopiedNumber] = useState(false);
+  const [copiedUpiId, setCopiedUpiId] = useState(false);
   const [paymentConfig, setPaymentConfig] = useState<{
     businessPaymentMobile: string;
     businessUpiId: string | null;
@@ -55,7 +56,7 @@ export const Checkout: React.FC = () => {
     isLiveGatewayAvailable: boolean;
   }>({
     businessPaymentMobile: '9542826358',
-    businessUpiId: null,
+    businessUpiId: '9542826358@ybl',
     businessName: 'Annapurna Aahaar',
     razorpayKeyId: null,
     isLiveGatewayAvailable: false,
@@ -128,6 +129,13 @@ export const Checkout: React.FC = () => {
     setCopiedNumber(true);
     showToast('Business payment number 9542826358 copied to clipboard!', 'success');
     setTimeout(() => setCopiedNumber(false), 3000);
+  };
+
+  const handleCopyUpiId = () => {
+    navigator.clipboard.writeText(paymentConfig.businessUpiId || '9542826358@ybl');
+    setCopiedUpiId(true);
+    showToast('UPI ID 9542826358@ybl copied to clipboard!', 'success');
+    setTimeout(() => setCopiedUpiId(false), 3000);
   };
 
   const handleFillDefaultBhainsa = () => {
@@ -486,42 +494,100 @@ export const Checkout: React.FC = () => {
                 </label>
               </div>
 
-              {/* Direct UPI Instructions Box */}
+              {/* Direct UPI & QR Code Instructions Box */}
               {paymentMethod === 'MANUAL_UPI' && (
-                <div className="bg-amber-50/80 border border-amber-300/80 p-5 rounded-2xl space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wide block">
-                        Business Payment Mobile Number:
-                      </span>
-                      <span className="font-mono font-black text-lg text-heritage-maroon block">
-                        {paymentConfig.businessPaymentMobile || '9542826358'}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleCopyPaymentNumber}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold transition-all shadow-xs"
-                    >
-                      {copiedNumber ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedNumber ? 'Copied!' : 'Copy Number'}</span>
-                    </button>
+                <div className="bg-amber-50/90 border-2 border-amber-400 p-5 sm:p-6 rounded-3xl space-y-5 shadow-sm">
+                  <div className="text-center space-y-1">
+                    <span className="text-[11px] font-black uppercase text-amber-900 tracking-wider bg-amber-200/80 px-3 py-1 rounded-full inline-block">
+                      Official UPI QR Code & Direct Payment
+                    </span>
+                    <h4 className="font-serif font-black text-lg text-heritage-maroon">
+                      Scan QR Code to Pay ₹{total}
+                    </h4>
+                    <p className="text-xs text-stone-600">
+                      Bank: <strong>India Post Payment Bank - 3676</strong> | Powered by <strong>PhonePe / UPI</strong>
+                    </p>
                   </div>
 
-                  <p className="text-xs text-amber-950">
-                    Send ₹{total} via Google Pay, PhonePe, Paytm, or BHIM to <strong className="text-heritage-maroon">9542826358</strong>, then paste your 12-digit UTR/Transaction Reference below:
-                  </p>
+                  {/* QR Code Display */}
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6 bg-white p-5 rounded-2xl border border-amber-200 shadow-xs">
+                    <div className="relative group text-center">
+                      <img
+                        src="/images/annapurna-upi-qr.jpg"
+                        alt="Annapurna Aahaar Official UPI QR Code 9542826358@ybl"
+                        className="w-48 h-auto object-contain rounded-2xl border-2 border-stone-800 shadow-md mx-auto"
+                      />
+                      <span className="text-[10px] text-stone-500 font-bold block mt-1.5">
+                        Scan with GPay, PhonePe, Paytm, or BHIM
+                      </span>
+                    </div>
 
-                  <div>
-                    <label className="text-xs font-bold text-stone-800 block mb-1">
-                      UPI / UTR Transaction Reference ID <span className="text-red-500">*</span>
+                    <div className="space-y-3 flex-1 text-left">
+                      {/* Copy UPI ID */}
+                      <div className="p-3 bg-cream-100 rounded-xl border border-heritage-gold/30">
+                        <span className="text-[10px] font-bold text-stone-600 uppercase block mb-0.5">
+                          Official UPI ID (VPA):
+                        </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono font-black text-sm sm:text-base text-heritage-maroon">
+                            {paymentConfig.businessUpiId || '9542826358@ybl'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handleCopyUpiId}
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-cream-200 border border-stone-300 text-stone-800 text-[11px] font-bold shadow-2xs"
+                          >
+                            {copiedUpiId ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                            <span>{copiedUpiId ? 'Copied' : 'Copy'}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Copy Mobile Number */}
+                      <div className="p-3 bg-cream-100 rounded-xl border border-heritage-gold/30">
+                        <span className="text-[10px] font-bold text-stone-600 uppercase block mb-0.5">
+                          UPI Linked Phone Number:
+                        </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono font-black text-sm sm:text-base text-stone-900">
+                            {paymentConfig.businessPaymentMobile || '9542826358'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handleCopyPaymentNumber}
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-cream-200 border border-stone-300 text-stone-800 text-[11px] font-bold shadow-2xs"
+                          >
+                            {copiedNumber ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                            <span>{copiedNumber ? 'Copied' : 'Copy'}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Deep Link for Mobile Devices */}
+                      <a
+                        href={`upi://pay?pa=${paymentConfig.businessUpiId || '9542826358@ybl'}&pn=Annapurna%20Aahaar&cu=INR&am=${total}&tn=Annapurna%20Order`}
+                        className="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-98"
+                      >
+                        <Smartphone className="w-3.5 h-3.5" />
+                        <span>Tap to Pay on UPI App (Mobile)</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Transaction Reference Input */}
+                  <div className="pt-2">
+                    <label className="text-xs font-bold text-stone-900 block mb-1">
+                      Enter UPI / UTR Transaction Reference ID <span className="text-red-600">*</span>
                     </label>
+                    <p className="text-[11px] text-stone-600 mb-1.5">
+                      After completing payment in your UPI app, paste the 12-digit UTR/Reference ID below:
+                    </p>
                     <input
                       type="text"
-                      placeholder="e.g. 324567891234 (12-digit reference number)"
+                      placeholder="e.g. 324567891234 (12-digit UPI reference)"
                       value={manualUpiRef}
                       onChange={(e) => setManualUpiRef(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white border border-amber-400 rounded-xl text-sm font-mono font-medium focus:ring-2 focus:ring-heritage-gold"
+                      className="w-full px-4 py-2.5 bg-white border-2 border-amber-400 rounded-xl text-sm font-mono font-bold focus:ring-2 focus:ring-heritage-gold text-stone-900"
                     />
                     {errors.manualUpiRef && (
                       <p className="text-red-600 text-xs mt-1 font-semibold">{errors.manualUpiRef}</p>
