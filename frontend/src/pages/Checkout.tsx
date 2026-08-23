@@ -144,7 +144,7 @@ export const Checkout: React.FC = () => {
 
       // Handle Online Payment with Razorpay
       if (paymentMethod === 'ONLINE') {
-        const rzpOrder = createdOrder.razorpayOrder;
+        const rzpOrderId = createdOrder.razorpayOrderId || 'order_rzp_mock';
 
         // If Razorpay SDK is loaded or using seamless checkout verification:
         const simulatedPaymentId = `pay_rzp_${Math.random().toString(36).substring(2, 10)}`;
@@ -153,7 +153,7 @@ export const Checkout: React.FC = () => {
         try {
           await api.verifyOnlinePayment({
             orderId: createdOrder.id,
-            razorpayOrderId: rzpOrder?.id || 'order_rzp_mock',
+            razorpayOrderId: rzpOrderId,
             razorpayPaymentId: simulatedPaymentId,
             razorpaySignature: simulatedSignature,
           });
