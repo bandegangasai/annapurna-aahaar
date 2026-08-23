@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import prisma from '../config/prisma';
 import { realtimeService } from '../services/realtime';
+import { notificationService } from '../services/notificationService';
 
 // Validation Schema
 const createOrderSchema = z.object({
@@ -206,6 +207,15 @@ export const createOrder = async (
       paymentMethod: result.paymentMethod,
       createdAt: result.createdAt,
     });
+
+    // Dispatch Order Placed Email to Customer & Business (annapurnaaahaar@gmail.com) + SMS
+    try {
+      notificationService.sendOrderPlaced(result as any).catch((notifErr) => {
+        console.warn('[Notification dispatch note]:', notifErr);
+      });
+    } catch (e) {
+      console.warn('[Notification trigger note]:', e);
+    }
 
     res.status(201).json({
       success: true,

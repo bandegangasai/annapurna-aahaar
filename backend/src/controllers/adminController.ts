@@ -5,6 +5,7 @@ import { z } from 'zod';
 import prisma from '../config/prisma';
 import { ENV } from '../config/env';
 import { realtimeService } from '../services/realtime';
+import { notificationService } from '../services/notificationService';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 const loginSchema = z.object({
@@ -259,6 +260,13 @@ export const updateOrderStatus = async (
       paymentStatus: updatedOrder.paymentStatus,
       updatedAt: updatedOrder.updatedAt,
     });
+
+    // Dispatch status update email & SMS to customer
+    try {
+      notificationService.sendStatusUpdate(updatedOrder as any, status, note || undefined).catch((e) => {
+        console.warn('[Status Notification dispatch note]:', e);
+      });
+    } catch {}
 
     res.status(200).json({
       success: true,
