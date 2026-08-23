@@ -41,6 +41,7 @@ async function main() {
   // 3. Seed Verified Products and Variants with Exact Product Photography Assets
   const productsData = [
     {
+      id: 'prod-sevaya-1',
       name: 'Traditional Wheat Sevaya',
       slug: 'traditional-wheat-sevaya',
       category: 'Flours & Grains',
@@ -49,12 +50,13 @@ async function main() {
       imageUrl: '/products/sevaya.webp',
       isFeatured: true,
       variants: [
-        { weight: '1 kg', unit: 'kg', price: 100.0, stock: 150 },
-        { weight: '2 kg', unit: 'kg', price: 200.0, stock: 80 },
-        { weight: '5 kg', unit: 'kg', price: 500.0, stock: 40 },
+        { id: 'var-sevaya-1kg', weight: '1 kg', unit: 'kg', price: 100.0, stock: 150 },
+        { id: 'var-sevaya-2kg', weight: '2 kg', unit: 'kg', price: 200.0, stock: 80 },
+        { id: 'var-sevaya-5kg', weight: '5 kg', unit: 'kg', price: 500.0, stock: 40 },
       ],
     },
     {
+      id: 'prod-urad-papad-2',
       name: 'Urad Dal Papad',
       slug: 'urad-dal-papad',
       category: 'Papad',
@@ -63,11 +65,12 @@ async function main() {
       imageUrl: '/products/urad-dal-papad.webp',
       isFeatured: true,
       variants: [
-        { weight: '500 g', unit: '500g', price: 150.0, stock: 200 },
-        { weight: '1 kg', unit: 'kg', price: 300.0, stock: 120 },
+        { id: 'var-urad-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 200 },
+        { id: 'var-urad-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 120 },
       ],
     },
     {
+      id: 'prod-moong-papad-3',
       name: 'Moong Dal Papad',
       slug: 'moong-dal-papad',
       category: 'Papad',
@@ -76,11 +79,12 @@ async function main() {
       imageUrl: '/products/moong-dal-papad.webp',
       isFeatured: true,
       variants: [
-        { weight: '500 g', unit: '500g', price: 150.0, stock: 180 },
-        { weight: '1 kg', unit: 'kg', price: 300.0, stock: 100 },
+        { id: 'var-moong-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 180 },
+        { id: 'var-moong-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 100 },
       ],
     },
     {
+      id: 'prod-masala-papad-4',
       name: 'Masala Papad',
       slug: 'masala-papad',
       category: 'Papad',
@@ -89,11 +93,12 @@ async function main() {
       imageUrl: '/products/masala-papad.webp',
       isFeatured: true,
       variants: [
-        { weight: '500 g', unit: '500g', price: 150.0, stock: 150 },
-        { weight: '1 kg', unit: 'kg', price: 300.0, stock: 90 },
+        { id: 'var-masala-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 150 },
+        { id: 'var-masala-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 90 },
       ],
     },
     {
+      id: 'prod-rice-papad-5',
       name: 'Rice Papad',
       slug: 'rice-papad',
       category: 'Papad',
@@ -102,11 +107,12 @@ async function main() {
       imageUrl: '/products/rice-papad.webp',
       isFeatured: false,
       variants: [
-        { weight: '500 g', unit: '500g', price: 150.0, stock: 100 },
-        { weight: '1 kg', unit: 'kg', price: 300.0, stock: 60 },
+        { id: 'var-rice-500g', weight: '500 g', unit: '500g', price: 150.0, stock: 100 },
+        { id: 'var-rice-1kg', weight: '1 kg', unit: 'kg', price: 300.0, stock: 60 },
       ],
     },
     {
+      id: 'prod-turmeric-6',
       name: 'Pure Turmeric Powder',
       slug: 'pure-turmeric-powder',
       category: 'Spices',
@@ -115,11 +121,12 @@ async function main() {
       imageUrl: '/products/turmeric-haldi-powder.webp',
       isFeatured: true,
       variants: [
-        { weight: '500 g', unit: '500g', price: 80.0, stock: 250 },
-        { weight: '1 kg', unit: 'kg', price: 150.0, stock: 150 },
+        { id: 'var-turmeric-500g', weight: '500 g', unit: '500g', price: 80.0, stock: 250 },
+        { id: 'var-turmeric-1kg', weight: '1 kg', unit: 'kg', price: 150.0, stock: 150 },
       ],
     },
     {
+      id: 'prod-maggie-7',
       name: 'Maggie',
       slug: 'maggie',
       category: 'Noodles & Instant Foods',
@@ -128,11 +135,12 @@ async function main() {
       imageUrl: '/products/maggie.webp',
       isFeatured: false,
       variants: [
-        { weight: '420g Pack', unit: 'pack', price: 85.0, stock: 200 },
-        { weight: '840g Pack', unit: 'pack', price: 165.0, stock: 100 },
+        { id: 'var-maggie-420g', weight: '420g Pack', unit: 'pack', price: 85.0, stock: 200 },
+        { id: 'var-maggie-840g', weight: '840g Pack', unit: 'pack', price: 165.0, stock: 100 },
       ],
     },
     {
+      id: 'prod-noodles-8',
       name: 'Noodles',
       slug: 'noodles',
       category: 'Noodles & Instant Foods',
@@ -141,8 +149,8 @@ async function main() {
       imageUrl: '/products/noodles.webp',
       isFeatured: false,
       variants: [
-        { weight: '500g Pack', unit: 'pack', price: 95.0, stock: 140 },
-        { weight: '1 kg Pack', unit: 'pack', price: 180.0, stock: 75 },
+        { id: 'var-noodles-500g', weight: '500g Pack', unit: 'pack', price: 95.0, stock: 140 },
+        { id: 'var-noodles-1kg', weight: '1 kg Pack', unit: 'pack', price: 180.0, stock: 75 },
       ],
     },
   ];

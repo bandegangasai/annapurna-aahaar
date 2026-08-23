@@ -85,6 +85,28 @@ export const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDashboardData();
+
+    // Auto-refresh orders every 6 seconds to capture live customer orders
+    const interval = setInterval(() => {
+      if (token) {
+        api.adminGetOrders(token, {
+          status: statusFilter !== 'ALL' ? statusFilter : undefined,
+          search: searchQuery || undefined,
+        })
+          .then((res) => {
+            if (res.success) setOrders(res.data);
+          })
+          .catch(() => {});
+
+        api.adminGetStats(token)
+          .then((res) => {
+            if (res.success) setStats(res.data);
+          })
+          .catch(() => {});
+      }
+    }, 6000);
+
+    return () => clearInterval(interval);
   }, [token, statusFilter]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
