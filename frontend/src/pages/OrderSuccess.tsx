@@ -1,136 +1,124 @@
-import React, { useEffect } from 'react';
-import { useParams, useLocation, Link, useNavigate } from 'react-router-dom';
-import confetti from 'canvas-confetti';
+import React from 'react';
+import { useLocation, useParams, Link } from 'react-router-dom';
 import {
-  CheckCircle2,
+  CheckCircle,
   Clock,
   MapPin,
   Phone,
   ArrowRight,
-  ShoppingBag,
-  Sparkles,
   ShieldCheck,
+  Package,
 } from 'lucide-react';
-import { formatINR, formatDate, STATUS_CONFIG } from '../utils/formatters';
 import { SEOHead } from '../components/common/SEOHead';
+import { formatINR } from '../utils/formatters';
 
 export const OrderSuccess: React.FC = () => {
   const { orderNumber } = useParams<{ orderNumber: string }>();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const order = (location.state as any)?.order;
-
-  useEffect(() => {
-    // Fire festive celebration confetti
-    try {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#D97706', '#F59E0B', '#78350F', '#10B981', '#FDE68A'],
-      });
-    } catch (e) {
-      console.warn('Confetti effect unavailable:', e);
-    }
-  }, []);
+  const order = location.state?.order;
 
   return (
-    <div className="bg-[#FCF9F2] min-h-screen py-12 lg:py-16">
+    <div className="bg-[#FAF6EE] min-h-screen py-12 lg:py-20">
       <SEOHead
-        title="Order Placed Successfully | Annapurna Aahaar"
-        description="Your Annapurna Aahaar order has been received."
+        title={`Order Confirmed #${orderNumber} | Annapurna Aahaar`}
+        description="Your Annapurna Aahaar order has been received and is being prepared with traditional care."
       />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-amber-900/10 shadow-xl text-center space-y-6">
-          {/* Animated Success Badge */}
-          <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner animate-bounce">
-            <CheckCircle2 className="w-10 h-10 stroke-[2.5]" />
+        <div className="bg-white rounded-3xl p-8 sm:p-12 border-2 border-heritage-gold/40 shadow-xl text-center space-y-6">
+          {/* Success Icon */}
+          <div className="w-20 h-20 bg-emerald-100 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-700 shadow-md animate-bounce">
+            <CheckCircle className="w-10 h-10 stroke-[2.5]" />
           </div>
 
           <div className="space-y-2">
-            <span className="text-xs font-bold text-turmeric-700 uppercase tracking-widest bg-turmeric-100/60 px-3 py-1 rounded-full">
-              Order Received
+            <span className="text-xs font-bold text-heritage-antiqueGold uppercase tracking-widest block">
+              Order Confirmed
             </span>
             <h1 className="font-serif font-black text-3xl sm:text-4xl text-heritage-maroon">
-              Order Successfully Placed!
+              Thank You for Ordering from Annapurna Aahaar!
             </h1>
             <p className="text-stone-600 text-sm sm:text-base max-w-md mx-auto">
-              Thank you for trusting Annapurna Aahaar. Your order has been placed in our kitchen queue for approval and fresh batch packaging.
+              Your order has been recorded in our database and will be freshly processed by <strong>Bande Omkar</strong> in Bhainsa, Telangana.
             </p>
           </div>
 
-          {/* Order ID Highlight Card */}
-          <div className="bg-cream-50 p-4 sm:p-5 rounded-2xl border border-amber-900/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
-            <div>
-              <span className="text-xs text-stone-500 font-medium block uppercase">
-                Your Order Reference Number
-              </span>
-              <strong className="font-serif text-xl sm:text-2xl text-heritage-maroon tracking-wide">
-                {orderNumber}
-              </strong>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                PENDING APPROVAL
-              </span>
-            </div>
-          </div>
-
-          {/* Order Snapshot if available */}
-          {order && (
-            <div className="text-left bg-[#FCF9F2] p-5 rounded-2xl border border-amber-900/10 space-y-4">
-              <h3 className="font-serif font-bold text-stone-900 text-base border-b border-amber-900/10 pb-2">
-                Order Summary
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-stone-700">
-                <div>
-                  <span className="font-semibold text-stone-900 block">Customer Name:</span>
-                  <span>{order.customer?.name}</span>
-                </div>
-                <div>
-                  <span className="font-semibold text-stone-900 block">Contact Phone:</span>
-                  <span>+91 {order.customer?.phone}</span>
-                </div>
-                <div className="sm:col-span-2">
-                  <span className="font-semibold text-stone-900 block">Delivery Address:</span>
-                  <span>
-                    {order.customer?.address}, {order.customer?.city}, {order.customer?.state} - {order.customer?.pincode}
-                  </span>
-                </div>
-                <div>
-                  <span className="font-semibold text-stone-900 block">Payment Mode:</span>
-                  <span>Cash / UPI on Delivery</span>
-                </div>
-                <div>
-                  <span className="font-semibold text-stone-900 block">Total Amount:</span>
-                  <span className="font-bold text-heritage-maroon text-base">
-                    {formatINR(order.total)}
-                  </span>
-                </div>
+          {/* Order Details Card */}
+          <div className="bg-[#FAF6EE] p-6 rounded-2xl border border-heritage-gold/30 text-left space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-stone-200 pb-3 gap-2">
+              <div>
+                <span className="text-xs text-stone-500 uppercase font-bold block">Order Number</span>
+                <span className="font-mono font-bold text-lg text-heritage-maroon">
+                  #{orderNumber}
+                </span>
+              </div>
+              <div className="text-left sm:text-right">
+                <span className="text-xs text-stone-500 uppercase font-bold block">Initial Status</span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-black bg-amber-100 text-amber-900 px-3 py-1 rounded-full border border-amber-300">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  {order?.status || 'PENDING'} (Awaiting Admin Review)
+                </span>
               </div>
             </div>
-          )}
 
-          {/* Action CTAs */}
-          <div className="pt-2 flex flex-col sm:flex-row gap-4 justify-center">
+            {order && (
+              <>
+                {/* Customer & Delivery */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="font-bold text-stone-700 block mb-1">Customer:</span>
+                    <p className="text-stone-900 font-semibold">{order.customer.name}</p>
+                    <p className="text-stone-600">Mobile: {order.customer.phone}</p>
+                  </div>
+                  <div>
+                    <span className="font-bold text-stone-700 block mb-1">Delivery Address:</span>
+                    <p className="text-stone-600">
+                      {order.customer.address}, {order.customer.city}, {order.customer.state} - {order.customer.pincode}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Payment Breakdown */}
+                <div className="pt-3 border-t border-stone-200 flex items-center justify-between text-xs sm:text-sm">
+                  <div>
+                    <span className="font-bold text-stone-700 block">Payment Method:</span>
+                    <span className="text-stone-600 font-medium">
+                      {order.paymentMethod === 'ONLINE_RAZORPAY' ? 'Online Payment (Razorpay)' : 'Cash on Delivery (Pay Offline)'}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-stone-700 block">Grand Total:</span>
+                    <span className="font-serif font-black text-xl text-heritage-maroon">
+                      {formatINR(order.total)}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Action Links */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to={`/track/${orderNumber}`}
-              className="bg-gradient-to-r from-turmeric-600 to-amber-700 hover:from-turmeric-700 hover:to-amber-800 text-white px-7 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg shadow-turmeric-600/25 transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto bg-heritage-maroon hover:bg-heritage-darkMaroon text-cream-100 font-bold px-8 py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 border border-heritage-gold/30 text-sm"
             >
-              <Clock className="w-4 h-4" />
-              <span>Track Order Timeline</span>
-              <ArrowRight className="w-4 h-4" />
+              <Clock className="w-4 h-4 text-heritage-gold" />
+              <span>Track Live Order Status</span>
             </Link>
 
             <Link
               to="/products"
-              className="bg-white hover:bg-cream-100 text-heritage-maroon border border-amber-900/20 px-6 py-3.5 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+              className="w-full sm:w-auto bg-white hover:bg-cream-100 text-stone-800 font-bold px-6 py-3.5 rounded-2xl border border-heritage-gold/30 transition-colors text-sm"
             >
-              <ShoppingBag className="w-4 h-4" />
               <span>Continue Shopping</span>
             </Link>
+          </div>
+
+          {/* Business Contact Footer Note */}
+          <div className="pt-4 border-t border-stone-100 text-xs text-stone-500 space-y-1">
+            <div className="font-bold text-heritage-maroon">Annapurna Aahaar — Bhainsa, Telangana (504103)</div>
+            <div>Owner: Bande Omkar | Customer Support: 6305970844 / 8688456925</div>
           </div>
         </div>
       </div>

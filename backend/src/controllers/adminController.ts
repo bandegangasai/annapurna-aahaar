@@ -22,7 +22,13 @@ const updateStatusSchema = z.object({
     'DELIVERED',
     'CANCELLED',
   ]),
+  paymentStatus: z.enum(['PENDING', 'PAID', 'FAILED', 'REFUNDED']).optional(),
   note: z.string().optional(),
+});
+
+const updateVariantPriceSchema = z.object({
+  price: z.number().min(0, 'Price must be non-negative'),
+  stock: z.number().int().optional(),
 });
 
 export const loginAdmin = async (
@@ -171,7 +177,7 @@ export const updateOrderStatus = async (
 ): Promise<void> => {
   try {
     const { id } = req.params as { id: string };
-    const { status, note } = updateStatusSchema.parse(req.body);
+    const { status, paymentStatus, note } = updateStatusSchema.parse(req.body);
 
     const existingOrder = await prisma.order.findUnique({
       where: { id },
@@ -183,18 +189,23 @@ export const updateOrderStatus = async (
     }
 
     const previousStatus = existingOrder.status;
+    const dataToUpdate: any = { status };
+
+    if (paymentStatus) {
+      dataToUpdate.paymentStatus = paymentStatus;
+    }
 
     // Update order status and record history in a transaction
     const updatedOrder = await prisma.order.update({
       where: { id },
       data: {
-        status,
+        ...dataToUpdate,
         statusHistory: {
           create: {
             previousStatus,
             newStatus: status,
             note: note || `Order status updated to ${status} by admin`,
-            changedBy: req.admin?.name || 'ADMIN',
+            changedBy: req.admin?.name || 'Bande Omkar (Admin)',
           },
         },
       },
@@ -209,7 +220,7 @@ export const updateOrderStatus = async (
 
     res.status(200).json({
       success: true,
-      message: `Order status updated to ${status}`,
+      message: `Order #${updatedOrder.orderNumber} updated to ${status}`,
       data: updatedOrder,
     });
   } catch (error) {
@@ -227,8 +238,10 @@ export const getAdminStats = async (
       totalOrders,
       pendingOrders,
       acceptedOrders,
+      processingOrders,
       deliveredOrders,
       rejectedOrders,
+      paidOrdersCount,
       ordersWithTotals,
       totalCustomers,
       unreadContacts,
@@ -236,8 +249,10 @@ export const getAdminStats = async (
       prisma.order.count(),
       prisma.order.count({ where: { status: 'PENDING' } }),
       prisma.order.count({ where: { status: 'ACCEPTED' } }),
+      prisma.order.count({ where: { status: 'PROCESSING' } }),
       prisma.order.count({ where: { status: 'DELIVERED' } }),
       prisma.order.count({ where: { status: 'REJECTED' } }),
+      prisma.order.count({ where: { paymentStatus: 'PAID' } }),
       prisma.order.findMany({
         where: { status: { notIn: ['REJECTED', 'CANCELLED'] } },
         select: { total: true },
@@ -254,11 +269,21 @@ export const getAdminStats = async (
         totalOrders,
         pendingOrders,
         acceptedOrders,
+        processingOrders,
         deliveredOrders,
         rejectedOrders,
+        paidOrdersCount,
         totalRevenue,
         totalCustomers,
         unreadContacts,
+        business: {
+          name: ENV.BUSINESS_NAME,
+          owner: ENV.BUSINESS_OWNER,
+          location: ENV.BUSINESS_LOCATION,
+          pincode: ENV.BUSINESS_PINCODE,
+          phones: [ENV.BUSINESS_PHONE_PRIMARY, ENV.BUSINESS_PHONE_SECONDARY],
+          email: ENV.BUSINESS_EMAIL,
+        },
       },
     });
   } catch (error) {
@@ -315,10 +340,37 @@ export const adminGetProducts = async (
   try {
     const products = await prisma.product.findMany({
       include: { variants: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
     });
 
     res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const adminUpdateVariantPrice = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { variantId } = req.params as { variantId: string };
+    const { price, stock } = updateVariantPriceSchema.parse(req.body);
+
+    const updated = await prisma.productVariant.update({
+      where: { id: variantId },
+      data: {
+        price,
+        ...(typeof stock === 'number' ? { stock } : {}),
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Product variant updated successfully',
+      data: updated,
+    });
   } catch (error) {
     next(error);
   }

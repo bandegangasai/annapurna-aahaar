@@ -12,7 +12,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: '*', // Allow development & production frontends
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
@@ -25,20 +25,24 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     service: 'Annapurna Aahaar API',
+    owner: ENV.BUSINESS_OWNER,
+    location: ENV.BUSINESS_LOCATION,
+    pincode: ENV.BUSINESS_PINCODE,
     timestamp: new Date().toISOString(),
-    version: '1.0.0',
+    version: '1.1.0',
   });
 });
 
-// Business Profile Endpoint
+// Business Profile Endpoint (Verified)
 app.get('/api/business-info', (req, res) => {
   res.status(200).json({
     name: ENV.BUSINESS_NAME,
     tagline: ENV.BUSINESS_TAGLINE,
-    phone: ENV.BUSINESS_PHONE,
+    owner: ENV.BUSINESS_OWNER,
+    location: ENV.BUSINESS_LOCATION,
+    pincode: ENV.BUSINESS_PINCODE,
+    phones: [ENV.BUSINESS_PHONE_PRIMARY, ENV.BUSINESS_PHONE_SECONDARY],
     email: ENV.BUSINESS_EMAIL,
-    address: ENV.BUSINESS_ADDRESS,
-    whatsapp: ENV.BUSINESS_WHATSAPP,
   });
 });
 
@@ -64,7 +68,7 @@ const PORT = parseInt(ENV.PORT, 10) || 5000;
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`🌾 Annapurna Aahaar API Server running on port ${PORT}`);
-    console.log(`🌾 Environment: ${ENV.NODE_ENV}`);
+    console.log(`🌾 Business: ${ENV.BUSINESS_NAME} (Owner: ${ENV.BUSINESS_OWNER}, Bhainsa, Telangana)`);
     console.log(`🌾 Health Check: http://localhost:${PORT}/api/health`);
   });
 }

@@ -8,6 +8,7 @@ import {
   getContactMessages,
   markContactMessageRead,
   adminGetProducts,
+  adminUpdateVariantPrice,
 } from '../controllers/adminController';
 import { authenticateAdmin } from '../middleware/auth';
 
@@ -26,5 +27,6 @@ router.patch('/orders/:id/status', updateOrderStatus as any);
 router.get('/contact-messages', getContactMessages as any);
 router.patch('/contact-messages/:id/read', markContactMessageRead as any);
 router.get('/products', adminGetProducts as any);
+router.patch('/variants/:variantId', adminUpdateVariantPrice as any);
 
 export default router;

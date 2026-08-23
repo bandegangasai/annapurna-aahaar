@@ -11,6 +11,8 @@ interface CartContextType {
   deliveryFee: number;
   total: number;
   totalItemsCount: number;
+  freeDeliveryThreshold: number;
+  amountForFreeDelivery: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
 }
@@ -99,8 +101,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Computations
   const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const deliveryFee = subtotal === 0 ? 0 : subtotal >= 500 ? 0 : 40;
+  const freeDeliveryThreshold = 500;
+  const deliveryFee = subtotal === 0 ? 0 : subtotal >= freeDeliveryThreshold ? 0 : 40;
   const total = subtotal + deliveryFee;
+  const amountForFreeDelivery = Math.max(0, freeDeliveryThreshold - subtotal);
   const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -115,6 +119,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deliveryFee,
         total,
         totalItemsCount,
+        freeDeliveryThreshold,
+        amountForFreeDelivery,
         isCartOpen,
         setIsCartOpen,
       }}

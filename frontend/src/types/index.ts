@@ -15,7 +15,6 @@ export interface Product {
   description: string;
   category: string;
   imageUrl: string;
-  rating: number;
   isFeatured: boolean;
   isActive: boolean;
   variants: ProductVariant[];
@@ -41,6 +40,7 @@ export interface Customer {
   email?: string;
   address: string;
   city: string;
+  district?: string;
   state: string;
   pincode: string;
 }
@@ -85,7 +85,10 @@ export interface Order {
   deliveryFee: number;
   total: number;
   notes?: string;
-  paymentMethod: string;
+  paymentMethod: string; // 'OFFLINE_COD' or 'ONLINE_RAZORPAY'
+  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
   items: OrderItem[];
   statusHistory: OrderStatusHistory[];
   createdAt: string;
@@ -99,15 +102,28 @@ export interface AdminUser {
   role: string;
 }
 
+export interface BusinessInfo {
+  name: string;
+  tagline: string;
+  owner: string;
+  location: string;
+  pincode: string;
+  phones: string[];
+  email: string;
+}
+
 export interface AdminStats {
   totalOrders: number;
   pendingOrders: number;
   acceptedOrders: number;
+  processingOrders: number;
   deliveredOrders: number;
   rejectedOrders: number;
+  paidOrdersCount: number;
   totalRevenue: number;
   totalCustomers: number;
   unreadContacts: number;
+  business?: BusinessInfo;
 }
 
 export interface ContactMessage {

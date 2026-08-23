@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import prisma from '../config/prisma';
+import { razorpayService } from '../services/razorpay';
+import { ENV } from '../config/env';
 
 // Validation Schema
 const createOrderSchema = z.object({
@@ -10,7 +12,8 @@ const createOrderSchema = z.object({
     email: z.string().email('Invalid email address').optional().or(z.literal('')),
     address: z.string().min(5, 'Please provide complete delivery address'),
     city: z.string().min(2, 'City is required'),
-    state: z.string().min(2, 'State is required'),
+    district: z.string().optional().default('Nirmal District'),
+    state: z.string().min(2, 'State is required').default('Telangana'),
     pincode: z.string().regex(/^\d{6}$/, 'Please enter a valid 6-digit Indian PIN code'),
   }),
   items: z.array(
@@ -21,7 +24,14 @@ const createOrderSchema = z.object({
     })
   ).min(1, 'Order must contain at least one item'),
   notes: z.string().optional(),
-  paymentMethod: z.string().default('CASH_ON_DELIVERY'),
+  paymentMethod: z.enum(['OFFLINE', 'ONLINE']).default('OFFLINE'),
+});
+
+const verifyPaymentSchema = z.object({
+  orderId: z.string().min(1, 'Order ID is required'),
+  razorpayOrderId: z.string().min(1, 'Razorpay Order ID is required'),
+  razorpayPaymentId: z.string().min(1, 'Razorpay Payment ID is required'),
+  razorpaySignature: z.string().min(1, 'Razorpay Signature is required'),
 });
 
 // Helper to generate readable Order Number
@@ -106,6 +116,7 @@ export const createOrder = async (
           email: custData.email || customer.email,
           address: custData.address,
           city: custData.city,
+          district: custData.district || customer.district,
           state: custData.state,
           pincode: custData.pincode,
         },
@@ -118,14 +129,21 @@ export const createOrder = async (
           email: custData.email || null,
           address: custData.address,
           city: custData.city,
-          state: custData.state,
-          pincode: custData.pincode,
+          district: custData.district || 'Nirmal District',
+          state: custData.state || 'Telangana',
+          pincode: custData.pincode || '504103',
         },
       });
     }
 
-    // 4. Create Order & Line Items in Database Transaction
+    // 4. Create Order Number
     const orderNumber = generateOrderNumber();
+
+    // 5. If Online Payment, generate Razorpay Order
+    let rzpOrder: any = null;
+    if (paymentMethod === 'ONLINE') {
+      rzpOrder = await razorpayService.createOrder(finalTotal, orderNumber);
+    }
 
     const newOrder = await prisma.order.create({
       data: {
@@ -136,7 +154,9 @@ export const createOrder = async (
         deliveryFee,
         total: finalTotal,
         notes: notes || null,
-        paymentMethod: paymentMethod || 'CASH_ON_DELIVERY',
+        paymentMethod: paymentMethod === 'ONLINE' ? 'ONLINE_RAZORPAY' : 'OFFLINE_COD',
+        paymentStatus: 'PENDING',
+        razorpayOrderId: rzpOrder ? rzpOrder.id : null,
         items: {
           create: resolvedItems.map((ri) => ({
             productId: ri.productId,
@@ -152,7 +172,7 @@ export const createOrder = async (
           create: {
             previousStatus: null,
             newStatus: 'PENDING',
-            note: 'Order placed by customer',
+            note: paymentMethod === 'ONLINE' ? 'Online order initialized' : 'Order placed (Cash on Delivery)',
             changedBy: 'CUSTOMER',
           },
         },
@@ -169,7 +189,92 @@ export const createOrder = async (
     res.status(201).json({
       success: true,
       message: 'Order successfully placed!',
-      data: newOrder,
+      data: {
+        ...newOrder,
+        razorpayOrder: rzpOrder,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyOnlinePayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { orderId, razorpayOrderId, razorpayPaymentId, razorpaySignature } =
+      verifyPaymentSchema.parse(req.body);
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      res.status(404).json({ success: false, message: 'Order not found' });
+      return;
+    }
+
+    const isValidSignature = razorpayService.verifySignature(
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature
+    );
+
+    if (!isValidSignature) {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          paymentStatus: 'FAILED',
+          statusHistory: {
+            create: {
+              previousStatus: order.status,
+              newStatus: order.status,
+              note: 'Online payment verification failed',
+              changedBy: 'SYSTEM',
+            },
+          },
+        },
+      });
+
+      res.status(400).json({
+        success: false,
+        message: 'Invalid payment signature. Payment could not be verified.',
+      });
+      return;
+    }
+
+    // Payment Successful
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentStatus: 'PAID',
+        razorpayPaymentId,
+        razorpaySignature,
+        statusHistory: {
+          create: {
+            previousStatus: order.status,
+            newStatus: order.status,
+            note: `Online payment verified successfully (Payment ID: ${razorpayPaymentId})`,
+            changedBy: 'SYSTEM',
+          },
+        },
+      },
+      include: {
+        customer: true,
+        items: true,
+        statusHistory: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Payment verified successfully!',
+      data: updatedOrder,
     });
   } catch (error) {
     next(error);
@@ -198,7 +303,7 @@ export const getOrderByOrderNumber = async (
     if (!order) {
       res.status(404).json({
         success: false,
-        message: `Order #${orderNumber} not found. Please verify the order number.`,
+        message: `Order #${orderNumber} not found. Please verify your order number.`,
       });
       return;
     }

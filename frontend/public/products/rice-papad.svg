@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="riceBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FCFAF5"/>
+      <stop offset="70%" stop-color="#EBE4D5"/>
+      <stop offset="100%" stop-color="#D5CBB8"/>
+    </radialGradient>
+    <radialGradient id="ricePapad" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="60%" stop-color="#FAF7F0"/>
+      <stop offset="85%" stop-color="#ECE5D6"/>
+      <stop offset="100%" stop-color="#D6CEBC"/>
+    </radialGradient>
+    <filter id="papadShadowRice" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#3A3326" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#riceBg)"/>
+  <circle cx="300" cy="290" r="255" stroke="#C89B3C" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.4"/>
+
+  <!-- Back Stacked Rice Papad -->
+  <g filter="url(#papadShadowRice)" transform="translate(340, 250) rotate(16)">
+    <circle cx="0" cy="0" r="148" fill="#ECE5D6"/>
+    <circle cx="0" cy="0" r="145" stroke="#A69B85" stroke-width="2" stroke-dasharray="8 6" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Main Hero Rice Papad (Delicate White with Cumin) -->
+  <g filter="url(#papadShadowRice)" transform="translate(300, 310)">
+    <circle cx="0" cy="0" r="162" fill="url(#ricePapad)"/>
+    <circle cx="0" cy="0" r="158" stroke="#A69B85" stroke-width="2.5" stroke-dasharray="10 4" fill="none" opacity="0.6"/>
+
+    <!-- Subtle Rice Flour Texture Waves -->
+    <path d="M-110 -60 Q0 -90 110 -60" stroke="#F0EAE0" stroke-width="6" fill="none" opacity="0.8"/>
+    <path d="M-130 0 Q0 -30 130 0" stroke="#F0EAE0" stroke-width="8" fill="none" opacity="0.8"/>
+    <path d="M-110 60 Q0 30 110 60" stroke="#F0EAE0" stroke-width="6" fill="none" opacity="0.8"/>
+
+    <!-- Cumin Seeds (Jeera in Rice Papad) -->
+    <g fill="#422E15">
+      <ellipse cx="-55" cy="-65" rx="5.0" ry="1.8" transform="rotate(30 -55 -65)"/>
+      <ellipse cx="45" cy="-45" rx="5.5" ry="1.9" transform="rotate(-35 45 -45)"/>
+      <ellipse cx="-15" cy="15" rx="5.2" ry="1.8" transform="rotate(10 -15 15)"/>
+      <ellipse cx="60" cy="45" rx="5.8" ry="2.0" transform="rotate(55 60 45)"/>
+      <ellipse cx="-65" cy="55" rx="4.8" ry="1.7" transform="rotate(-20 -65 55)"/>
+      <ellipse cx="15" cy="-75" rx="5.0" ry="1.8" transform="rotate(75 15 -75)"/>
+      <ellipse cx="80" cy="-10" rx="5.2" ry="1.9" transform="rotate(-10 80 -10)"/>
+      <ellipse cx="0" cy="85" rx="5.5" ry="1.9" transform="rotate(40 0 85)"/>
+    </g>
+  </g>
+
+  <!-- Premium Label / Emblem -->
+  <g transform="translate(300, 520)">
+    <rect x="-125" y="-22" width="250" height="44" rx="22" fill="#4A0E17" stroke="#C89B3C" stroke-width="2"/>
+    <text x="0" y="6" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="bold" font-size="16" fill="#FDF8F0" letter-spacing="1.5">
+      CRISPY RICE PAPAD
+    </text>
+  </g>
+</svg>

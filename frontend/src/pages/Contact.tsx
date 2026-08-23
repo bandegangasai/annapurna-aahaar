@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import {
-  MapPin,
   Phone,
   Mail,
-  Clock,
+  MapPin,
   Send,
   CheckCircle2,
-  AlertCircle,
-  Sparkles,
+  Clock,
+  ExternalLink,
   MessageSquare,
 } from 'lucide-react';
-import { api } from '../services/api';
-import { validateIndianMobile } from '../utils/formatters';
-import { useToast } from '../context/ToastContext';
 import { SEOHead } from '../components/common/SEOHead';
+import { useToast } from '../context/ToastContext';
+import { api } from '../services/api';
 
 export const Contact: React.FC = () => {
   const { showToast } = useToast();
@@ -22,54 +20,21 @@ export const Contact: React.FC = () => {
     name: '',
     phone: '',
     email: '',
-    subject: 'General Enquiry',
+    subject: '',
     message: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim() || formData.name.trim().length < 2) {
-      newErrors.name = 'Please enter your full name';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Mobile number is required';
-    } else if (!validateIndianMobile(formData.phone)) {
-      newErrors.phone = 'Please enter a valid 10-digit Indian mobile number';
-    }
-
-    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.message.trim() || formData.message.trim().length < 5) {
-      newErrors.message = 'Please provide a message with at least 5 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const mapSearchUrl =
+    'https://www.google.com/maps/search/?api=1&query=Bhainsa,+Nirmal+District,+Telangana+504103';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) {
-      showToast('Please fix the errors before submitting.', 'error');
+    if (!formData.name.trim() || !formData.phone.trim() || !formData.message.trim()) {
+      showToast('Please fill out all required fields.', 'error');
       return;
     }
 
@@ -78,293 +43,239 @@ export const Contact: React.FC = () => {
       const res = await api.submitContact(formData);
       if (res.success) {
         setIsSubmitted(true);
-        showToast('Your message has been sent successfully!', 'success');
-        setFormData({
-          name: '',
-          phone: '',
-          email: '',
-          subject: 'General Enquiry',
-          message: '',
-        });
+        showToast('Enquiry successfully submitted to Bande Omkar!', 'success');
+        setFormData({ name: '', phone: '', email: '', subject: '', message: '' });
       }
     } catch (err: any) {
-      console.error('Contact submission error:', err);
-      showToast(err.message || 'Failed to submit enquiry. Please try again.', 'error');
+      showToast(err.message || 'Failed to submit enquiry.', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-[#FCF9F2] min-h-screen py-10 lg:py-16">
+    <div className="bg-[#FAF6EE] min-h-screen py-10 lg:py-16">
       <SEOHead
-        title="Contact Us & Bulk Enquiries | Annapurna Aahaar"
-        description="Reach out to Annapurna Aahaar for order support, retail distribution, wholesale inquiries, and product questions."
+        title="Contact Us & Bulk Enquiries | Annapurna Aahaar — Bhainsa, Nirmal"
+        description="Contact Bande Omkar at Annapurna Aahaar in Bhainsa, Nirmal District, Telangana. Phone: 6305970844 / 8688456925. Email: annapurnaaahaar@gmail.com."
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        {/* Page Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-turmeric-700 bg-turmeric-100/70 border border-turmeric-300/40 px-3.5 py-1.5 rounded-full uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            We Value Your Connection
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="text-xs font-bold text-heritage-antiqueGold uppercase tracking-widest block mb-1">
+            Get In Touch
           </span>
-          <h1 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-heritage-maroon">
-            Contact & Bulk Enquiries
+          <h1 className="font-serif font-black text-3xl sm:text-4xl text-heritage-maroon">
+            Contact Annapurna Aahaar
           </h1>
-          <p className="text-stone-700 text-sm sm:text-base">
-            Have questions about our authentic food products, bulk wedding orders, or distribution? Send us a message and our team will get in touch.
+          <p className="text-stone-600 text-sm sm:text-base mt-2">
+            Reach out to <strong>Bande Omkar</strong> for retail orders, bulk supply enquiries, or product queries.
           </p>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* Left Column: Contact Form */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 border border-amber-900/10 shadow-lg">
-            {isSubmitted ? (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-                <h3 className="font-serif font-bold text-2xl text-stone-900">
-                  Enquiry Received!
-                </h3>
-                <p className="text-sm text-stone-600 max-w-md mx-auto">
-                  Thank you for reaching out to Annapurna Aahaar. Our customer care representative will contact you via phone or email shortly.
-                </p>
-                <button
-                  onClick={() => setIsSubmitted(false)}
-                  className="mt-4 bg-heritage-maroon text-cream-100 px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-turmeric-900 transition-colors"
-                >
-                  Send Another Message
-                </button>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Left Column: Real Verified Contact Info */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-heritage-gold/30 shadow-sm space-y-6">
+              <h3 className="font-serif font-bold text-2xl text-heritage-maroon border-b border-stone-100 pb-3">
+                Business Details
+              </h3>
+
+              {/* Owner */}
+              <div>
+                <span className="text-xs font-bold text-stone-500 uppercase">Proprietor / Owner</span>
+                <p className="font-serif font-bold text-lg text-stone-900">Bande Omkar</p>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <h3 className="font-serif font-bold text-xl text-stone-900 border-b border-stone-100 pb-3 flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-turmeric-600" />
-                  <span>Send a Message</span>
-                </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Name */}
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                      Your Full Name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="e.g. Anand Vardhan"
-                      className={`w-full px-4 py-3 bg-cream-50 border rounded-xl text-sm focus:outline-none focus:ring-2 text-stone-900 ${
-                        errors.name
-                          ? 'border-red-400 focus:ring-red-400'
-                          : 'border-amber-900/15 focus:ring-turmeric-500'
-                      }`}
-                    />
-                    {errors.name && (
-                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>{errors.name}</span>
-                      </p>
-                    )}
+              {/* Address */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-stone-500 uppercase">Registered Location</span>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-heritage-gold/20 flex items-center justify-center text-heritage-maroon shrink-0">
+                    <MapPin className="w-5 h-5" />
                   </div>
-
-                  {/* Phone */}
                   <div>
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                      Mobile Number <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-500">
-                        +91
+                    <p className="font-semibold text-stone-800 text-sm">
+                      Bhainsa, Nirmal District
+                    </p>
+                    <p className="text-xs text-stone-600">Telangana — 504103, India</p>
+                    <a
+                      href={mapSearchUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-heritage-maroon hover:underline mt-2"
+                    >
+                      <span>Open on Google Maps</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phone Numbers */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-stone-500 uppercase">Direct Phone Lines</span>
+                <div className="space-y-2">
+                  <a
+                    href="tel:6305970844"
+                    className="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF6EE] hover:bg-cream-200 border border-heritage-gold/25 transition-colors group"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-800">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-stone-500 block">Primary Helpline</span>
+                      <span className="font-bold text-stone-900 text-sm group-hover:text-heritage-maroon">
+                        +91 6305970844
                       </span>
+                    </div>
+                  </a>
+
+                  <a
+                    href="tel:8688456925"
+                    className="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF6EE] hover:bg-cream-200 border border-heritage-gold/25 transition-colors group"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-800">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-stone-500 block">Secondary Helpline</span>
+                      <span className="font-bold text-stone-900 text-sm group-hover:text-heritage-maroon">
+                        +91 8688456925
+                      </span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-stone-500 uppercase">Email Enquiries</span>
+                <a
+                  href="mailto:annapurnaaahaar@gmail.com"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF6EE] hover:bg-cream-200 border border-heritage-gold/25 transition-colors group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-stone-500 block">Official Inbox</span>
+                    <span className="font-bold text-stone-900 text-sm group-hover:text-heritage-maroon">
+                      annapurnaaahaar@gmail.com
+                    </span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Contact Form */}
+          <div className="lg:col-span-7">
+            <div className="bg-white p-6 sm:p-10 rounded-3xl border border-heritage-gold/30 shadow-md">
+              <h3 className="font-serif font-bold text-2xl text-heritage-maroon mb-2">
+                Send Us a Message
+              </h3>
+              <p className="text-xs sm:text-sm text-stone-600 mb-6">
+                Fill out the form below and we will respond via call or email within 24 hours.
+              </p>
+
+              {isSubmitted ? (
+                <div className="p-8 text-center bg-emerald-50 border border-emerald-300 rounded-3xl space-y-3">
+                  <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
+                  <h4 className="font-serif font-bold text-xl text-emerald-900">
+                    Thank You! Message Received
+                  </h4>
+                  <p className="text-xs text-emerald-800 max-w-sm mx-auto">
+                    Your enquiry has been securely saved in our database. Bande Omkar will review your request promptly.
+                  </p>
+                  <button
+                    onClick={() => setIsSubmitted(false)}
+                    className="mt-4 bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-emerald-800 transition-colors"
+                  >
+                    Send Another Message
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-stone-700 block mb-1">
+                        Your Name <span className="text-red-500">*</span>
+                      </label>
                       <input
-                        type="tel"
-                        name="phone"
-                        maxLength={10}
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="9876543210"
-                        className={`w-full pl-12 pr-4 py-3 bg-cream-50 border rounded-xl text-sm focus:outline-none focus:ring-2 text-stone-900 ${
-                          errors.phone
-                            ? 'border-red-400 focus:ring-red-400'
-                            : 'border-amber-900/15 focus:ring-turmeric-500'
-                        }`}
+                        type="text"
+                        required
+                        placeholder="e.g. Anand Rao"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
                       />
                     </div>
-                    {errors.phone && (
-                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>{errors.phone}</span>
-                      </p>
-                    )}
+
+                    <div>
+                      <label className="text-xs font-bold text-stone-700 block mb-1">
+                        Phone Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="10-digit mobile number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
+                      />
+                    </div>
                   </div>
 
-                  {/* Email */}
                   <div>
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                    <label className="text-xs font-bold text-stone-700 block mb-1">
                       Email Address <span className="text-stone-400 font-normal">(Optional)</span>
                     </label>
                     <input
                       type="email"
-                      name="email"
+                      placeholder="your.email@example.com"
                       value={formData.email}
-                      onChange={handleChange}
-                      placeholder="anand@example.com"
-                      className={`w-full px-4 py-3 bg-cream-50 border rounded-xl text-sm focus:outline-none focus:ring-2 text-stone-900 ${
-                        errors.email
-                          ? 'border-red-400 focus:ring-red-400'
-                          : 'border-amber-900/15 focus:ring-turmeric-500'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
                     />
-                    {errors.email && (
-                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>{errors.email}</span>
-                      </p>
-                    )}
                   </div>
 
-                  {/* Subject */}
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                      Subject / Enquiry Type
-                    </label>
-                    <select
-                      name="subject"
+                  <div>
+                    <label className="text-xs font-bold text-stone-700 block mb-1">Subject</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Bulk order enquiry for weddings / retail shop supply"
                       value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-cream-50 border border-amber-900/15 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-turmeric-500 text-stone-900 font-medium"
-                    >
-                      <option value="General Enquiry">General Product Enquiry</option>
-                      <option value="Wholesale & Bulk Orders">Wholesale & Bulk Papad / Sevaya Orders</option>
-                      <option value="Distributor Inquiry">Retail & Dealership Partnership</option>
-                      <option value="Order Assistance">Help with Existing Order</option>
-                      <option value="Feedback">Product Feedback</option>
-                    </select>
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
+                    />
                   </div>
 
-                  {/* Message */}
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                      Your Message <span className="text-red-500">*</span>
+                  <div>
+                    <label className="text-xs font-bold text-stone-700 block mb-1">
+                      Message / Requirement <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       rows={4}
-                      name="message"
+                      required
+                      placeholder="Please specify product quantities or questions..."
                       value={formData.message}
-                      onChange={handleChange}
-                      placeholder="Please describe your requirements or inquiry in detail..."
-                      className={`w-full px-4 py-3 bg-cream-50 border rounded-xl text-sm focus:outline-none focus:ring-2 text-stone-900 ${
-                        errors.message
-                          ? 'border-red-400 focus:ring-red-400'
-                          : 'border-amber-900/15 focus:ring-turmeric-500'
-                      }`}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
                     />
-                    {errors.message && (
-                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>{errors.message}</span>
-                      </p>
-                    )}
                   </div>
-                </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-turmeric-600 to-amber-700 hover:from-turmeric-700 hover:to-amber-800 text-white py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg shadow-turmeric-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Sending Enquiry...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      <span>Submit Message</span>
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
-
-          {/* Right Column: Business Info Cards */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-heritage-maroon rounded-3xl p-6 sm:p-8 text-cream-100 space-y-6 shadow-xl border border-amber-900/40">
-              <div>
-                <span className="text-xs font-bold text-turmeric-400 uppercase tracking-widest block">
-                  Connect Directly
-                </span>
-                <h3 className="font-serif font-bold text-2xl text-cream-50 mt-1">
-                  Annapurna Aahaar
-                </h3>
-                <p className="text-xs text-cream-300 italic mt-0.5">"Tradition in Every Grain."</p>
-              </div>
-
-              <div className="space-y-4 text-sm text-cream-200">
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-amber-900/60 flex items-center justify-center shrink-0 border border-amber-700/40">
-                    <MapPin className="w-4 h-4 text-turmeric-400" />
-                  </div>
-                  <div>
-                    <strong className="text-cream-100 block">Dispatch & Milling Facility</strong>
-                    <span className="text-xs text-cream-300">
-                      Near Traditional Grain Market, Industrial Area, India
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-amber-900/60 flex items-center justify-center shrink-0 border border-amber-700/40">
-                    <Phone className="w-4 h-4 text-turmeric-400" />
-                  </div>
-                  <div>
-                    <strong className="text-cream-100 block">Customer Helpline</strong>
-                    <span className="text-xs text-cream-300">+91 98765 43210</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-amber-900/60 flex items-center justify-center shrink-0 border border-amber-700/40">
-                    <Mail className="w-4 h-4 text-turmeric-400" />
-                  </div>
-                  <div>
-                    <strong className="text-cream-100 block">Email Address</strong>
-                    <span className="text-xs text-cream-300">contact@annapurnaaahaar.in</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-amber-900/60 flex items-center justify-center shrink-0 border border-amber-700/40">
-                    <Clock className="w-4 h-4 text-turmeric-400" />
-                  </div>
-                  <div>
-                    <strong className="text-cream-100 block">Milling & Support Hours</strong>
-                    <span className="text-xs text-cream-300">
-                      Monday to Saturday: 9:00 AM - 7:00 PM IST
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Wholesale Card */}
-            <div className="bg-white rounded-3xl p-6 border border-amber-900/10 shadow-sm space-y-3">
-              <span className="text-xs font-bold text-turmeric-800 bg-turmeric-100 px-2.5 py-1 rounded-full uppercase">
-                Wholesale & Weddings
-              </span>
-              <h4 className="font-serif font-bold text-lg text-stone-900">
-                Bulk Indian Food Supply
-              </h4>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                Planning bulk orders for catering, restaurants, community events, or festive family gatherings? We provide customized 10kg to 100kg batch orders at wholesale rates.
-              </p>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-heritage-maroon hover:bg-heritage-darkMaroon text-cream-100 py-4 rounded-2xl font-bold text-sm shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 border border-heritage-gold/30"
+                  >
+                    <Send className="w-4 h-4 text-heritage-gold" />
+                    <span>{isSubmitting ? 'Sending Message...' : 'Submit Message'}</span>
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>

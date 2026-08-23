@@ -23,9 +23,8 @@ model Product {
   name        String
   slug        String           @unique
   description String
-  category    String           // e.g. "Papad", "Flours & Grains", "Spices", "Noodles"
+  category    String           // "Papad", "Flours & Grains", "Spices", "Noodles & Instant Foods"
   imageUrl    String
-  rating      Float            @default(4.9)
   isFeatured  Boolean          @default(false)
   isActive    Boolean          @default(true)
   createdAt   DateTime         @default(now())
@@ -37,9 +36,9 @@ model ProductVariant {
   id        String   @id @default(uuid())
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  weight    String   // e.g. "500g", "1kg", "2kg", "420g"
+  weight    String   // e.g. "500g", "1 kg", "2 kg", "5 kg"
   unit      String   // e.g. "kg", "g", "pack"
-  price     Float    // e.g. 150.0, 300.0, 100.0
+  price     Float    // e.g. 150.0, 300.0, 100.0 (or 0 for Price on Request)
   stock     Int      @default(100)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -49,31 +48,36 @@ model ProductVariant {
 model Customer {
   id        String   @id @default(uuid())
   name      String
-  phone     String
+  phone     String   @unique
   email     String?
   address   String
   city      String
-  state     String
-  pincode   String
+  district  String?  @default("Nirmal District")
+  state     String   @default("Telangana")
+  pincode   String   @default("504103")
   createdAt DateTime @default(now())
   orders    Order[]
 }
 
 model Order {
-  id            String               @id @default(uuid())
-  orderNumber   String               @unique // e.g. "AA-2026-0823-1001"
-  customerId    String
-  customer      Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  status        String               @default("PENDING") // PENDING, ACCEPTED, REJECTED, PROCESSING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
-  subtotal      Float
-  deliveryFee   Float                @default(0.0)
-  total         Float
-  notes         String?
-  paymentMethod String               @default("CASH_ON_DELIVERY")
-  items         OrderItem[]
-  statusHistory OrderStatusHistory[]
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+  id                String               @id @default(uuid())
+  orderNumber       String               @unique // e.g. "AA-2026-0823-1001"
+  customerId        String
+  customer          Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  status            String               @default("PENDING") // PENDING, ACCEPTED, REJECTED, PROCESSING, READY, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+  subtotal          Float
+  deliveryFee       Float                @default(0.0)
+  total             Float
+  notes             String?
+  paymentMethod     String               @default("OFFLINE") // "OFFLINE" (Cash on Delivery) or "ONLINE" (Razorpay)
+  paymentStatus     String               @default("PENDING") // "PENDING", "PAID", "FAILED"
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  items             OrderItem[]
+  statusHistory     OrderStatusHistory[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
 }
 
 model OrderItem {
@@ -97,7 +101,7 @@ model OrderStatusHistory {
   previousStatus String?
   newStatus      String
   note           String?
-  changedBy      String   @default("SYSTEM") // "ADMIN" or "SYSTEM"
+  changedBy      String   @default("SYSTEM") // "ADMIN", "CUSTOMER", or "SYSTEM"
   createdAt      DateTime @default(now())
 }
 

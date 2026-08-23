@@ -57,6 +57,7 @@ export const api = {
       email?: string;
       address: string;
       city: string;
+      district?: string;
       state: string;
       pincode: string;
     };
@@ -66,7 +67,7 @@ export const api = {
       quantity: number;
     }>;
     notes?: string;
-    paymentMethod?: string;
+    paymentMethod: 'OFFLINE' | 'ONLINE';
   }) {
     return fetchApi<{ success: boolean; message: string; data: any }>('/orders', {
       method: 'POST',
@@ -74,8 +75,20 @@ export const api = {
     });
   },
 
+  async verifyOnlinePayment(payload: {
+    orderId: string;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+  }) {
+    return fetchApi<{ success: boolean; message: string; data: any }>('/orders/razorpay-verify', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
   async getOrderByNumber(orderNumber: string) {
-    return fetchApi<{ success: boolean; data: any }>(`/orders/${orderNumber}`);
+    return fetchApi<{ success: boolean; data: any; message?: string }>(`/orders/${orderNumber}`);
   },
 
   // Contact
@@ -97,10 +110,11 @@ export const api = {
     return fetchApi<{
       name: string;
       tagline: string;
-      phone: string;
+      owner: string;
+      location: string;
+      pincode: string;
+      phones: string[];
       email: string;
-      address: string;
-      whatsapp: string;
     }>('/business-info');
   },
 
@@ -144,13 +158,30 @@ export const api = {
     token: string,
     id: string,
     status: string,
+    paymentStatus?: string,
     note?: string
   ) {
     return fetchApi<{ success: boolean; message: string; data: any }>(
       `/admin/orders/${id}/status`,
       {
         method: 'PATCH',
-        body: JSON.stringify({ status, note }),
+        body: JSON.stringify({ status, paymentStatus, note }),
+      },
+      token
+    );
+  },
+
+  async adminUpdateVariantPrice(
+    token: string,
+    variantId: string,
+    price: number,
+    stock?: number
+  ) {
+    return fetchApi<{ success: boolean; message: string; data: any }>(
+      `/admin/variants/${variantId}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ price, stock }),
       },
       token
     );

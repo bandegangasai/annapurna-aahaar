@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="papadBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FDF8EE"/>
+      <stop offset="70%" stop-color="#EFE2C5"/>
+      <stop offset="100%" stop-color="#DAC195"/>
+    </radialGradient>
+    <radialGradient id="uradPapad" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FFFBF2"/>
+      <stop offset="65%" stop-color="#F3E5C8"/>
+      <stop offset="90%" stop-color="#DFC498"/>
+      <stop offset="100%" stop-color="#C5A574"/>
+    </radialGradient>
+    <radialGradient id="papadBack" cx="45%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#EEDCB7"/>
+      <stop offset="85%" stop-color="#D2B581"/>
+      <stop offset="100%" stop-color="#B29158"/>
+    </radialGradient>
+    <filter id="papadShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#4A260B" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="600" height="600" fill="url(#papadBg)"/>
+  <circle cx="300" cy="290" r="255" stroke="#C89B3C" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.4"/>
+
+  <!-- Back Stacked Papad 1 -->
+  <g filter="url(#papadShadow)" transform="translate(340, 240) rotate(15)">
+    <circle cx="0" cy="0" r="145" fill="url(#papadBack)"/>
+    <!-- Sun-dried blisters and edges -->
+    <circle cx="0" cy="0" r="142" stroke="#9A7641" stroke-width="2" stroke-dasharray="8 6" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Back Stacked Papad 2 -->
+  <g filter="url(#papadShadow)" transform="translate(250, 270) rotate(-10)">
+    <circle cx="0" cy="0" r="150" fill="url(#papadBack)"/>
+    <circle cx="0" cy="0" r="146" stroke="#9A7641" stroke-width="2.5" stroke-dasharray="10 5" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Main Hero Urad Dal Papad -->
+  <g filter="url(#papadShadow)" transform="translate(300, 310)">
+    <!-- Round Papad Disc with subtle organic edge -->
+    <circle cx="0" cy="0" r="160" fill="url(#uradPapad)"/>
+    <circle cx="0" cy="0" r="157" stroke="#A88349" stroke-width="3" stroke-dasharray="12 4" fill="none" opacity="0.7"/>
+
+    <!-- Organic Sun-Cured Blisters / Bubbles -->
+    <circle cx="-60" cy="-45" r="12" fill="#E8D1A3" opacity="0.6"/>
+    <circle cx="70" cy="-30" r="16" fill="#DEC08E" opacity="0.5"/>
+    <circle cx="-30" cy="80" r="14" fill="#EAD5AB" opacity="0.5"/>
+    <circle cx="50" cy="65" r="18" fill="#DEC08E" opacity="0.6"/>
+    <circle cx="0" cy="-90" r="10" fill="#E8D1A3" opacity="0.7"/>
+
+    <!-- Authentic Black Pepper & Cumin Flecks (Kali Mirch) -->
+    <g fill="#2B1D14" opacity="0.85">
+      <circle cx="-80" cy="-20" r="3.2"/>
+      <circle cx="-45" cy="-85" r="2.8"/>
+      <circle cx="20" cy="-55" r="3.5"/>
+      <circle cx="95" cy="-10" r="3.0"/>
+      <circle cx="-25" cy="15" r="4.0"/>
+      <circle cx="45" cy="20" r="3.4"/>
+      <circle cx="-75" cy="60" r="2.9"/>
+      <circle cx="10" cy="95" r="3.6"/>
+      <circle cx="80" cy="70" r="3.1"/>
+      <circle cx="-110" cy="25" r="2.5"/>
+      <circle cx="115" cy="-60" r="3.2"/>
+      <circle cx="-10" cy="-120" r="2.7"/>
+      <circle cx="65" cy="-100" r="3.3"/>
+      <circle cx="-50" cy="110" r="2.8"/>
+      <circle cx="105" cy="30" r="3.0"/>
+    </g>
+  </g>
+
+  <!-- Premium Label / Emblem -->
+  <g transform="translate(300, 520)">
+    <rect x="-130" y="-22" width="260" height="44" rx="22" fill="#4A0E17" stroke="#C89B3C" stroke-width="2"/>
+    <text x="0" y="6" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="bold" font-size="16" fill="#FDF8F0" letter-spacing="1.5">
+      URAD DAL PAPAD
+    </text>
+  </g>
+</svg>

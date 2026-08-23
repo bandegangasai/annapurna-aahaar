@@ -1,95 +1,95 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Lock, Mail, ShieldCheck, ArrowLeft, AlertCircle, Sparkles } from 'lucide-react';
+import { Lock, Mail, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { SEOHead } from '../../components/common/SEOHead';
 
 export const AdminLogin: React.FC = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('admin@annapurnaaahaar.in');
-  const [password, setPassword] = useState('Admin@Annapurna2026');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // If already logged in, redirect to dashboard
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/admin/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
+    if (!email.trim() || !password.trim()) {
+      showToast('Please enter your email and password.', 'error');
+      return;
+    }
 
+    setIsLoading(true);
     try {
       await login(email.trim(), password);
-      showToast('Admin logged in successfully!', 'success');
+      showToast('Welcome back to Annapurna Aahaar Admin Portal!', 'success');
       navigate('/admin/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Invalid admin credentials.');
-      showToast(err.message || 'Login failed', 'error');
+      showToast(err.message || 'Login failed. Please verify credentials.', 'error');
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  return (
-    <div className="bg-[#FAF4EB] min-h-screen py-16 flex flex-col justify-center items-center px-4">
-      <SEOHead title="Admin Login | Annapurna Aahaar" />
+  const handleFillDemo = () => {
+    setEmail('admin@annapurnaaahaar.in');
+    setPassword('Admin@Annapurna2026');
+  };
 
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center space-y-3">
-          <Link to="/" className="inline-flex items-center gap-2 text-xs font-semibold text-stone-500 hover:text-heritage-maroon transition-colors mb-2">
+  return (
+    <div className="bg-[#FAF6EE] min-h-screen py-16 flex items-center justify-center px-4">
+      <SEOHead
+        title="Admin Portal Login | Annapurna Aahaar"
+        description="Administrative access for Annapurna Aahaar store and order fulfillment."
+      />
+
+      <div className="max-w-md w-full space-y-6">
+        <div className="text-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-heritage-maroon mb-6 bg-white px-4 py-2 rounded-full border border-heritage-gold/20 shadow-sm"
+          >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Storefront</span>
+            <span>Return to Storefront</span>
           </Link>
 
-          <div className="w-16 h-16 rounded-full bg-heritage-maroon text-cream-100 flex items-center justify-center mx-auto shadow-xl border-2 border-turmeric-400">
-            <span className="font-serif font-black text-2xl text-turmeric-300">AA</span>
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-heritage-gold to-heritage-antiqueGold p-0.5 mx-auto mb-3 shadow-md">
+            <div className="w-full h-full rounded-full bg-heritage-maroon flex items-center justify-center border border-heritage-gold/40">
+              <span className="font-serif font-black text-2xl text-heritage-gold">AA</span>
+            </div>
           </div>
 
           <h1 className="font-serif font-black text-3xl text-heritage-maroon">
-            Admin Portal Login
+            Admin Management
           </h1>
-          <p className="text-xs text-stone-600">
-            Secure management of orders, customer enquiries, and catalog for Annapurna Aahaar.
+          <p className="text-xs text-stone-600 mt-1">
+            Annapurna Aahaar — Bhainsa, Nirmal District, Telangana (504103)
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl p-8 border border-amber-900/10 shadow-xl space-y-6">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-800 p-3.5 rounded-xl text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
+        <div className="bg-white p-8 rounded-3xl border-2 border-heritage-gold/30 shadow-xl space-y-5">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                Admin Email
+              <label className="text-xs font-bold text-stone-700 block mb-1">
+                Admin Email Address
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
                   type="email"
                   required
+                  placeholder="admin@annapurnaaahaar.in"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@annapurnaaahaar.in"
-                  className="w-full pl-10 pr-4 py-3 bg-cream-50 border border-amber-900/15 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-turmeric-500 text-stone-900 font-medium"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+              <label className="text-xs font-bold text-stone-700 block mb-1">
                 Password
               </label>
               <div className="relative">
@@ -97,45 +97,38 @@ export const AdminLogin: React.FC = () => {
                 <input
                   type="password"
                   required
+                  placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-3 bg-cream-50 border border-amber-900/15 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-turmeric-500 text-stone-900 font-medium"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#FAF6EE] border border-heritage-gold/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-heritage-gold text-stone-900 font-medium"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-heritage-maroon to-turmeric-900 hover:from-turmeric-900 hover:to-heritage-maroon text-cream-100 py-3.5 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-heritage-maroon to-heritage-darkMaroon hover:from-heritage-darkMaroon hover:to-heritage-maroon text-cream-100 py-3.5 rounded-2xl font-bold text-sm shadow-md transition-all disabled:opacity-50 border border-heritage-gold/30"
             >
-              {isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Authenticating...</span>
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="w-4 h-4 text-turmeric-400" />
-                  <span>Sign In to Dashboard</span>
-                </>
-              )}
+              {isLoading ? 'Signing In...' : 'Sign In to Dashboard'}
             </button>
           </form>
 
-          {/* Seed Credentials Hint */}
-          <div className="bg-amber-50 p-4 rounded-2xl border border-amber-200/70 text-xs text-amber-950 space-y-1">
-            <div className="flex items-center gap-1.5 font-bold">
-              <Sparkles className="w-3.5 h-3.5 text-turmeric-700" />
-              <span>Default Administrator Credentials:</span>
-            </div>
-            <div className="font-mono text-[11px] text-stone-700 pl-5">
-              Email: <strong>admin@annapurnaaahaar.in</strong>
-              <br />
-              Password: <strong>Admin@Annapurna2026</strong>
-            </div>
+          {/* Quick Demo Credentials Autofill */}
+          <div className="pt-3 border-t border-stone-100 text-center">
+            <button
+              type="button"
+              onClick={handleFillDemo}
+              className="text-xs font-bold text-heritage-antiqueGold hover:text-heritage-maroon underline"
+            >
+              Autofill Default Admin Credentials
+            </button>
           </div>
+        </div>
+
+        <div className="text-center text-xs text-stone-500 flex items-center justify-center gap-1.5">
+          <ShieldCheck className="w-4 h-4 text-emerald-700" />
+          <span>Encrypted JWT Authentication & RBAC Session Security</span>
         </div>
       </div>
     </div>

@@ -24,6 +24,8 @@ export function formatDate(dateString: string): string {
   }).format(date);
 }
 
+export const formatDateTime = formatDate;
+
 /**
  * Validate 10-digit Indian Mobile Number
  */
