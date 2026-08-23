@@ -1,6 +1,6 @@
 import { Product, Order, OrderItem, ContactMessage, AdminStats } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = 'https://annapurna-aahaar-1.onrender.com/api';
 
 // 8 Verified Authentic Products
 const INITIAL_PRODUCTS: Product[] = [
