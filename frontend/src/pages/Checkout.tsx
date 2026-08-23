@@ -494,37 +494,26 @@ export const Checkout: React.FC = () => {
                 </label>
               </div>
 
-              {/* Direct UPI & QR Code Instructions Box */}
+              {/* Direct UPI Instructions Box */}
               {paymentMethod === 'MANUAL_UPI' && (
                 <div className="bg-amber-50/90 border-2 border-amber-400 p-5 sm:p-6 rounded-3xl space-y-5 shadow-sm">
                   <div className="text-center space-y-1">
                     <span className="text-[11px] font-black uppercase text-amber-900 tracking-wider bg-amber-200/80 px-3 py-1 rounded-full inline-block">
-                      Official UPI QR Code & Direct Payment
+                      Direct UPI / Mobile Payment
                     </span>
                     <h4 className="font-serif font-black text-lg text-heritage-maroon">
-                      Scan QR Code to Pay ₹{total}
+                      Pay ₹{total} via Google Pay / PhonePe / Paytm / BHIM
                     </h4>
                     <p className="text-xs text-stone-600">
-                      Bank: <strong>India Post Payment Bank - 3676</strong> | Powered by <strong>PhonePe / UPI</strong>
+                      Send payment using the UPI ID or mobile number below, then paste your 12-digit transaction UTR number.
                     </p>
                   </div>
 
-                  {/* QR Code Display */}
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6 bg-white p-5 rounded-2xl border border-amber-200 shadow-xs">
-                    <div className="relative group text-center">
-                      <img
-                        src={getProductImageUrl('/images/annapurna-upi-qr.jpg')}
-                        alt="Annapurna Aahaar Official UPI QR Code 9542826358@ybl"
-                        className="w-48 h-auto object-contain rounded-2xl border-2 border-stone-800 shadow-md mx-auto"
-                      />
-                      <span className="text-[10px] text-stone-500 font-bold block mt-1.5">
-                        Scan with GPay, PhonePe, Paytm, or BHIM
-                      </span>
-                    </div>
-
-                    <div className="space-y-3 flex-1 text-left">
+                  {/* UPI Details Card */}
+                  <div className="bg-white p-5 rounded-2xl border border-amber-200 shadow-xs space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {/* Copy UPI ID */}
-                      <div className="p-3 bg-cream-100 rounded-xl border border-heritage-gold/30">
+                      <div className="p-3.5 bg-cream-100 rounded-xl border border-heritage-gold/30">
                         <span className="text-[10px] font-bold text-stone-600 uppercase block mb-0.5">
                           Official UPI ID (VPA):
                         </span>
@@ -544,7 +533,7 @@ export const Checkout: React.FC = () => {
                       </div>
 
                       {/* Copy Mobile Number */}
-                      <div className="p-3 bg-cream-100 rounded-xl border border-heritage-gold/30">
+                      <div className="p-3.5 bg-cream-100 rounded-xl border border-heritage-gold/30">
                         <span className="text-[10px] font-bold text-stone-600 uppercase block mb-0.5">
                           UPI Linked Phone Number:
                         </span>
@@ -562,20 +551,20 @@ export const Checkout: React.FC = () => {
                           </button>
                         </div>
                       </div>
-
-                      {/* Deep Link for Mobile Devices */}
-                      <a
-                        href={`upi://pay?pa=${paymentConfig.businessUpiId || '9542826358@ybl'}&pn=Annapurna%20Aahaar&cu=INR&am=${total}&tn=Annapurna%20Order`}
-                        className="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-98"
-                      >
-                        <Smartphone className="w-3.5 h-3.5" />
-                        <span>Tap to Pay on UPI App (Mobile)</span>
-                      </a>
                     </div>
+
+                    {/* Deep Link for Mobile Devices */}
+                    <a
+                      href={`upi://pay?pa=${paymentConfig.businessUpiId || '9542826358@ybl'}&pn=Annapurna%20Aahaar&cu=INR&am=${total}&tn=Annapurna%20Order`}
+                      className="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-98"
+                    >
+                      <Smartphone className="w-4 h-4" />
+                      <span>Tap to Open UPI App & Pay ₹{total} (Mobile)</span>
+                    </a>
                   </div>
 
                   {/* Transaction Reference Input */}
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <label className="text-xs font-bold text-stone-900 block mb-1">
                       Enter UPI / UTR Transaction Reference ID <span className="text-red-600">*</span>
                     </label>
