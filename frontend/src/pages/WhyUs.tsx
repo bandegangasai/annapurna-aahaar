@@ -54,7 +54,7 @@ export const WhyUs: React.FC = () => {
       <SEOHead
         title="Why Choose Us | Annapurna Aahaar"
         description="Discover the core pillars of quality and tradition that make Annapurna Aahaar the preferred choice for authentic Indian food in Bhainsa, Telangana (504103). Call 9347036152."
-        url="https://bandegangasai.github.io/annapurna-aahaar/#/why-us"
+        url="https://annapurnaaahaar.in/#/why-us"
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">

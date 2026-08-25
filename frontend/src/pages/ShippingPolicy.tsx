@@ -9,7 +9,7 @@ export const ShippingPolicy: React.FC = () => {
       <SEOHead
         title="Shipping & Delivery Policy | Annapurna Aahaar"
         description="Official shipping and delivery terms for Annapurna Aahaar. Flat rate ₹40 delivery, FREE SHIPPING above ₹500, and fast dispatch across Telangana & All India."
-        url="https://bandegangasai.github.io/annapurna-aahaar/#/shipping-policy"
+        url="https://annapurnaaahaar.in/#/shipping-policy"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">

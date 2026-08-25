@@ -81,7 +81,7 @@ export const Home: React.FC = () => {
       <SEOHead
         title="Annapurna Aahaar | Traditional Indian Food Products"
         description="Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152."
-        url="https://bandegangasai.github.io/annapurna-aahaar/"
+        url="https://annapurnaaahaar.in/"
       />
 
       {/* 1. HERO SECTION WITH 3D HERITAGE COMPOSITION */}

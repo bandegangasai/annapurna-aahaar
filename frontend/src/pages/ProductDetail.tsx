@@ -147,8 +147,8 @@ export const ProductDetail: React.FC = () => {
   }
 
   const localized = getLocalizedProduct(product.slug || product.id, product.name, product.description);
-  const canonicalUrl = `https://bandegangasai.github.io/annapurna-aahaar/#/products/${product.slug}`;
-  const imageUrl = `https://bandegangasai.github.io/annapurna-aahaar${getProductImageUrl(product.imageUrl)}`;
+  const canonicalUrl = `https://annapurnaaahaar.in/#/products/${product.slug}`;
+  const imageUrl = `https://annapurnaaahaar.in${getProductImageUrl(product.imageUrl)}`;
 
   // Google Search Console Compliant Structured Data (Schema.org)
   const productJsonLd: Record<string, any> = {

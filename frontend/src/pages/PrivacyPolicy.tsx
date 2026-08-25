@@ -9,7 +9,7 @@ export const PrivacyPolicy: React.FC = () => {
       <SEOHead
         title="Privacy Policy | Annapurna Aahaar"
         description="Privacy policy and data protection standards for Annapurna Aahaar customers in Bhainsa, Nirmal District, Telangana."
-        url="https://bandegangasai.github.io/annapurna-aahaar/#/privacy-policy"
+        url="https://annapurnaaahaar.in/#/privacy-policy"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">

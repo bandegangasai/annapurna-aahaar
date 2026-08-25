@@ -59,7 +59,7 @@ export const Contact: React.FC = () => {
       <SEOHead
         title="Contact Us | Annapurna Aahaar"
         description="Contact Annapurna Aahaar in Bhainsa, Nirmal District, Telangana (504103). 24/7 Telephone Helpline: 9347036152. Email: annapurnaaahaar@gmail.com."
-        url="https://bandegangasai.github.io/annapurna-aahaar/#/contact"
+        url="https://annapurnaaahaar.in/#/contact"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
