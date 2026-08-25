@@ -241,6 +241,31 @@ export const ProductDetail: React.FC = () => {
       : {}),
   };
 
+  const breadcrumbJsonLd: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://bandegangasai.github.io/annapurna-aahaar/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Products',
+        item: 'https://bandegangasai.github.io/annapurna-aahaar/#/products',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: localized.name,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   const approvedReviews = product.reviews || [];
 
   return (
@@ -250,7 +275,7 @@ export const ProductDetail: React.FC = () => {
         description={`${localized.name} from Annapurna Aahaar, Bhainsa, Nirmal District, Telangana. Handcrafted traditional quality. Call 9347036152 to order.`}
         url={canonicalUrl}
         image={imageUrl}
-        jsonLd={productJsonLd}
+        jsonLd={[productJsonLd, breadcrumbJsonLd]}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
