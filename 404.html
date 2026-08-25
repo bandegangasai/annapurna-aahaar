@@ -2,12 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Annapurna Aahaar | Page Redirect</title>
+    <title>Annapurna Aahaar | Traditional Indian Food Products</title>
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // https://github.com/rafgraph/spa-github-pages
-      var pathSegmentsToKeep = 1;
+      // Dynamic Single Page App redirect for both custom domain (annapurnaaahaar.in) and GitHub Pages fallback
       var l = window.location;
+      var pathSegmentsToKeep = l.hostname.indexOf('github.io') > -1 ? 1 : 0;
       l.replace(
         l.protocol +
           '//' +
@@ -34,9 +33,9 @@
         font-family: Georgia, serif;
         color: #173F35;
         text-align: center;
-        padding: 50px 20px;
+        padding: 60px 20px;
       }
-      h1 { font-size: 28px; margin-bottom: 10px; }
+      h1 { font-size: 32px; margin-bottom: 12px; }
       p { font-size: 16px; color: #4b5563; }
       a { color: #C79A45; font-weight: bold; text-decoration: underline; }
     </style>
@@ -44,6 +43,6 @@
   <body>
     <h1>Annapurna Aahaar</h1>
     <p>Redirecting to authentic traditional food catalogue...</p>
-    <p>If you are not redirected automatically, please <a href="/annapurna-aahaar/">click here to return home</a>.</p>
+    <p>If you are not redirected automatically, please <a href="./">click here to return home</a>.</p>
   </body>
 </html>
