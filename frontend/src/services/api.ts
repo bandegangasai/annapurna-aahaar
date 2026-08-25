@@ -7,6 +7,8 @@ import {
   Call,
   IvrInteraction,
   CallCenterStats,
+  Review,
+  StorePolicySettings,
 } from '../types';
 
 const API_BASE = 'https://annapurna-aahaar-1.onrender.com/api';
@@ -139,6 +141,31 @@ const INITIAL_PRODUCTS: Product[] = [
 const LOCAL_PRODUCTS_KEY = 'annapurna_catalog_products_v3';
 const LOCAL_ORDERS_KEY = 'annapurna_orders_db_v3';
 const LOCAL_MESSAGES_KEY = 'annapurna_messages_db_v3';
+const LOCAL_REVIEWS_KEY = 'annapurna_reviews_db_v1';
+const LOCAL_SETTINGS_KEY = 'annapurna_store_settings_v1';
+
+export const DEFAULT_STORE_SETTINGS: StorePolicySettings = {
+  businessName: 'Annapurna Aahaar',
+  tagline: 'Tradition in Every Grain.',
+  owner: 'Bande Omkar',
+  location: 'Bhainsa, Nirmal District, Telangana (504103), India',
+  pincode: '504103',
+  phone: '9347036152',
+  email: 'annapurnaaahaar@gmail.com',
+  businessHours: 'Monday – Sunday: 8:00 AM – 9:00 PM IST',
+  upiId: '9542836358@ybl',
+  shippingFee: 40,
+  freeShippingThreshold: 500,
+  estimatedDeliveryDays: '3-5 business days across Telangana & All India',
+  shippingRegions: 'Telangana, Andhra Pradesh, Maharashtra, Karnataka, and All India',
+  returnWindowDays: 7,
+  returnEligibility: 'Returns accepted within 7 days of delivery for sealed, unopened, or damaged packages.',
+  refundPolicy: '100% refund processed within 3-5 business days to original payment method or UPI upon inspection.',
+  cancellationPolicy: 'Orders can be cancelled before dispatch (status: PENDING or ACCEPTED) via website tracking or telephone helpline.',
+  announcementBanner: '🌾 Pure Stone-Ground Turmeric & Sun-Dried Papads from Bhainsa • 100% Preservative Free • Fast Doorstep Delivery',
+  seoTitle: 'Annapurna Aahaar | Traditional Indian Food Products',
+  seoDescription: 'Annapurna Aahaar offers authentic handcrafted Indian food products including roasted whole wheat sevaya, sun-cured papads, and stone-ground turmeric powder from Bhainsa, Telangana.',
+};
 
 function getLocalProducts(): Product[] {
   try {
@@ -158,6 +185,33 @@ function getLocalOrders(): Order[] {
     }
   } catch {}
   return [];
+}
+
+function getLocalReviews(): Review[] {
+  try {
+    const saved = localStorage.getItem(LOCAL_REVIEWS_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+}
+
+function saveLocalReviews(reviews: Review[]): void {
+  try {
+    localStorage.setItem(LOCAL_REVIEWS_KEY, JSON.stringify(reviews));
+  } catch {}
+}
+
+function getLocalSettings(): StorePolicySettings {
+  try {
+    const saved = localStorage.getItem(LOCAL_SETTINGS_KEY);
+    if (saved) {
+      return { ...DEFAULT_STORE_SETTINGS, ...JSON.parse(saved) };
+    }
+  } catch {}
+  return DEFAULT_STORE_SETTINGS;
 }
 
 export async function fetchApi<T>(
@@ -254,15 +308,40 @@ export const api = {
   },
 
   async getProductBySlug(slug: string) {
+    let prod: Product | undefined;
     try {
       const res = await fetchApi<{ success: boolean; data: Product }>(`/products/${slug}`);
-      if (res.success && res.data) return res;
+      if (res.success && res.data) {
+        prod = res.data;
+      }
     } catch {}
 
-    const prods = getLocalProducts();
-    const prod = prods.find((p) => p.slug === slug);
+    if (!prod) {
+      const prods = getLocalProducts();
+      prod = prods.find((p) => p.slug === slug);
+    }
+
     if (!prod) throw new Error('Product not found');
-    return { success: true, data: prod };
+
+    // Attach genuine approved reviews
+    const allReviews = getLocalReviews();
+    const approvedReviews = allReviews.filter(
+      (r) => (r.productId === prod!.id || r.productId === prod!.slug) && r.isApproved
+    );
+    const avgRating =
+      approvedReviews.length > 0
+        ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length
+        : 0;
+
+    return {
+      success: true,
+      data: {
+        ...prod,
+        reviews: approvedReviews,
+        averageRating: Number(avgRating.toFixed(1)),
+        totalReviews: approvedReviews.length,
+      },
+    };
   },
 
   async getCategories() {
@@ -963,5 +1042,169 @@ export const api = {
 
   getExportIvrInteractionsCsvUrl(token?: string) {
     return `${API_BASE}/admin/ivr-interactions/export?token=${token || ''}`;
+  },
+
+  // 1. Customer Review System APIs
+  async submitReview(payload: {
+    productId: string;
+    customerName: string;
+    customerLocation?: string;
+    rating: number;
+    title?: string;
+    comment: string;
+  }) {
+    const reviews = getLocalReviews();
+    const prods = getLocalProducts();
+    const product = prods.find((p) => p.id === payload.productId || p.slug === payload.productId);
+
+    const newReview: Review = {
+      id: `rev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      productId: product ? product.id : payload.productId,
+      productName: product ? product.name : 'Authentic Food Product',
+      customerName: payload.customerName.trim(),
+      customerLocation: payload.customerLocation?.trim() || 'Telangana',
+      rating: Math.min(5, Math.max(1, Number(payload.rating) || 5)),
+      title: payload.title?.trim() || '',
+      comment: payload.comment.trim(),
+      isApproved: false, // Requires admin moderation
+      createdAt: new Date().toISOString(),
+    };
+
+    reviews.unshift(newReview);
+    saveLocalReviews(reviews);
+
+    return {
+      success: true,
+      message: 'Thank you! Your genuine review has been submitted and will be published following admin review.',
+      data: newReview,
+    };
+  },
+
+  async adminGetReviews(token?: string, filter?: { status?: string; productId?: string }) {
+    const reviews = getLocalReviews();
+    let filtered = [...reviews];
+    if (filter?.status === 'PENDING') filtered = filtered.filter((r) => !r.isApproved);
+    if (filter?.status === 'APPROVED') filtered = filtered.filter((r) => r.isApproved);
+    if (filter?.productId && filter.productId !== 'ALL') {
+      filtered = filtered.filter((r) => r.productId === filter.productId);
+    }
+    return { success: true, data: filtered };
+  },
+
+  async adminApproveReview(token: string, reviewId: string) {
+    const reviews = getLocalReviews();
+    const rev = reviews.find((r) => r.id === reviewId);
+    if (!rev) throw new Error('Review not found');
+    rev.isApproved = true;
+    saveLocalReviews(reviews);
+    return { success: true, message: 'Review successfully approved & published', data: rev };
+  },
+
+  async adminRejectReview(token: string, reviewId: string) {
+    const reviews = getLocalReviews();
+    const rev = reviews.find((r) => r.id === reviewId);
+    if (!rev) throw new Error('Review not found');
+    rev.isApproved = false;
+    saveLocalReviews(reviews);
+    return { success: true, message: 'Review rejected', data: rev };
+  },
+
+  async adminDeleteReview(token: string, reviewId: string) {
+    let reviews = getLocalReviews();
+    reviews = reviews.filter((r) => r.id !== reviewId);
+    saveLocalReviews(reviews);
+    return { success: true, message: 'Review removed successfully' };
+  },
+
+  // 2. Product Management System CRUD APIs
+  async adminCreateProduct(token: string, data: Partial<Product>) {
+    const prods = getLocalProducts();
+    const slug =
+      data.slug ||
+      data.name
+        ?.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') ||
+      `product-${Date.now()}`;
+
+    const newProduct: Product = {
+      id: `prod-${Date.now()}`,
+      name: data.name || 'New Authentic Product',
+      slug,
+      description: data.description || '',
+      category: data.category || 'Papad',
+      imageUrl: data.imageUrl || '/products/sevaya.webp',
+      gallery: data.gallery || [],
+      isFeatured: Boolean(data.isFeatured),
+      isActive: data.isActive !== undefined ? data.isActive : true,
+      sku: data.sku || `AA-${slug.toUpperCase()}`,
+      ingredients: data.ingredients || '',
+      packagingInfo: data.packagingInfo || '',
+      seoTitle: data.seoTitle || `${data.name} | Annapurna Aahaar`,
+      seoDescription: data.seoDescription || `${data.name} handcrafted in Bhainsa, Telangana.`,
+      variants:
+        data.variants && data.variants.length > 0
+          ? data.variants
+          : [
+              {
+                id: `var-${Date.now()}-1`,
+                productId: `prod-${Date.now()}`,
+                weight: '500 g',
+                unit: '500g',
+                price: 150,
+                stock: 100,
+                isActive: true,
+              },
+            ],
+    };
+
+    prods.unshift(newProduct);
+    localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(prods));
+    return { success: true, message: 'Product created successfully', data: newProduct };
+  },
+
+  async adminUpdateProduct(token: string, id: string, data: Partial<Product>) {
+    const prods = getLocalProducts();
+    const idx = prods.findIndex((p) => p.id === id);
+    if (idx === -1) throw new Error('Product not found');
+    prods[idx] = { ...prods[idx], ...data };
+    localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(prods));
+    return { success: true, message: 'Product updated successfully', data: prods[idx] };
+  },
+
+  async adminDeleteProduct(token: string, id: string) {
+    let prods = getLocalProducts();
+    prods = prods.filter((p) => p.id !== id);
+    localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(prods));
+    return { success: true, message: 'Product deleted successfully' };
+  },
+
+  async adminToggleProductStatus(token: string, id: string) {
+    const prods = getLocalProducts();
+    const prod = prods.find((p) => p.id === id);
+    if (!prod) throw new Error('Product not found');
+    prod.isActive = !prod.isActive;
+    localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(prods));
+    return {
+      success: true,
+      message: `Product ${prod.isActive ? 'activated' : 'disabled'} successfully`,
+      data: prod,
+    };
+  },
+
+  // 3. Store Policy & Site Settings APIs
+  getStoreSettings(): StorePolicySettings {
+    return getLocalSettings();
+  },
+
+  async adminUpdateStoreSettings(token: string, settings: Partial<StorePolicySettings>) {
+    const current = getLocalSettings();
+    const updated: StorePolicySettings = { ...current, ...settings };
+    localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(updated));
+    return {
+      success: true,
+      message: 'Store settings and policies updated successfully',
+      data: updated,
+    };
   },
 };

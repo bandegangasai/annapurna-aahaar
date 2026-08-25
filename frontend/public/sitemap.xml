@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Main 100% Free Production Storefront -->
+  <!-- Main Production Storefront -->
   <url>
     <loc>https://bandegangasai.github.io/annapurna-aahaar/</loc>
     <changefreq>daily</changefreq>
@@ -54,7 +54,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Company & Contact Pages -->
+  <!-- Story & Help Pages -->
   <url>
     <loc>https://bandegangasai.github.io/annapurna-aahaar/#/our-story</loc>
     <changefreq>monthly</changefreq>
@@ -69,6 +69,31 @@
     <loc>https://bandegangasai.github.io/annapurna-aahaar/#/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/shipping-policy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/return-policy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/privacy-policy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bandegangasai.github.io/annapurna-aahaar/#/terms</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://bandegangasai.github.io/annapurna-aahaar/#/track</loc>

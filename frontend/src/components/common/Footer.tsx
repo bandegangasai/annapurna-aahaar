@@ -11,6 +11,9 @@ import {
   ArrowRight,
   Headphones,
   CreditCard,
+  FileText,
+  RotateCcw,
+  HelpCircle,
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -104,7 +107,7 @@ export const Footer: React.FC = () => {
           </div>
 
           <p className="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-sm">
-            Handcrafted traditional Indian food products produced with pure farm-sourced grains, sun-dried hygiene, and authentic home-style recipes.
+            Handcrafted traditional Indian food products produced with pure farm-sourced grains, sun-dried hygiene, and authentic home-style recipes from Bhainsa, Telangana.
           </p>
 
           <div className="pt-2 text-xs text-stone-300 space-y-2">
@@ -123,11 +126,11 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            {/* Dedicated IVR Hotline */}
+            {/* Dedicated IVR Helpline */}
             <div className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-[#C79A45] shrink-0" />
               <span>
-                Dedicated 24/7 IVR: <a href="tel:9347036152" className="text-[#C79A45] font-bold hover:underline">9347036152</a>
+                24/7 Telephone Helpline: <a href="tel:9347036152" className="text-[#C79A45] font-bold hover:underline">9347036152</a>
               </span>
             </div>
 
@@ -136,11 +139,6 @@ export const Footer: React.FC = () => {
               <span>
                 Payment Contact: <strong className="text-white">9542836358</strong> (UPI: 9542836358@ybl)
               </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-[#C79A45]/70 shrink-0" />
-              <span>Kitchen Help: +91 6305970844 / +91 8688456925</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -217,28 +215,47 @@ export const Footer: React.FC = () => {
                 {t('cat_noodles')}
               </Link>
             </li>
+            <li>
+              <Link to="/faq" className="hover:text-[#C79A45] transition-colors flex items-center gap-1 text-[#C79A45]">
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>Frequently Asked Questions</span>
+              </Link>
+            </li>
           </ul>
         </div>
 
-        {/* Policies & Admin Portal */}
+        {/* Customer Policies & Admin */}
         <div className="space-y-4">
           <h4 className="font-serif font-bold text-white text-base mb-4 border-b border-[#C79A45]/30 pb-2">
-            Business Policies
+            Store Policies
           </h4>
           <ul className="space-y-2 text-xs text-stone-300">
             <li>
-              <span className="block text-[#F8F3E7] font-semibold">Voice Ordering:</span>
-              <a href="tel:9347036152" className="text-[#C79A45] font-bold">9347036152</a> (24/7 Hotline)
+              <Link to="/shipping-policy" className="hover:text-[#C79A45] transition-colors flex items-center gap-1.5">
+                <Truck className="w-3.5 h-3.5 text-[#C79A45]" />
+                <span>Shipping & Delivery Policy</span>
+              </Link>
             </li>
             <li>
-              <span className="block text-[#F8F3E7] font-semibold">Payment Modes:</span>
-              <span>Cash on Delivery & Direct UPI (9542836358@ybl)</span>
+              <Link to="/return-policy" className="hover:text-[#C79A45] transition-colors flex items-center gap-1.5">
+                <RotateCcw className="w-3.5 h-3.5 text-[#C79A45]" />
+                <span>7-Day Return & Refund</span>
+              </Link>
             </li>
             <li>
-              <span className="block text-[#F8F3E7] font-semibold">Dispatch Location:</span>
-              <span>Bhainsa, Nirmal, Telangana (504103)</span>
+              <Link to="/privacy-policy" className="hover:text-[#C79A45] transition-colors flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#C79A45]" />
+                <span>Privacy & Security Policy</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/terms" className="hover:text-[#C79A45] transition-colors flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-[#C79A45]" />
+                <span>Terms & Conditions</span>
+              </Link>
             </li>
           </ul>
+
           <div className="pt-2">
             <Link
               to="/admin/login"
@@ -254,7 +271,7 @@ export const Footer: React.FC = () => {
       {/* Bottom Legal & Copyright Bar */}
       <div className="border-t border-[#C79A45]/20 py-5 px-4 text-center text-xs text-stone-400 bg-[#071512]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p>© {new Date().getFullYear()} Annapurna Aahaar. All rights reserved. Registered in Bhainsa, Telangana.</p>
+          <p>© {new Date().getFullYear()} Annapurna Aahaar. All rights reserved. Registered in Bhainsa, Telangana (504103).</p>
           <p className="text-[#C79A45]">
             {t('tagline')} • Founder & Owner: <strong>Bande Omkar</strong>
           </p>

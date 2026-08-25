@@ -21,6 +21,12 @@ import { OrderTrack } from './pages/OrderTrack';
 import { OurStory } from './pages/OurStory';
 import { WhyUs } from './pages/WhyUs';
 import { Contact } from './pages/Contact';
+import { FAQ } from './pages/FAQ';
+import { ShippingPolicy } from './pages/ShippingPolicy';
+import { ReturnPolicy } from './pages/ReturnPolicy';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { Terms } from './pages/Terms';
+import { NotFound } from './pages/NotFound';
 import { AdminLogin } from './pages/admin/AdminLogin';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 
@@ -107,6 +113,12 @@ export function App() {
                   <Route path="/our-story" element={<OurStory />} />
                   <Route path="/why-us" element={<WhyUs />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                  <Route path="/return-policy" element={<ReturnPolicy />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/404" element={<NotFound />} />
 
                   {/* Admin Management Routes */}
                   <Route path="/admin" element={<AdminLogin />} />
@@ -114,8 +126,8 @@ export function App() {
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/call-center" element={<AdminDashboard initialTab="call-center" />} />
 
-                  {/* Fallback 404 */}
-                  <Route path="*" element={<Home />} />
+                  {/* Dedicated 404 Fallback */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>
             </HashRouter>

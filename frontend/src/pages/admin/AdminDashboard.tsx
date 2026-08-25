@@ -37,6 +37,18 @@ import {
   PhoneMissed,
   Globe,
   Languages,
+  Plus,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
+  Save,
+  MessageSquare,
+  Settings,
+  Star,
+  Sliders,
+  X,
+  Store,
+  Layers,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -52,6 +64,8 @@ import {
   Call,
   IvrInteraction,
   CallCenterStats,
+  Review,
+  StorePolicySettings,
 } from '../../types';
 
 // Web Audio API chime generator (zero external mp3 dependency, 100% reliable)
@@ -89,7 +103,18 @@ const playOrderChime = () => {
 };
 
 interface AdminDashboardProps {
-  initialTab?: 'orders' | 'call-center' | 'payments' | 'reports' | 'customers' | 'products' | 'contacts' | 'audit' | 'system-health';
+  initialTab?:
+    | 'orders'
+    | 'call-center'
+    | 'products'
+    | 'reviews'
+    | 'settings'
+    | 'payments'
+    | 'reports'
+    | 'customers'
+    | 'contacts'
+    | 'audit'
+    | 'system-health';
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'orders' }) => {
@@ -98,7 +123,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<
-    'orders' | 'call-center' | 'payments' | 'reports' | 'customers' | 'products' | 'contacts' | 'audit' | 'system-health'
+    | 'orders'
+    | 'call-center'
+    | 'products'
+    | 'reviews'
+    | 'settings'
+    | 'payments'
+    | 'reports'
+    | 'customers'
+    | 'contacts'
+    | 'audit'
+    | 'system-health'
   >(initialTab);
 
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -111,6 +146,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [systemHealth, setSystemHealth] = useState<any>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  // Reviews & Moderation State
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewFilter, setReviewFilter] = useState<'ALL' | 'PENDING' | 'APPROVED'>('ALL');
+
+  // Store Policy & Website Settings State
+  const [storeSettings, setStoreSettings] = useState<StorePolicySettings>(api.getStoreSettings());
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  // Product Management Modal State
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [productForm, setProductForm] = useState({
+    name: '',
+    slug: '',
+    category: 'Papad',
+    description: '',
+    imageUrl: '/products/sevaya.webp',
+    sku: '',
+    ingredients: '',
+    packagingInfo: '',
+    seoTitle: '',
+    seoDescription: '',
+    isFeatured: false,
+    isActive: true,
+    variants: [
+      { id: `var-${Date.now()}-1`, productId: '', weight: '500 g', unit: '500g', price: 100, stock: 100, isActive: true },
+    ],
+  });
 
   // Call Center State
   const [callCenterStats, setCallCenterStats] = useState<CallCenterStats | null>(null);
@@ -132,7 +196,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [newOrderAlert, setNewOrderAlert] = useState<Order | null>(null);
 
-  // Product price editor modal
+  // Product price editor quick modal
   const [editingVariant, setEditingVariant] = useState<{
     variantId: string;
     productName: string;
@@ -251,6 +315,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
         if (healthRes.success && healthRes.data) {
           setSystemHealth(healthRes.data);
         }
+      } catch (e) {}
+
+      // 11. Fetch Customer Reviews
+      try {
+        const revRes = await api.adminGetReviews(token || undefined);
+        if (revRes.success && Array.isArray(revRes.data)) {
+          setReviews(revRes.data);
+        }
+      } catch (e) {}
+
+      // 12. Fetch Store Settings
+      try {
+        const currentSettings = api.getStoreSettings();
+        setStoreSettings(currentSettings);
       } catch (e) {}
 
       setLastSyncTime(new Date());
@@ -389,7 +467,170 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
     }
   };
 
+  // Open Add Product Modal
+  const handleOpenAddProduct = () => {
+    setEditingProduct(null);
+    setProductForm({
+      name: '',
+      slug: '',
+      category: 'Papad',
+      description: '',
+      imageUrl: '/products/sevaya.webp',
+      sku: '',
+      ingredients: '100% Traditional farm-sourced grains & authentic regional spices.',
+      packagingInfo: 'Sealed food-grade moisture resistant pouch packaging.',
+      seoTitle: '',
+      seoDescription: '',
+      isFeatured: false,
+      isActive: true,
+      variants: [
+        { id: `var-${Date.now()}-1`, productId: '', weight: '500 g', unit: '500g', price: 120, stock: 100, isActive: true },
+      ],
+    });
+    setIsProductModalOpen(true);
+  };
+
+  // Open Edit Product Modal
+  const handleOpenEditProduct = (prod: Product) => {
+    setEditingProduct(prod);
+    setProductForm({
+      name: prod.name,
+      slug: prod.slug,
+      category: prod.category,
+      description: prod.description,
+      imageUrl: prod.imageUrl,
+      sku: prod.sku || '',
+      ingredients: prod.ingredients || '',
+      packagingInfo: prod.packagingInfo || '',
+      seoTitle: prod.seoTitle || '',
+      seoDescription: prod.seoDescription || '',
+      isFeatured: prod.isFeatured,
+      isActive: prod.isActive,
+      variants:
+        prod.variants && prod.variants.length > 0
+          ? [...prod.variants]
+          : [
+              {
+                id: `var-${Date.now()}-1`,
+                productId: prod.id,
+                weight: '500 g',
+                unit: '500g',
+                price: 120,
+                stock: 100,
+                isActive: true,
+              },
+            ],
+    });
+    setIsProductModalOpen(true);
+  };
+
+  // Save Product (Create or Update)
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingProduct) {
+        const res = await api.adminUpdateProduct(token || '', editingProduct.id, productForm);
+        if (res.success) {
+          showToast(`Product "${productForm.name}" updated successfully!`, 'success');
+        }
+      } else {
+        const res = await api.adminCreateProduct(token || '', productForm);
+        if (res.success) {
+          showToast(`Product "${productForm.name}" created successfully!`, 'success');
+        }
+      }
+      setIsProductModalOpen(false);
+      setEditingProduct(null);
+      fetchDashboardData(true);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save product.', 'error');
+    }
+  };
+
+  // Toggle Product Active
+  const handleToggleProductStatus = async (prodId: string) => {
+    try {
+      const res = await api.adminToggleProductStatus(token || '', prodId);
+      if (res.success) {
+        showToast(res.message, 'success');
+        fetchDashboardData(true);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to toggle product status.', 'error');
+    }
+  };
+
+  // Delete Product
+  const handleDeleteProduct = async (prodId: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete "${name}" from the store catalogue?`)) return;
+    try {
+      const res = await api.adminDeleteProduct(token || '', prodId);
+      if (res.success) {
+        showToast(`Product "${name}" deleted successfully.`, 'info');
+        fetchDashboardData(true);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to delete product.', 'error');
+    }
+  };
+
+  // Review Actions
+  const handleApproveReview = async (reviewId: string) => {
+    try {
+      const res = await api.adminApproveReview(token || '', reviewId);
+      if (res.success) {
+        showToast('Review approved & published to live storefront!', 'success');
+        fetchDashboardData(true);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to approve review.', 'error');
+    }
+  };
+
+  const handleRejectReview = async (reviewId: string) => {
+    try {
+      const res = await api.adminRejectReview(token || '', reviewId);
+      if (res.success) {
+        showToast('Review rejected.', 'info');
+        fetchDashboardData(true);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to reject review.', 'error');
+    }
+  };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!window.confirm('Delete this customer review permanently?')) return;
+    try {
+      const res = await api.adminDeleteReview(token || '', reviewId);
+      if (res.success) {
+        showToast('Review removed.', 'info');
+        fetchDashboardData(true);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to delete review.', 'error');
+    }
+  };
+
+  // Save Store Settings
+  const handleSaveStoreSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingSettings(true);
+    try {
+      const res = await api.adminUpdateStoreSettings(token || '', storeSettings);
+      if (res.success) {
+        showToast('Store policies and website settings updated successfully!', 'success');
+        fetchDashboardData(true);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update store settings.', 'error');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   const pendingVerificationPayments = payments.filter((p) => p.status === 'PENDING_VERIFICATION');
+  const pendingReviewsCount = reviews.filter((r) => !r.isApproved).length;
 
   // Filter orders by source and language
   const filteredOrders = orders.filter((o) => {
@@ -589,6 +830,50 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
             </span>
           </button>
 
+          {/* Product & Catalog Management Tab */}
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              activeTab === 'products'
+                ? 'bg-heritage-maroon text-cream-100 shadow-md border border-heritage-gold'
+                : 'bg-white text-stone-700 hover:bg-cream-100 border border-stone-200'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Product & Catalog Manager ({products.length})</span>
+          </button>
+
+          {/* Reviews Moderation Tab */}
+          <button
+            onClick={() => setActiveTab('reviews')}
+            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              activeTab === 'reviews'
+                ? 'bg-heritage-maroon text-cream-100 shadow-md border border-heritage-gold'
+                : 'bg-white text-stone-700 hover:bg-cream-100 border border-stone-200'
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-amber-500" />
+            <span>Reviews Moderation</span>
+            {pendingReviewsCount > 0 && (
+              <span className="bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black animate-pulse">
+                {pendingReviewsCount} New
+              </span>
+            )}
+          </button>
+
+          {/* Store & Policy Settings Tab */}
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              activeTab === 'settings'
+                ? 'bg-heritage-maroon text-cream-100 shadow-md border border-heritage-gold'
+                : 'bg-white text-stone-700 hover:bg-cream-100 border border-stone-200'
+            }`}
+          >
+            <Settings className="w-3.5 h-3.5 text-indigo-500" />
+            <span>Store & Policy Settings</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('payments')}
             className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
@@ -628,17 +913,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
           </button>
 
           <button
-            onClick={() => setActiveTab('products')}
-            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
-              activeTab === 'products'
-                ? 'bg-heritage-maroon text-cream-100 shadow-md border border-heritage-gold'
-                : 'bg-white text-stone-700 hover:bg-cream-100 border border-stone-200'
-            }`}
-          >
-            Product & Price Editor
-          </button>
-
-          <button
             onClick={() => setActiveTab('contacts')}
             className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
               activeTab === 'contacts'
@@ -662,13 +936,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
 
           <button
             onClick={() => setActiveTab('system-health')}
-            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
+            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               activeTab === 'system-health'
                 ? 'bg-heritage-maroon text-cream-100 shadow-md border border-heritage-gold'
                 : 'bg-white text-stone-700 hover:bg-cream-100 border border-stone-200'
             }`}
           >
-            System Health
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>System Health</span>
           </button>
         </div>
 
@@ -1449,44 +1724,125 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
         )}
 
         {/* ======================================================== */}
-        {/* TAB 6: PRODUCT & PRICE EDITOR */}
+        {/* TAB: PRODUCT & CATALOG MANAGEMENT */}
         {/* ======================================================== */}
         {activeTab === 'products' && (
-          <div className="bg-white rounded-3xl border border-heritage-gold/25 shadow-sm overflow-hidden p-6 space-y-4">
-            <h3 className="font-serif font-bold text-xl text-heritage-maroon border-b border-stone-100 pb-3">
-              Product & Variant Price Editor
-            </h3>
-            <div className="space-y-6">
+          <div className="bg-white rounded-3xl border border-heritage-gold/25 shadow-sm overflow-hidden p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-100 pb-4">
+              <div>
+                <h3 className="font-serif font-bold text-xl text-heritage-maroon">
+                  Product & Storefront Catalog Manager
+                </h3>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Create, edit, toggle stock/visibility, and manage price variants for all authentic food products.
+                </p>
+              </div>
+              <button
+                onClick={handleOpenAddProduct}
+                className="bg-heritage-maroon hover:bg-heritage-darkMaroon text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-md flex items-center gap-2 transition-all"
+              >
+                <Plus className="w-4 h-4 text-heritage-gold" />
+                <span>Add New Authentic Product</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
               {products.map((p) => (
-                <div key={p.id} className="p-4 rounded-2xl bg-[#FAF6EE] border border-heritage-gold/30 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-serif font-bold text-base text-stone-900">{p.name}</h4>
-                      <span className="text-xs text-stone-500">{p.category}</span>
+                <div
+                  key={p.id}
+                  className={`p-5 rounded-2xl border transition-all ${
+                    p.isActive
+                      ? 'bg-[#FAF6EE] border-heritage-gold/30 shadow-xs'
+                      : 'bg-stone-100 border-stone-300 opacity-70'
+                  }`}
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 rounded-2xl bg-white border border-heritage-gold/30 p-2 shrink-0 flex items-center justify-center overflow-hidden">
+                        <img
+                          src={p.imageUrl}
+                          alt={p.name}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-serif font-bold text-base text-stone-900">{p.name}</h4>
+                          <span
+                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                              p.isActive
+                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                : 'bg-stone-200 text-stone-700'
+                            }`}
+                          >
+                            {p.isActive ? 'Active on Store' : 'Disabled'}
+                          </span>
+                          {p.isFeatured && (
+                            <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-300">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500">
+                          <span className="font-medium text-stone-700">Category: {p.category}</span>
+                          <span>•</span>
+                          <span>SKU: {p.sku || `AA-${p.slug.toUpperCase()}`}</span>
+                          <span>•</span>
+                          <span>Slug: /{p.slug}</span>
+                        </div>
+                        <p className="text-xs text-stone-600 line-clamp-1 max-w-xl">{p.description}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 shrink-0 w-full md:w-auto justify-end pt-2 md:pt-0 border-t md:border-t-0 border-stone-200">
+                      <button
+                        onClick={() => handleToggleProductStatus(p.id)}
+                        className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all ${
+                          p.isActive
+                            ? 'bg-stone-200 text-stone-700 hover:bg-stone-300'
+                            : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        }`}
+                        title={p.isActive ? 'Disable from storefront' : 'Activate on storefront'}
+                      >
+                        {p.isActive ? <ToggleRight className="w-4 h-4 text-emerald-700" /> : <ToggleLeft className="w-4 h-4" />}
+                        <span>{p.isActive ? 'Deactivate' : 'Activate'}</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleOpenEditProduct(p)}
+                        className="bg-white hover:bg-cream-100 text-heritage-maroon border border-heritage-gold/50 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs"
+                      >
+                        <Edit2 className="w-3.5 h-3.5 text-heritage-gold" />
+                        <span>Edit Product</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteProduct(p.id, p.name)}
+                        className="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 p-2 rounded-xl transition-all"
+                        title="Delete Product"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Product Variants List */}
+                  <div className="mt-4 pt-3 border-t border-stone-200/70 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                     {p.variants.map((v) => (
-                      <div key={v.id} className="bg-white p-3 rounded-xl border border-stone-200 flex items-center justify-between">
+                      <div
+                        key={v.id}
+                        className="bg-white p-2.5 rounded-xl border border-stone-200 flex items-center justify-between text-xs"
+                      >
                         <div>
-                          <div className="font-bold text-xs text-stone-800">{v.weight}</div>
-                          <div className="text-sm font-black text-heritage-maroon">{formatINR(v.price)}</div>
+                          <span className="font-bold text-stone-800 block">{v.weight}</span>
+                          <span className="text-stone-500 text-[10px]">Stock: {v.stock} units</span>
                         </div>
-                        <button
-                          onClick={() =>
-                            setEditingVariant({
-                              variantId: v.id,
-                              productName: p.name,
-                              weight: v.weight,
-                              price: v.price,
-                              stock: v.stock,
-                            })
-                          }
-                          className="p-1.5 text-stone-500 hover:text-heritage-maroon hover:bg-cream-100 rounded-lg"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
+                        <div className="text-right">
+                          <span className="font-black text-heritage-maroon">{formatINR(v.price)}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1494,6 +1850,352 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
               ))}
             </div>
           </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB: CUSTOMER REVIEWS MODERATION */}
+        {/* ======================================================== */}
+        {activeTab === 'reviews' && (
+          <div className="bg-white rounded-3xl border border-heritage-gold/25 shadow-sm overflow-hidden p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-100 pb-4">
+              <div>
+                <h3 className="font-serif font-bold text-xl text-heritage-maroon">
+                  Customer Reviews & Ratings Moderation
+                </h3>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Approve, reject, or moderate authentic feedback submitted by customers on product pages.
+                </p>
+              </div>
+
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-2 bg-[#FAF6EE] p-1 rounded-2xl border border-heritage-gold/30 text-xs font-bold">
+                <button
+                  onClick={() => setReviewFilter('ALL')}
+                  className={`px-3 py-1.5 rounded-xl transition-all ${
+                    reviewFilter === 'ALL' ? 'bg-heritage-maroon text-white shadow-2xs' : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  All ({reviews.length})
+                </button>
+                <button
+                  onClick={() => setReviewFilter('PENDING')}
+                  className={`px-3 py-1.5 rounded-xl transition-all ${
+                    reviewFilter === 'PENDING' ? 'bg-amber-500 text-white shadow-2xs' : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  Pending Moderation ({reviews.filter((r) => !r.isApproved).length})
+                </button>
+                <button
+                  onClick={() => setReviewFilter('APPROVED')}
+                  className={`px-3 py-1.5 rounded-xl transition-all ${
+                    reviewFilter === 'APPROVED' ? 'bg-emerald-700 text-white shadow-2xs' : 'text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  Approved ({reviews.filter((r) => r.isApproved).length})
+                </button>
+              </div>
+            </div>
+
+            {/* Reviews List */}
+            <div className="space-y-4">
+              {reviews.filter((r) => {
+                if (reviewFilter === 'PENDING') return !r.isApproved;
+                if (reviewFilter === 'APPROVED') return r.isApproved;
+                return true;
+              }).length === 0 ? (
+                <div className="text-center py-12 bg-[#FAF6EE] rounded-2xl border border-stone-200 space-y-2">
+                  <MessageSquare className="w-8 h-8 text-stone-400 mx-auto" />
+                  <h4 className="font-bold text-sm text-stone-700">No Reviews in this Filter</h4>
+                  <p className="text-xs text-stone-500">
+                    When customers submit reviews on product pages, they will appear here for admin moderation.
+                  </p>
+                </div>
+              ) : (
+                reviews
+                  .filter((r) => {
+                    if (reviewFilter === 'PENDING') return !r.isApproved;
+                    if (reviewFilter === 'APPROVED') return r.isApproved;
+                    return true;
+                  })
+                  .map((rev) => (
+                    <div
+                      key={rev.id}
+                      className={`p-5 rounded-2xl border space-y-3 transition-all ${
+                        rev.isApproved
+                          ? 'bg-[#FAF6EE] border-heritage-gold/30'
+                          : 'bg-amber-50/50 border-amber-300'
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-heritage-maroon text-heritage-gold flex items-center justify-center font-bold text-xs">
+                            {rev.customerName.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-sm text-stone-900">{rev.customerName}</span>
+                              <span className="text-xs text-stone-500">({rev.customerLocation || 'Verified Buyer'})</span>
+                              <span
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                  rev.isApproved
+                                    ? 'bg-emerald-100 text-emerald-800'
+                                    : 'bg-amber-100 text-amber-900 font-extrabold'
+                                }`}
+                              >
+                                {rev.isApproved ? 'Approved & Published' : 'Pending Moderation'}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-stone-500 block">
+                              Product: <strong>{rev.productName || rev.productId}</strong> • {new Date(rev.createdAt).toLocaleDateString('en-IN')}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="flex text-amber-500">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                className={`w-4 h-4 ${
+                                  s <= rev.rating ? 'fill-amber-400 text-amber-500' : 'text-stone-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs font-bold text-stone-700">({rev.rating}/5)</span>
+                        </div>
+                      </div>
+
+                      {rev.title && <h5 className="font-bold text-xs text-stone-900">{rev.title}</h5>}
+                      <p className="text-xs text-stone-700 leading-relaxed bg-white p-3 rounded-xl border border-stone-200">
+                        {rev.comment}
+                      </p>
+
+                      <div className="flex justify-end gap-2 pt-1">
+                        {!rev.isApproved ? (
+                          <button
+                            onClick={() => handleApproveReview(rev.id)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-xs flex items-center gap-1.5"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Approve & Publish</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleRejectReview(rev.id)}
+                            className="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs px-3 py-2 rounded-xl"
+                          >
+                            Unpublish
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDeleteReview(rev.id)}
+                          className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs px-3 py-2 rounded-xl border border-rose-200 flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* TAB: STORE & POLICY SETTINGS */}
+        {/* ======================================================== */}
+        {activeTab === 'settings' && (
+          <form
+            onSubmit={handleSaveStoreSettings}
+            className="bg-white rounded-3xl border border-heritage-gold/25 shadow-sm overflow-hidden p-6 sm:p-8 space-y-8"
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-100 pb-4">
+              <div>
+                <h3 className="font-serif font-bold text-xl text-heritage-maroon">
+                  Store Policies & Business Information
+                </h3>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Update customer policies, shipping fees, return window, contact numbers, and announcement banner.
+                </p>
+              </div>
+              <button
+                type="submit"
+                disabled={isSavingSettings}
+                className="bg-heritage-maroon hover:bg-heritage-darkMaroon text-white font-bold text-xs px-6 py-2.5 rounded-2xl shadow-md flex items-center gap-2 transition-all disabled:opacity-50"
+              >
+                <Save className="w-4 h-4 text-heritage-gold" />
+                <span>{isSavingSettings ? 'Saving Changes...' : 'Save Settings'}</span>
+              </button>
+            </div>
+
+            {/* Section 1: Business Profile */}
+            <div className="space-y-4">
+              <h4 className="font-serif font-bold text-base text-heritage-maroon border-b border-stone-100 pb-2">
+                1. Business Identity & Helplines
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Business Name</label>
+                  <input
+                    type="text"
+                    value={storeSettings.businessName}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, businessName: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Tagline</label>
+                  <input
+                    type="text"
+                    value={storeSettings.tagline}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, tagline: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Founder / Owner Name</label>
+                  <input
+                    type="text"
+                    value={storeSettings.owner}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, owner: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Physical Kitchen Location</label>
+                  <input
+                    type="text"
+                    value={storeSettings.location}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, location: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">24/7 Telephone Helpline</label>
+                  <input
+                    type="text"
+                    value={storeSettings.phone}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, phone: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Official UPI ID for Payments</label>
+                  <input
+                    type="text"
+                    value={storeSettings.upiId}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, upiId: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2: Delivery & Shipping */}
+            <div className="space-y-4">
+              <h4 className="font-serif font-bold text-base text-heritage-maroon border-b border-stone-100 pb-2">
+                2. Shipping & Delivery Charges
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Standard Delivery Fee (₹)</label>
+                  <input
+                    type="number"
+                    value={storeSettings.shippingFee}
+                    onChange={(e) =>
+                      setStoreSettings({ ...storeSettings, shippingFee: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Free Shipping Threshold (₹)</label>
+                  <input
+                    type="number"
+                    value={storeSettings.freeShippingThreshold}
+                    onChange={(e) =>
+                      setStoreSettings({
+                        ...storeSettings,
+                        freeShippingThreshold: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Delivery Time Estimate</label>
+                  <input
+                    type="text"
+                    value={storeSettings.estimatedDeliveryDays}
+                    onChange={(e) =>
+                      setStoreSettings({ ...storeSettings, estimatedDeliveryDays: e.target.value })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3: Return & Refund Policy */}
+            <div className="space-y-4">
+              <h4 className="font-serif font-bold text-base text-heritage-maroon border-b border-stone-100 pb-2">
+                3. Return & Refund Policy Settings
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Return Window (Days)</label>
+                  <input
+                    type="number"
+                    value={storeSettings.returnWindowDays}
+                    onChange={(e) =>
+                      setStoreSettings({ ...storeSettings, returnWindowDays: parseInt(e.target.value) || 7 })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Refund Processing Summary</label>
+                  <input
+                    type="text"
+                    value={storeSettings.refundPolicy}
+                    onChange={(e) => setStoreSettings({ ...storeSettings, refundPolicy: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 4: Announcement Banner */}
+            <div className="space-y-4">
+              <h4 className="font-serif font-bold text-base text-heritage-maroon border-b border-stone-100 pb-2">
+                4. Store Announcement Banner
+              </h4>
+              <div>
+                <label className="text-xs font-bold text-stone-700 block mb-1">Top Banner Text</label>
+                <input
+                  type="text"
+                  value={storeSettings.announcementBanner || ''}
+                  onChange={(e) => setStoreSettings({ ...storeSettings, announcementBanner: e.target.value })}
+                  placeholder="e.g. 🌾 Pure Stone-Ground Turmeric & Sun-Dried Papads from Bhainsa..."
+                  className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-4 border-t border-stone-100">
+              <button
+                type="submit"
+                disabled={isSavingSettings}
+                className="bg-heritage-maroon hover:bg-heritage-darkMaroon text-white font-bold text-xs px-8 py-3 rounded-2xl shadow-md flex items-center gap-2 transition-all disabled:opacity-50"
+              >
+                <Save className="w-4 h-4 text-heritage-gold" />
+                <span>Save All Settings</span>
+              </button>
+            </div>
+          </form>
         )}
 
         {/* ======================================================== */}
@@ -1769,6 +2471,232 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
                 className="px-5 py-2 bg-heritage-maroon text-white rounded-xl text-xs font-bold hover:bg-heritage-darkMaroon"
               >
                 Save Price
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      {/* Comprehensive Add / Edit Product Modal */}
+      {isProductModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <form
+            onSubmit={handleSaveProduct}
+            className="bg-white max-w-2xl w-full rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 my-8"
+          >
+            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div>
+                <h3 className="font-serif font-bold text-xl text-heritage-maroon">
+                  {editingProduct ? `Edit Product: ${editingProduct.name}` : 'Add New Authentic Product'}
+                </h3>
+                <p className="text-xs text-stone-500">Configure product details, weight variants, and prices.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsProductModalOpen(false)}
+                className="text-stone-400 hover:text-stone-700 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Product Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={productForm.name}
+                    onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                    placeholder="e.g. Traditional Wheat Sevaya"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Category *</label>
+                  <select
+                    value={productForm.category}
+                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                  >
+                    <option value="Papad">Papad</option>
+                    <option value="Flours & Grains">Flours & Grains</option>
+                    <option value="Spices">Spices</option>
+                    <option value="Noodles & Instant Foods">Noodles & Instant Foods</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-stone-700 block mb-1">Product Description *</label>
+                <textarea
+                  required
+                  rows={2}
+                  value={productForm.description}
+                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                  className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl p-3 text-xs font-medium"
+                  placeholder="Authentic description of heritage craft, taste, and quality..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">Image URL / Path</label>
+                  <input
+                    type="text"
+                    value={productForm.imageUrl}
+                    onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                    placeholder="/products/sevaya.webp"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-stone-700 block mb-1">SKU / Code</label>
+                  <input
+                    type="text"
+                    value={productForm.sku}
+                    onChange={(e) => setProductForm({ ...productForm, sku: e.target.value })}
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2 text-xs font-medium"
+                    placeholder="e.g. AA-SEVAYA-01"
+                  />
+                </div>
+              </div>
+
+              {/* Variants Builder */}
+              <div className="space-y-3 pt-2 border-t border-stone-100">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-heritage-maroon uppercase tracking-wider block">
+                    Weight Variants & Pricing
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setProductForm({
+                        ...productForm,
+                        variants: [
+                          ...productForm.variants,
+                          {
+                            id: `var-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+                            productId: editingProduct?.id || '',
+                            weight: '1 kg',
+                            unit: 'kg',
+                            price: 200,
+                            stock: 100,
+                            isActive: true,
+                          },
+                        ],
+                      })
+                    }
+                    className="text-[11px] font-bold text-heritage-maroon hover:underline flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Weight Variant</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {productForm.variants.map((v, vIdx) => (
+                    <div key={v.id || vIdx} className="bg-[#FAF6EE] p-3 rounded-xl border border-stone-200 grid grid-cols-12 gap-2 items-center text-xs">
+                      <div className="col-span-4">
+                        <span className="text-[10px] text-stone-500 font-bold block">Weight / Pack</span>
+                        <input
+                          type="text"
+                          required
+                          value={v.weight}
+                          onChange={(e) => {
+                            const copy = [...productForm.variants];
+                            copy[vIdx].weight = e.target.value;
+                            setProductForm({ ...productForm, variants: copy });
+                          }}
+                          className="w-full bg-white border border-stone-300 rounded-lg px-2 py-1 text-xs font-medium"
+                          placeholder="500 g"
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <span className="text-[10px] text-stone-500 font-bold block">Price (₹)</span>
+                        <input
+                          type="number"
+                          required
+                          value={v.price}
+                          onChange={(e) => {
+                            const copy = [...productForm.variants];
+                            copy[vIdx].price = parseFloat(e.target.value) || 0;
+                            setProductForm({ ...productForm, variants: copy });
+                          }}
+                          className="w-full bg-white border border-stone-300 rounded-lg px-2 py-1 text-xs font-bold text-heritage-maroon"
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <span className="text-[10px] text-stone-500 font-bold block">Stock (Units)</span>
+                        <input
+                          type="number"
+                          value={v.stock}
+                          onChange={(e) => {
+                            const copy = [...productForm.variants];
+                            copy[vIdx].stock = parseInt(e.target.value) || 0;
+                            setProductForm({ ...productForm, variants: copy });
+                          }}
+                          className="w-full bg-white border border-stone-300 rounded-lg px-2 py-1 text-xs font-medium"
+                        />
+                      </div>
+                      <div className="col-span-2 text-right pt-3">
+                        {productForm.variants.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const copy = productForm.variants.filter((_, idx) => idx !== vIdx);
+                              setProductForm({ ...productForm, variants: copy });
+                            }}
+                            className="text-rose-600 hover:text-rose-800 p-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Toggles */}
+              <div className="flex items-center gap-6 pt-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-stone-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={productForm.isActive}
+                    onChange={(e) => setProductForm({ ...productForm, isActive: e.target.checked })}
+                    className="w-4 h-4 text-heritage-maroon rounded"
+                  />
+                  <span>Active & Visible on Storefront</span>
+                </label>
+                <label className="flex items-center gap-2 text-xs font-bold text-stone-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={productForm.isFeatured}
+                    onChange={(e) => setProductForm({ ...productForm, isFeatured: e.target.checked })}
+                    className="w-4 h-4 text-heritage-maroon rounded"
+                  />
+                  <span>Featured on Homepage</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setIsProductModalOpen(false)}
+                className="px-5 py-2.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-2xl text-xs font-bold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-heritage-maroon hover:bg-heritage-darkMaroon text-white rounded-2xl text-xs font-bold shadow-md transition-all flex items-center gap-2"
+              >
+                <Save className="w-4 h-4 text-heritage-gold" />
+                <span>{editingProduct ? 'Save Changes' : 'Create Product'}</span>
               </button>
             </div>
           </form>

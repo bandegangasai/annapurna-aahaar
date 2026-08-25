@@ -4,8 +4,23 @@ export interface ProductVariant {
   weight: string;
   unit: string;
   price: number;
+  discountPrice?: number;
   stock: number;
+  sku?: string;
   isActive: boolean;
+}
+
+export interface Review {
+  id: string;
+  productId: string;
+  productName?: string;
+  customerName: string;
+  customerLocation?: string;
+  rating: number; // 1 to 5
+  title?: string;
+  comment: string;
+  isApproved: boolean;
+  createdAt: string;
 }
 
 export interface Product {
@@ -15,10 +30,42 @@ export interface Product {
   description: string;
   category: string;
   imageUrl: string;
+  gallery?: string[];
   isFeatured: boolean;
   isActive: boolean;
+  sku?: string;
+  ingredients?: string;
+  packagingInfo?: string;
+  seoTitle?: string;
+  seoDescription?: string;
   variants: ProductVariant[];
   related?: Product[];
+  reviews?: Review[];
+  averageRating?: number;
+  totalReviews?: number;
+}
+
+export interface StorePolicySettings {
+  businessName: string;
+  tagline: string;
+  owner: string;
+  location: string;
+  pincode: string;
+  phone: string;
+  email: string;
+  businessHours: string;
+  upiId: string;
+  shippingFee: number;
+  freeShippingThreshold: number;
+  estimatedDeliveryDays: string;
+  shippingRegions: string;
+  returnWindowDays: number;
+  returnEligibility: string;
+  refundPolicy: string;
+  cancellationPolicy: string;
+  announcementBanner?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface CartItem {
