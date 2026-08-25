@@ -1,0 +1,18 @@
+{
+  "short_name": "Annapurna Aahaar",
+  "name": "Annapurna Aahaar — Traditional Indian Food Products",
+  "description": "Authentic handcrafted Indian food products including whole-wheat roasted sevaya, sun-cured papads, and stone-ground turmeric powder from Bhainsa, Nirmal District, Telangana (504103).",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "128x128 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#F8F3E7",
+  "theme_color": "#173F35",
+  "display": "standalone",
+  "orientation": "portrait"
+}

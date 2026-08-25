@@ -1,6 +1,19 @@
 # Robots.txt for Annapurna Aahaar
+# Official Storefront: https://bandegangasai.github.io/annapurna-aahaar/
 User-agent: *
 Allow: /
+Allow: /assets/
+Allow: /images/
+Allow: /products/
+Allow: /*.js
+Allow: /*.css
+Allow: /*.svg
+Allow: /*.webp
+Allow: /*.jpg
+Allow: /*.png
+Allow: /favicon.svg
+Allow: /manifest.json
+Allow: /sitemap.xml
 Allow: /#/products
 Allow: /#/our-story
 Allow: /#/why-us
