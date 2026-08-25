@@ -9,6 +9,7 @@ import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
 import { CartDrawer } from './components/cart/CartDrawer';
 import { IvrCallModal } from './components/ivr/IvrCallModal';
+import { AiAssistantModal } from './components/common/AiAssistantModal';
 
 // Pages
 import { Home } from './pages/Home';
@@ -45,6 +46,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {!isAdminDashboard && <CartDrawer />}
       <main className="flex-grow">{children}</main>
       {!isAdminDashboard && <Footer />}
+
+      {/* AI Smart Product Assistant Modal */}
+      {!isAdminDashboard && <AiAssistantModal />}
 
       {/* Interactive Voice IVR Call Modal */}
       <IvrCallModal

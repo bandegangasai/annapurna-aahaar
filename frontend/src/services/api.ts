@@ -1,5 +1,6 @@
 import {
   Product,
+  ProductVariant,
   Order,
   OrderItem,
   ContactMessage,
@@ -9,6 +10,7 @@ import {
   CallCenterStats,
   Review,
   StorePolicySettings,
+  Coupon,
 } from '../types';
 
 const API_BASE = 'https://annapurna-aahaar-1.onrender.com/api';
@@ -143,6 +145,57 @@ const LOCAL_ORDERS_KEY = 'annapurna_orders_db_v3';
 const LOCAL_MESSAGES_KEY = 'annapurna_messages_db_v3';
 const LOCAL_REVIEWS_KEY = 'annapurna_reviews_db_v1';
 const LOCAL_SETTINGS_KEY = 'annapurna_store_settings_v1';
+const LOCAL_COUPONS_KEY = 'annapurna_coupons_db_v1';
+
+const INITIAL_COUPONS: Coupon[] = [
+  {
+    id: 'coup-1',
+    code: 'WELCOME10',
+    discountType: 'percentage',
+    discountValue: 10,
+    minOrderAmount: 200,
+    maxDiscount: 50,
+    isActive: true,
+    description: '10% OFF on your first traditional food order (Min. ₹200)',
+  },
+  {
+    id: 'coup-2',
+    code: 'AAHAAR50',
+    discountType: 'fixed',
+    discountValue: 50,
+    minOrderAmount: 450,
+    isActive: true,
+    description: 'Flat ₹50 OFF on family orders above ₹450',
+  },
+  {
+    id: 'coup-3',
+    code: 'FESTIVE15',
+    discountType: 'percentage',
+    discountValue: 15,
+    minOrderAmount: 700,
+    maxDiscount: 150,
+    isActive: true,
+    description: 'Festive special: 15% OFF on bulk orders above ₹700',
+  },
+];
+
+function getLocalCoupons(): Coupon[] {
+  try {
+    const saved = localStorage.getItem(LOCAL_COUPONS_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  localStorage.setItem(LOCAL_COUPONS_KEY, JSON.stringify(INITIAL_COUPONS));
+  return INITIAL_COUPONS;
+}
+
+function saveLocalCoupons(coupons: Coupon[]): void {
+  try {
+    localStorage.setItem(LOCAL_COUPONS_KEY, JSON.stringify(coupons));
+  } catch {}
+}
 
 export const DEFAULT_STORE_SETTINGS: StorePolicySettings = {
   businessName: 'Annapurna Aahaar',
@@ -377,6 +430,8 @@ export const api = {
       quantity: number;
     }>;
     notes?: string;
+    discountAmount?: number;
+    couponCode?: string;
     paymentMethod: 'OFFLINE' | 'ONLINE';
   }) {
     let cloudOrder: Order | null = null;
@@ -422,8 +477,9 @@ export const api = {
     });
 
     const subtotal = orderItems.reduce((sum, item) => sum + item.totalPrice, 0);
+    const discountAmount = Number(orderPayload.discountAmount) || 0;
     const deliveryFee = subtotal >= 500 ? 0 : 40;
-    const total = subtotal + deliveryFee;
+    const total = Math.max(0, subtotal - discountAmount + deliveryFee);
     const randomDigits = Math.floor(1000 + Math.random() * 9000);
     const orderNumber = `AA-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${randomDigits}`;
 
@@ -435,6 +491,8 @@ export const api = {
       paymentMethod: orderPayload.paymentMethod === 'ONLINE' ? 'ONLINE_RAZORPAY' : 'OFFLINE_COD',
       paymentStatus: orderPayload.paymentMethod === 'ONLINE' ? 'PAID' : 'PENDING',
       subtotal,
+      discountAmount: discountAmount > 0 ? discountAmount : undefined,
+      couponCode: orderPayload.couponCode,
       deliveryFee,
       total,
       notes: orderPayload.notes,
@@ -1205,6 +1263,161 @@ export const api = {
       success: true,
       message: 'Store settings and policies updated successfully',
       data: updated,
+    };
+  },
+
+  // 4. Coupons & Promotion Management APIs
+  getCoupons(): Coupon[] {
+    return getLocalCoupons().filter((c) => c.isActive);
+  },
+
+  adminGetAllCoupons(token?: string): Coupon[] {
+    return getLocalCoupons();
+  },
+
+  validateCoupon(code: string, subtotal: number): { isValid: boolean; discount: number; message: string; coupon?: Coupon } {
+    const cleanCode = code.trim().toUpperCase();
+    const coupons = getLocalCoupons();
+    const coupon = coupons.find((c) => c.code.toUpperCase() === cleanCode && c.isActive);
+
+    if (!coupon) {
+      return { isValid: false, discount: 0, message: 'Invalid or expired coupon code.' };
+    }
+
+    if (subtotal < coupon.minOrderAmount) {
+      return {
+        isValid: false,
+        discount: 0,
+        message: `This coupon requires a minimum order value of ₹${coupon.minOrderAmount}.`,
+      };
+    }
+
+    let discount = 0;
+    if (coupon.discountType === 'percentage') {
+      discount = (subtotal * coupon.discountValue) / 100;
+      if (coupon.maxDiscount && discount > coupon.maxDiscount) {
+        discount = coupon.maxDiscount;
+      }
+    } else {
+      discount = coupon.discountValue;
+    }
+
+    discount = Math.min(discount, subtotal);
+
+    return {
+      isValid: true,
+      discount: Math.round(discount),
+      message: `Coupon "${coupon.code}" applied! You saved ₹${Math.round(discount)}.`,
+      coupon,
+    };
+  },
+
+  adminCreateCoupon(token: string, coupon: Partial<Coupon>) {
+    const list = getLocalCoupons();
+    const newCoupon: Coupon = {
+      id: `coup-${Date.now()}`,
+      code: (coupon.code || 'PROMO').toUpperCase().trim(),
+      discountType: coupon.discountType || 'percentage',
+      discountValue: Number(coupon.discountValue) || 10,
+      minOrderAmount: Number(coupon.minOrderAmount) || 0,
+      maxDiscount: coupon.maxDiscount ? Number(coupon.maxDiscount) : undefined,
+      isActive: coupon.isActive !== undefined ? coupon.isActive : true,
+      description: coupon.description || '',
+    };
+    list.unshift(newCoupon);
+    saveLocalCoupons(list);
+    return { success: true, message: 'Coupon created successfully', data: newCoupon };
+  },
+
+  adminUpdateCoupon(token: string, id: string, updates: Partial<Coupon>) {
+    const list = getLocalCoupons();
+    const idx = list.findIndex((c) => c.id === id);
+    if (idx === -1) throw new Error('Coupon not found');
+    list[idx] = { ...list[idx], ...updates };
+    if (list[idx].code) list[idx].code = list[idx].code.toUpperCase().trim();
+    saveLocalCoupons(list);
+    return { success: true, message: 'Coupon updated successfully', data: list[idx] };
+  },
+
+  adminDeleteCoupon(token: string, id: string) {
+    let list = getLocalCoupons();
+    list = list.filter((c) => c.id !== id);
+    saveLocalCoupons(list);
+    return { success: true, message: 'Coupon deleted successfully' };
+  },
+
+  adminToggleCoupon(token: string, id: string) {
+    const list = getLocalCoupons();
+    const c = list.find((item) => item.id === id);
+    if (!c) throw new Error('Coupon not found');
+    c.isActive = !c.isActive;
+    saveLocalCoupons(list);
+    return { success: true, message: `Coupon ${c.isActive ? 'activated' : 'deactivated'}`, data: c };
+  },
+
+  // 5. Inventory & Stock Alerts
+  adminUpdateStock(token: string, productId: string, variantId: string, stock: number) {
+    const prods = getLocalProducts();
+    const p = prods.find((pr) => pr.id === productId);
+    if (p) {
+      const v = p.variants.find((vr) => vr.id === variantId);
+      if (v) {
+        v.stock = stock;
+        localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(prods));
+        return { success: true, message: 'Stock updated', data: v };
+      }
+    }
+    throw new Error('Variant not found');
+  },
+
+  getLowStockVariants(threshold = 10): Array<{ product: Product; variant: ProductVariant }> {
+    const prods = getLocalProducts();
+    const lowStock: Array<{ product: Product; variant: ProductVariant }> = [];
+    for (const p of prods) {
+      for (const v of p.variants) {
+        if (v.stock <= threshold) {
+          lowStock.push({ product: p, variant: v });
+        }
+      }
+    }
+    return lowStock;
+  },
+
+  // 6. Comprehensive Sales Analytics
+  adminGetSalesAnalytics() {
+    const orders = getLocalOrders();
+    const totalOrders = orders.length;
+    const completedOrders = orders.filter((o) => o.status === 'DELIVERED' || o.paymentStatus === 'PAID');
+    const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+    const avgOrderValue = completedOrders.length > 0 ? totalRevenue / completedOrders.length : 0;
+
+    const productSalesMap: Record<string, { name: string; quantity: number; revenue: number }> = {};
+    for (const o of completedOrders) {
+      for (const it of o.items || []) {
+        const key = it.productName;
+        if (!productSalesMap[key]) {
+          productSalesMap[key] = { name: key, quantity: 0, revenue: 0 };
+        }
+        productSalesMap[key].quantity += it.quantity;
+        productSalesMap[key].revenue += it.totalPrice;
+      }
+    }
+
+    const topSellingProducts = Object.values(productSalesMap).sort((a, b) => b.quantity - a.quantity);
+
+    const statusCounts: Record<string, number> = {};
+    orders.forEach((o) => {
+      statusCounts[o.status] = (statusCounts[o.status] || 0) + 1;
+    });
+
+    return {
+      totalOrders,
+      completedOrdersCount: completedOrders.length,
+      totalRevenue,
+      avgOrderValue,
+      topSellingProducts,
+      statusCounts,
+      recentOrders: orders.slice(0, 10),
     };
   },
 };

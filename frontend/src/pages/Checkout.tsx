@@ -11,14 +11,17 @@ import {
   Copy,
   Check,
   Phone,
+  Tag,
+  MessageCircle,
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { useLanguage } from '../context/LanguageContext';
 import { SEOHead } from '../components/common/SEOHead';
 import { formatINR, getProductImageUrl } from '../utils/formatters';
+import { generateWhatsAppOrderUrl } from '../utils/whatsapp';
 import { api } from '../services/api';
-import { CartItem } from '../types';
+import { CartItem, Coupon } from '../types';
 
 declare global {
   interface Window {
@@ -64,6 +67,42 @@ export const Checkout: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
+
+  const finalTotal = Math.max(0, subtotal - couponDiscount + deliveryFee);
+
+  const handleApplyCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError('');
+    setCouponSuccess('');
+    if (!couponCode.trim()) return;
+
+    const res = api.validateCoupon(couponCode, subtotal);
+    if (res.isValid && res.coupon) {
+      setAppliedCoupon(res.coupon);
+      setCouponDiscount(res.discount);
+      setCouponSuccess(res.message);
+      showToast(res.message, 'success');
+    } else {
+      setAppliedCoupon(null);
+      setCouponDiscount(0);
+      setCouponError(res.message);
+      showToast(res.message, 'error');
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponCode('');
+    setCouponSuccess('');
+    setCouponError('');
+  };
 
   useEffect(() => {
     api.getPaymentConfig().then((res) => {
@@ -170,6 +209,8 @@ export const Checkout: React.FC = () => {
         notes: paymentMethod === 'MANUAL_UPI'
           ? `[Direct UPI Ref: ${manualUpiRef.trim()}] ${formData.notes.trim()}`
           : formData.notes.trim() || undefined,
+        discountAmount: couponDiscount > 0 ? couponDiscount : undefined,
+        couponCode: appliedCoupon?.code,
         paymentMethod: (paymentMethod === 'ONLINE' ? 'ONLINE' : 'OFFLINE') as 'ONLINE' | 'OFFLINE',
       };
 
@@ -647,12 +688,60 @@ export const Checkout: React.FC = () => {
                 })}
               </div>
 
+              {/* Coupon Application Box */}
+              <div className="bg-[#FAF6EE] p-3.5 rounded-2xl border border-[#C79A45]/30 space-y-2">
+                <span className="text-xs font-bold text-[#173F35] flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-[#C79A45]" />
+                  <span>Have a Coupon or Promo Code?</span>
+                </span>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between text-xs bg-white p-2.5 rounded-xl border border-emerald-300">
+                    <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
+                      <span>{appliedCoupon.code} Applied (-{formatINR(couponDiscount)})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="text-red-600 font-bold hover:underline text-[11px]"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="e.g. WELCOME10"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="flex-1 bg-white border border-[#C79A45]/40 rounded-xl px-3 py-2 text-xs uppercase font-mono tracking-wider focus:outline-none focus:ring-1 focus:ring-[#173F35]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={!couponCode.trim()}
+                      className="bg-[#173F35] hover:bg-[#0C241E] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )}
+                {couponError && <p className="text-[10px] text-red-600 font-medium">{couponError}</p>}
+                {couponSuccess && <p className="text-[10px] text-emerald-700 font-medium">{couponSuccess}</p>}
+              </div>
+
               {/* Pricing Breakdown */}
               <div className="space-y-2 text-xs sm:text-sm border-t border-stone-100 pt-4">
                 <div className="flex justify-between text-stone-muted">
                   <span>{t('cart_subtotal')}</span>
                   <span className="font-semibold text-stone-primary">{formatINR(subtotal)}</span>
                 </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-800 font-bold">
+                    <span>Coupon Discount</span>
+                    <span>-{formatINR(couponDiscount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-stone-muted">
                   <span>{t('cart_delivery')}</span>
                   <span>
@@ -665,9 +754,43 @@ export const Checkout: React.FC = () => {
                 </div>
                 <div className="flex justify-between font-serif font-black text-xl text-[#173F35] pt-3 border-t border-stone-200">
                   <span>{t('cart_total')}</span>
-                  <span>{formatINR(total)}</span>
+                  <span>{formatINR(finalTotal)}</span>
                 </div>
               </div>
+
+              {/* Direct WhatsApp Instant Order Button */}
+              <a
+                href={generateWhatsAppOrderUrl({
+                  customerName: formData.name,
+                  phone: formData.phone,
+                  address: formData.address,
+                  city: formData.city,
+                  state: formData.state,
+                  pincode: formData.pincode,
+                  items: items.map((it) => ({
+                    name: it.productName,
+                    weight: it.weight,
+                    quantity: it.quantity,
+                    price: it.unitPrice,
+                  })),
+                  subtotal,
+                  discount: couponDiscount,
+                  couponCode: appliedCoupon?.code,
+                  shippingFee: deliveryFee,
+                  grandTotal: finalTotal,
+                  paymentPreference:
+                    paymentMethod === 'MANUAL_UPI'
+                      ? `Direct UPI (${paymentConfig.businessUpiId || '9542836358@ybl'})`
+                      : 'Cash on Delivery (COD)',
+                  notes: formData.notes,
+                })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white py-3.5 rounded-2xl font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4 fill-white" />
+                <span>Order on WhatsApp (One-Click)</span>
+              </a>
 
               {/* Submit Action Button */}
               <button
@@ -683,7 +806,7 @@ export const Checkout: React.FC = () => {
                 ) : (
                   <>
                     <Lock className="w-4 h-4 text-[#C79A45]" />
-                    <span>{t('checkout_btn_place')} • {formatINR(total)}</span>
+                    <span>{t('checkout_btn_place')} • {formatINR(finalTotal)}</span>
                   </>
                 )}
               </button>

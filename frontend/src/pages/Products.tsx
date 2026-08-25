@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Sparkles, RefreshCw, Phone } from 'lucide-react';
+import { Search, Sparkles, RefreshCw, Phone, Mic, MicOff, CheckCircle } from 'lucide-react';
 import { ProductCard3D } from '../components/product/ProductCard3D';
 import { SEOHead } from '../components/common/SEOHead';
 import { useLanguage } from '../context/LanguageContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../services/api';
 import { Product } from '../types';
 
@@ -12,7 +13,10 @@ export const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'featured' | 'price-low' | 'price-high' | 'name'>('featured');
+  const [isListening, setIsListening] = useState(false);
+  const [inStockOnly, setInStockOnly] = useState(false);
   const { t } = useLanguage();
+  const { showToast } = useToast();
 
   const selectedCategory = searchParams.get('category') || 'All';
   const searchQuery = searchParams.get('search') || '';
@@ -68,8 +72,53 @@ export const Products: React.FC = () => {
     setSearchParams(newParams);
   };
 
-  // Sorting
-  const sortedProducts = [...products].sort((a, b) => {
+  const handleVoiceSearch = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      showToast('Voice search is not supported in this browser. Please type to search.', 'info');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      setIsListening(true);
+      showToast('Listening... Speak product name now (e.g. Papad, Sevaya, Turmeric)', 'info');
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setIsListening(false);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('search', transcript);
+        setSearchParams(newParams);
+        showToast(`Voice Search: "${transcript}"`, 'success');
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+        showToast('Could not recognize voice. Please try typing.', 'error');
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
+  };
+
+  // Filter in-stock and sort
+  const filteredProducts = products.filter((p) => {
+    if (!inStockOnly) return true;
+    return p.variants?.some((v) => v.stock > 0);
+  });
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortBy === 'price-low') {
       const priceA = a.variants?.[0]?.price || 0;
       const priceB = b.variants?.[0]?.price || 0;
@@ -118,31 +167,55 @@ export const Products: React.FC = () => {
         {/* Filters & Search Toolbar */}
         <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-subtle border border-[#C79A45]/30 mb-10 space-y-4">
           <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-            {/* Search Input */}
-            <div className="relative w-full md:w-96">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+            {/* Search Input with Voice Search */}
+            <div className="relative w-full md:w-96 flex items-center">
+              <Search className="w-4 h-4 absolute left-3.5 text-stone-400" />
               <input
                 type="text"
                 placeholder="Search papad, turmeric, haldi, sevaya..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-2.5 bg-[#FAF6EE] border border-[#C79A45]/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C79A45] text-stone-primary font-medium"
+                className="w-full pl-10 pr-12 py-2.5 bg-[#FAF6EE] border border-[#C79A45]/30 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C79A45] text-stone-primary font-medium"
               />
+              <button
+                type="button"
+                onClick={handleVoiceSearch}
+                className={`absolute right-2.5 p-1.5 rounded-xl transition-all ${
+                  isListening
+                    ? 'bg-red-500 text-white animate-pulse'
+                    : 'text-stone-500 hover:text-[#173F35] hover:bg-[#F1E9D5]'
+                }`}
+                title="Voice Search"
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
             </div>
 
-            {/* Sort Dropdown */}
-            <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-              <span className="text-xs font-bold text-stone-muted uppercase">Sort:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-[#FAF6EE] border border-[#C79A45]/30 text-stone-primary text-sm font-semibold rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#C79A45]"
-              >
-                <option value="featured">Featured First</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="name">Name (A-Z)</option>
-              </select>
+            {/* Sort & In-Stock Toggle */}
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+              <label className="flex items-center gap-2 cursor-pointer bg-[#FAF6EE] border border-[#C79A45]/30 px-3 py-2 rounded-xl text-xs font-bold text-stone-700">
+                <input
+                  type="checkbox"
+                  checked={inStockOnly}
+                  onChange={(e) => setInStockOnly(e.target.checked)}
+                  className="accent-[#173F35] w-3.5 h-3.5 rounded"
+                />
+                <span>In Stock Only</span>
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-stone-muted uppercase">Sort:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="bg-[#FAF6EE] border border-[#C79A45]/30 text-stone-primary text-sm font-semibold rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#C79A45]"
+                >
+                  <option value="featured">Featured First</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="name">Name (A-Z)</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -184,6 +257,7 @@ export const Products: React.FC = () => {
             <button
               onClick={() => {
                 setSearchParams({});
+                setInStockOnly(false);
               }}
               className="mt-2 bg-[#173F35] text-[#F8F3E7] px-5 py-2 rounded-xl text-xs font-bold"
             >

@@ -66,6 +66,7 @@ import {
   CallCenterStats,
   Review,
   StorePolicySettings,
+  Coupon,
 } from '../../types';
 
 // Web Audio API chime generator (zero external mp3 dependency, 100% reliable)
@@ -107,6 +108,7 @@ interface AdminDashboardProps {
     | 'orders'
     | 'call-center'
     | 'products'
+    | 'coupons'
     | 'reviews'
     | 'settings'
     | 'payments'
@@ -126,6 +128,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
     | 'orders'
     | 'call-center'
     | 'products'
+    | 'coupons'
     | 'reviews'
     | 'settings'
     | 'payments'
@@ -195,6 +198,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [newOrderAlert, setNewOrderAlert] = useState<Order | null>(null);
+
+  // Coupons & Offers State
+  const [coupons, setCoupons] = useState<Coupon[]>(api.adminGetAllCoupons());
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
+  const [couponForm, setCouponForm] = useState<Partial<Coupon>>({
+    code: '',
+    discountType: 'percentage',
+    discountValue: 10,
+    minOrderAmount: 200,
+    maxDiscount: 50,
+    isActive: true,
+    description: '',
+  });
 
   // Product price editor quick modal
   const [editingVariant, setEditingVariant] = useState<{
@@ -629,8 +646,68 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
     }
   };
 
+  // Coupon Handlers
+  const handleOpenAddCoupon = () => {
+    setEditingCoupon(null);
+    setCouponForm({
+      code: '',
+      discountType: 'percentage',
+      discountValue: 10,
+      minOrderAmount: 200,
+      maxDiscount: 50,
+      isActive: true,
+      description: '',
+    });
+    setIsCouponModalOpen(true);
+  };
+
+  const handleOpenEditCoupon = (coup: Coupon) => {
+    setEditingCoupon(coup);
+    setCouponForm({ ...coup });
+    setIsCouponModalOpen(true);
+  };
+
+  const handleSaveCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingCoupon) {
+        api.adminUpdateCoupon(token || '', editingCoupon.id, couponForm);
+        showToast(`Coupon ${couponForm.code} updated!`, 'success');
+      } else {
+        api.adminCreateCoupon(token || '', couponForm);
+        showToast(`Coupon ${couponForm.code} created!`, 'success');
+      }
+      setIsCouponModalOpen(false);
+      setCoupons(api.adminGetAllCoupons(token || undefined));
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save coupon.', 'error');
+    }
+  };
+
+  const handleToggleCoupon = (id: string) => {
+    try {
+      api.adminToggleCoupon(token || '', id);
+      setCoupons(api.adminGetAllCoupons(token || undefined));
+      showToast('Coupon status updated!', 'info');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update coupon status.', 'error');
+    }
+  };
+
+  const handleDeleteCoupon = (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this coupon?')) return;
+    try {
+      api.adminDeleteCoupon(token || '', id);
+      setCoupons(api.adminGetAllCoupons(token || undefined));
+      showToast('Coupon deleted!', 'info');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to delete coupon.', 'error');
+    }
+  };
+
   const pendingVerificationPayments = payments.filter((p) => p.status === 'PENDING_VERIFICATION');
   const pendingReviewsCount = reviews.filter((r) => !r.isApproved).length;
+  const lowStockItems = api.getLowStockVariants(10);
 
   // Filter orders by source and language
   const filteredOrders = orders.filter((o) => {
@@ -724,6 +801,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
               className="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-1.5 rounded-lg"
             >
               Dismiss
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Low-Stock Warning Alert Banner */}
+      {lowStockItems.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3">
+          <div className="bg-amber-500/15 border-2 border-amber-500/60 p-4 rounded-2xl flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 animate-bounce" />
+              <div>
+                <span className="font-bold text-xs text-amber-950 block">
+                  ⚠️ LOW STOCK ALERT: {lowStockItems.length} Product Variant{lowStockItems.length > 1 ? 's' : ''} have low inventory (&le; 10 units)
+                </span>
+                <span className="text-[11px] text-amber-800">
+                  {lowStockItems.slice(0, 3).map((item) => `${item.product.name} (${item.variant.weight}): ${item.variant.stock} left`).join(' • ')}
+                  {lowStockItems.length > 3 && ` ...and ${lowStockItems.length - 3} more`}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('products')}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl whitespace-nowrap shadow-xs"
+            >
+              Manage Stock
             </button>
           </div>
         </div>
@@ -840,7 +943,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
             }`}
           >
             <Layers className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Product & Catalog Manager ({products.length})</span>
+            <span>Product & Catalog ({products.length})</span>
+          </button>
+
+          {/* Coupons & Offers Tab */}
+          <button
+            onClick={() => setActiveTab('coupons')}
+            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              activeTab === 'coupons'
+                ? 'bg-heritage-maroon text-cream-100 shadow-md border border-heritage-gold'
+                : 'bg-white text-stone-700 hover:bg-cream-100 border border-stone-200'
+            }`}
+          >
+            <Tag className="w-3.5 h-3.5 text-[#C79A45]" />
+            <span>Coupons & Offers ({coupons.length})</span>
           </button>
 
           {/* Reviews Moderation Tab */}
@@ -2199,6 +2315,103 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
         )}
 
         {/* ======================================================== */}
+        {/* TAB: COUPONS & PROMOTIONAL OFFERS MANAGER */}
+        {/* ======================================================== */}
+        {activeTab === 'coupons' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-3xl border border-heritage-gold/25 shadow-sm p-6 sm:p-8 space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-100 pb-4">
+                <div>
+                  <h3 className="font-serif font-bold text-2xl text-heritage-maroon">
+                    Coupons & Promotional Offers ({coupons.length})
+                  </h3>
+                  <p className="text-xs text-stone-500 mt-1">
+                    Manage discount coupon codes for checkout, cart discounts, and WhatsApp ordering.
+                  </p>
+                </div>
+                <button
+                  onClick={handleOpenAddCoupon}
+                  className="bg-heritage-maroon hover:bg-heritage-darkMaroon text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md flex items-center gap-1.5 transition-all"
+                >
+                  <Plus className="w-4 h-4 text-heritage-gold" />
+                  <span>Create New Coupon</span>
+                </button>
+              </div>
+
+              {/* Coupons Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-stone-200 text-stone-500 uppercase tracking-wider text-[11px] bg-[#FAF6EE]">
+                      <th className="py-3 px-4 rounded-l-xl">Coupon Code</th>
+                      <th className="py-3 px-4">Discount</th>
+                      <th className="py-3 px-4">Min Order</th>
+                      <th className="py-3 px-4">Max Discount</th>
+                      <th className="py-3 px-4">Description</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4 text-right rounded-r-xl">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100">
+                    {coupons.map((coup) => (
+                      <tr key={coup.id} className="hover:bg-amber-50/40 transition-colors">
+                        <td className="py-4 px-4 font-mono font-black text-sm text-heritage-maroon">
+                          <span className="bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg">
+                            {coup.code}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 font-bold text-stone-800">
+                          {coup.discountType === 'percentage'
+                            ? `${coup.discountValue}% OFF`
+                            : `₹${coup.discountValue} Flat OFF`}
+                        </td>
+                        <td className="py-4 px-4 font-medium text-stone-600">
+                          {formatINR(coup.minOrderAmount)}
+                        </td>
+                        <td className="py-4 px-4 font-medium text-stone-600">
+                          {coup.maxDiscount ? formatINR(coup.maxDiscount) : 'No limit'}
+                        </td>
+                        <td className="py-4 px-4 text-stone-600 max-w-xs truncate">
+                          {coup.description || '—'}
+                        </td>
+                        <td className="py-4 px-4">
+                          <button
+                            onClick={() => handleToggleCoupon(coup.id)}
+                            className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                              coup.isActive
+                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                : 'bg-stone-100 text-stone-500 border border-stone-300'
+                            }`}
+                          >
+                            {coup.isActive ? 'Active' : 'Disabled'}
+                          </button>
+                        </td>
+                        <td className="py-4 px-4 text-right space-x-2">
+                          <button
+                            onClick={() => handleOpenEditCoupon(coup)}
+                            className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs inline-flex items-center gap-1"
+                            title="Edit Coupon"
+                          >
+                            <Edit2 className="w-3 h-3 text-stone-600" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCoupon(coup.id)}
+                            className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs inline-flex items-center gap-1"
+                            title="Delete Coupon"
+                          >
+                            <Trash2 className="w-3 h-3 text-red-600" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ======================================================== */}
         {/* TAB 7: ENQUIRIES */}
         {/* ======================================================== */}
         {activeTab === 'contacts' && (
@@ -2697,6 +2910,150 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab = 'or
               >
                 <Save className="w-4 h-4 text-heritage-gold" />
                 <span>{editingProduct ? 'Save Changes' : 'Create Product'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Create / Edit Coupon Modal */}
+      {isCouponModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <form
+            onSubmit={handleSaveCoupon}
+            className="bg-white max-w-md w-full rounded-3xl shadow-2xl p-6 sm:p-8 space-y-5"
+          >
+            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div>
+                <h3 className="font-serif font-bold text-lg text-heritage-maroon">
+                  {editingCoupon ? `Edit Coupon: ${editingCoupon.code}` : 'Create New Coupon Code'}
+                </h3>
+                <p className="text-xs text-stone-500">Set discount percentage, minimum order amount, and limits.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCouponModalOpen(false)}
+                className="text-stone-400 hover:text-stone-700 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-stone-700 block mb-1">Coupon Code (Uppercase) *</label>
+                <input
+                  type="text"
+                  required
+                  value={couponForm.code || ''}
+                  onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })}
+                  placeholder="e.g. WELCOME10, FESTIVE50"
+                  className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3.5 py-2.5 font-mono uppercase font-bold text-stone-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-stone-700 block mb-1">Discount Type *</label>
+                  <select
+                    value={couponForm.discountType || 'percentage'}
+                    onChange={(e) =>
+                      setCouponForm({ ...couponForm, discountType: e.target.value as 'percentage' | 'fixed' })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3 py-2.5 font-semibold text-stone-900"
+                  >
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Flat Amount (₹)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-stone-700 block mb-1">
+                    {couponForm.discountType === 'percentage' ? 'Discount % *' : 'Discount (₹) *'}
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={couponForm.discountValue || 10}
+                    onChange={(e) =>
+                      setCouponForm({ ...couponForm, discountValue: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3.5 py-2.5 font-bold text-stone-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-stone-700 block mb-1">Min Order Amount (₹)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={couponForm.minOrderAmount || 0}
+                    onChange={(e) =>
+                      setCouponForm({ ...couponForm, minOrderAmount: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3.5 py-2.5 font-medium text-stone-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-stone-700 block mb-1">Max Discount Cap (₹)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Optional limit"
+                    value={couponForm.maxDiscount || ''}
+                    onChange={(e) =>
+                      setCouponForm({
+                        ...couponForm,
+                        maxDiscount: e.target.value ? parseFloat(e.target.value) : undefined,
+                      })
+                    }
+                    className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3.5 py-2.5 font-medium text-stone-900"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-stone-700 block mb-1">Description / Promotion Note</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 10% OFF on your first handcrafted food order"
+                  value={couponForm.description || ''}
+                  onChange={(e) => setCouponForm({ ...couponForm, description: e.target.value })}
+                  className="w-full bg-[#FAF6EE] border border-stone-300 rounded-xl px-3.5 py-2.5 text-stone-900"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="couponActive"
+                  checked={couponForm.isActive !== false}
+                  onChange={(e) => setCouponForm({ ...couponForm, isActive: e.target.checked })}
+                  className="accent-heritage-maroon w-4 h-4 rounded"
+                />
+                <label htmlFor="couponActive" className="font-bold text-stone-800 cursor-pointer">
+                  Activate this coupon immediately
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setIsCouponModalOpen(false)}
+                className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-heritage-maroon hover:bg-heritage-darkMaroon text-white rounded-xl text-xs font-bold shadow-md"
+              >
+                Save Coupon
               </button>
             </div>
           </form>

@@ -23,6 +23,19 @@ export interface Review {
   createdAt: string;
 }
 
+export interface Coupon {
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number; // e.g. 10 for 10% or 50 for ₹50
+  minOrderAmount: number; // e.g. ₹250
+  maxDiscount?: number; // e.g. ₹100 for percentage
+  isActive: boolean;
+  expiryDate?: string;
+  usageCount?: number;
+  description?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -202,6 +215,8 @@ export interface Order {
     | 'DELIVERED'
     | 'CANCELLED';
   subtotal: number;
+  discountAmount?: number;
+  couponCode?: string;
   deliveryFee: number;
   total: number;
   deliveryAddress?: string;

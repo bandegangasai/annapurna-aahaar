@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   X,
@@ -9,10 +9,16 @@ import {
   Plus,
   Minus,
   ShieldCheck,
+  Tag,
+  Check,
+  MessageCircle,
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { formatINR, getProductImageUrl } from '../../utils/formatters';
+import { generateWhatsAppOrderUrl } from '../../utils/whatsapp';
+import { api } from '../../services/api';
+import { Coupon } from '../../types';
 
 export const CartDrawer: React.FC = () => {
   const {
@@ -23,13 +29,18 @@ export const CartDrawer: React.FC = () => {
     removeItem,
     subtotal,
     deliveryFee,
-    total,
     freeDeliveryThreshold,
     amountForFreeDelivery,
   } = useCart();
 
   const { t, getLocalizedProduct } = useLanguage();
   const navigate = useNavigate();
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
 
   if (!isCartOpen) return null;
 
@@ -38,10 +49,53 @@ export const CartDrawer: React.FC = () => {
     Math.round((subtotal / freeDeliveryThreshold) * 100)
   );
 
+  const finalTotal = Math.max(0, subtotal - couponDiscount + deliveryFee);
+
+  const handleApplyCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError('');
+    setCouponSuccess('');
+    if (!couponCode.trim()) return;
+
+    const res = api.validateCoupon(couponCode, subtotal);
+    if (res.isValid && res.coupon) {
+      setAppliedCoupon(res.coupon);
+      setCouponDiscount(res.discount);
+      setCouponSuccess(res.message);
+    } else {
+      setAppliedCoupon(null);
+      setCouponDiscount(0);
+      setCouponError(res.message);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponCode('');
+    setCouponSuccess('');
+    setCouponError('');
+  };
+
   const handleCheckoutClick = () => {
     setIsCartOpen(false);
     navigate('/checkout');
   };
+
+  const whatsAppUrl = generateWhatsAppOrderUrl({
+    items: items.map((item) => ({
+      name: item.productName,
+      weight: item.weight,
+      quantity: item.quantity,
+      price: item.unitPrice,
+    })),
+    subtotal,
+    discount: couponDiscount,
+    couponCode: appliedCoupon?.code,
+    shippingFee: deliveryFee,
+    grandTotal: finalTotal,
+    paymentPreference: 'Cash on Delivery / UPI (9542836358@ybl)',
+  });
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -98,53 +152,42 @@ export const CartDrawer: React.FC = () => {
             </div>
           </div>
 
-          {/* Items List */}
+          {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
             {items.length === 0 ? (
               <div className="text-center py-16 space-y-3">
-                <div className="w-16 h-16 rounded-2xl bg-[#F1E9D5] flex items-center justify-center mx-auto text-stone-400">
+                <div className="w-16 h-16 rounded-full bg-[#FAF6EE] border border-[#C79A45]/30 flex items-center justify-center mx-auto text-stone-400">
                   <ShoppingBag className="w-8 h-8 text-[#C79A45]" />
                 </div>
-                <h4 className="font-serif font-bold text-lg text-stone-primary">
-                  {t('cart_empty')}
-                </h4>
+                <h4 className="font-serif font-bold text-stone-700">{t('cart_empty')}</h4>
                 <p className="text-xs text-stone-muted max-w-xs mx-auto">
                   {t('cart_empty_sub')}
                 </p>
-                <button
-                  onClick={() => {
-                    setIsCartOpen(false);
-                    navigate('/products');
-                  }}
-                  className="mt-2 bg-[#173F35] text-[#F8F3E7] hover:bg-[#0C241E] px-6 py-2.5 rounded-2xl font-bold text-xs shadow-sm border border-[#C79A45]/30 transition-all"
-                >
-                  {t('cart_browse')}
-                </button>
               </div>
             ) : (
               items.map((item) => {
-                const localized = getLocalizedProduct(item.productId, item.productName, '');
+                const localized = getLocalizedProduct(item.slug || item.productId, item.productName, '');
                 return (
                   <div
                     key={`${item.productId}-${item.variantId}`}
-                    className="bg-white p-4 rounded-2xl border border-[#C79A45]/20 shadow-subtle flex items-center gap-3"
+                    className="flex gap-4 p-3 bg-white rounded-2xl border border-[#C79A45]/20 shadow-xs"
                   >
                     <img
                       src={getProductImageUrl(item.imageUrl)}
                       alt={localized.name}
-                      className="w-14 h-14 object-contain rounded-xl bg-[#FAF6EE] p-1 border border-stone-200 shrink-0"
+                      className="w-16 h-16 object-contain rounded-xl bg-[#FAF6EE] border border-stone-200 shrink-0"
                     />
 
                     <div className="flex-1 min-w-0">
-                      <h5 className="font-serif font-bold text-stone-primary text-sm truncate">
+                      <h4 className="font-bold text-xs sm:text-sm text-[#173F35] truncate">
                         {localized.name}
-                      </h5>
-                      <span className="text-xs text-stone-muted font-medium block">
-                        Pack: {item.weight}
-                      </span>
-                      <span className="font-serif font-black text-sm text-[#173F35]">
-                        {formatINR(item.unitPrice)}
-                      </span>
+                      </h4>
+                      <p className="text-[11px] text-stone-muted font-medium">
+                        {item.weight} • {formatINR(item.unitPrice)}
+                      </p>
+                      <p className="text-xs font-bold text-[#C79A45] mt-1">
+                        {formatINR(item.unitPrice * item.quantity)}
+                      </p>
                     </div>
 
                     {/* Quantity Controls */}
@@ -184,11 +227,55 @@ export const CartDrawer: React.FC = () => {
           {/* Drawer Footer Checkout */}
           {items.length > 0 && (
             <div className="p-5 sm:p-6 bg-white border-t border-[#C79A45]/25 space-y-4">
+              {/* Coupon Application Box */}
+              <div className="bg-[#FAF6EE] p-3 rounded-2xl border border-[#C79A45]/30">
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
+                      <Tag className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>{appliedCoupon.code} Applied (-{formatINR(couponDiscount)})</span>
+                    </div>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-red-600 font-bold hover:underline text-[11px]"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Coupon (e.g. WELCOME10)"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="flex-1 bg-white border border-[#C79A45]/40 rounded-xl px-3 py-1.5 text-xs uppercase font-mono tracking-wider focus:outline-none focus:ring-1 focus:ring-[#173F35]"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!couponCode.trim()}
+                      className="bg-[#173F35] hover:bg-[#0C241E] text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                    >
+                      Apply
+                    </button>
+                  </form>
+                )}
+                {couponError && <p className="text-[10px] text-red-600 mt-1 font-medium">{couponError}</p>}
+                {couponSuccess && <p className="text-[10px] text-emerald-700 mt-1 font-medium">{couponSuccess}</p>}
+              </div>
+
+              {/* Price Summary Breakdown */}
               <div className="space-y-1.5 text-xs sm:text-sm">
                 <div className="flex justify-between text-stone-muted">
                   <span>{t('cart_subtotal')}</span>
                   <span className="font-semibold text-stone-primary">{formatINR(subtotal)}</span>
                 </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-800 font-bold">
+                    <span>Coupon Discount</span>
+                    <span>-{formatINR(couponDiscount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-stone-muted">
                   <span>{t('cart_delivery')}</span>
                   <span>
@@ -201,22 +288,35 @@ export const CartDrawer: React.FC = () => {
                 </div>
                 <div className="flex justify-between font-serif font-black text-lg text-[#173F35] pt-2 border-t border-stone-100">
                   <span>{t('cart_total')}</span>
-                  <span>{formatINR(total)}</span>
+                  <span>{formatINR(finalTotal)}</span>
                 </div>
               </div>
 
-              <div className="space-y-2">
+              {/* Order Buttons */}
+              <div className="space-y-2.5">
+                {/* 1. Direct WhatsApp Instant Order Button */}
+                <a
+                  href={whatsAppUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white py-3.5 rounded-2xl font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4 fill-white" />
+                  <span>Order on WhatsApp (Instant Chat)</span>
+                </a>
+
+                {/* 2. Standard Web Checkout Button */}
                 <button
                   onClick={handleCheckoutClick}
-                  className="w-full bg-[#173F35] hover:bg-[#0C241E] text-[#F8F3E7] py-3.5 rounded-2xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 border border-[#C79A45]/40"
+                  className="w-full bg-[#173F35] hover:bg-[#0C241E] text-[#F8F3E7] py-3.5 rounded-2xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 border border-[#C79A45]/40"
                 >
-                  <span>{t('cart_checkout_btn')}</span>
+                  <span>{t('cart_checkout_btn')} (COD & UPI)</span>
                   <ArrowRight className="w-4 h-4 text-[#C79A45]" />
                 </button>
 
-                <div className="text-center text-[11px] text-stone-muted flex items-center justify-center gap-1">
+                <div className="text-center text-[10px] text-stone-muted flex items-center justify-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-800" />
-                  <span>Online Payments & Cash on Delivery Accepted</span>
+                  <span>100% Authentic • Secure Ordering • Direct Kitchen Dispatch</span>
                 </div>
               </div>
             </div>

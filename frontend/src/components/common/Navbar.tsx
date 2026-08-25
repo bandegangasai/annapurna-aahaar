@@ -10,18 +10,23 @@ import {
   Globe,
   MapPin,
   Sparkles,
+  Mic,
+  MicOff,
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useLanguage, LANGUAGES, LanguageCode } from '../../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isListening, setIsListening] = useState(false);
 
   const { totalItemsCount, setIsCartOpen } = useCart();
   const { language, setLanguage, t } = useLanguage();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,6 +49,45 @@ export const Navbar: React.FC = () => {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
       setSearchQuery('');
+    }
+  };
+
+  const handleVoiceSearch = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      showToast('Voice search is not supported in this browser. Please type to search.', 'info');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      setIsListening(true);
+      showToast('Listening... Speak product name now', 'info');
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setIsListening(false);
+        setSearchQuery(transcript);
+        navigate(`/products?search=${encodeURIComponent(transcript.trim())}`);
+        setIsSearchOpen(false);
+        showToast(`Voice Search: "${transcript}"`, 'success');
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch {
+      setIsListening(false);
     }
   };
 
@@ -210,16 +254,28 @@ export const Navbar: React.FC = () => {
         {/* Collapsible Search Input */}
         {isSearchOpen && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 pb-2 transition-all">
-            <form onSubmit={handleSearchSubmit} className="relative">
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search papad, whole wheat sevaya, turmeric powder, instant noodles..."
-                className="w-full pl-10 pr-24 py-2.5 rounded-xl border-2 border-[#C79A45]/40 focus:border-[#173F35] focus:outline-none bg-white text-[#252525] shadow-inner text-sm font-medium"
+                className="w-full pl-10 pr-32 py-2.5 rounded-xl border-2 border-[#C79A45]/40 focus:border-[#173F35] focus:outline-none bg-white text-[#252525] shadow-inner text-sm font-medium"
                 autoFocus
               />
-              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" />
+              <Search className="w-4 h-4 text-stone-400 absolute left-3.5" />
+              <button
+                type="button"
+                onClick={handleVoiceSearch}
+                className={`absolute right-20 p-1.5 rounded-lg transition-all ${
+                  isListening
+                    ? 'bg-red-500 text-white animate-pulse'
+                    : 'text-stone-400 hover:text-[#173F35] hover:bg-[#F1E9D5]'
+                }`}
+                title="Voice Search"
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
               <button
                 type="submit"
                 className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-[#173F35] text-[#F8F3E7] text-xs font-bold rounded-lg hover:bg-[#0C241E] transition-colors"
