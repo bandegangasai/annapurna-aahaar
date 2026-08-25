@@ -1,197 +1,255 @@
 # 🌾 ANNAPURNA AAHAAR (अन्नपूर्णा आहार • అన్నపూర్ణ ఆహార్)
 ### *Tradition in Every Grain.*
-**Handcrafted Indian Heritage Food Products & Multilingual Voice Telephony E-Commerce Platform**
+**Enterprise-Grade Handcrafted Indian Heritage Foods E-Commerce, PWA & Omnichannel Ordering Platform**
 
 ---
 
 [![Live Production Storefront](https://img.shields.io/badge/🌐_Official_Storefront-Visit_Live_Website-173F35?style=for-the-badge&logo=google-chrome&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/)
+[![PWA Ready](https://img.shields.io/badge/📱_PWA-Installable_App-173F35?style=for-the-badge&logo=pwa&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/)
 [![Multilingual Engine](https://img.shields.io/badge/🎙️_Multilingual_Support-4_Languages-C79A45?style=for-the-badge&logo=translate&logoColor=173F35)](#-multilingual-internationalization-4-languages)
-[![24/7 Voice Hotline](https://img.shields.io/badge/📞_Voice_Helpline-24%2F7_Automated-173F35?style=for-the-badge&logo=phone&logoColor=C79A45)](https://bandegangasai.github.io/annapurna-aahaar/#/contact)
-[![100% Free Hosting](https://img.shields.io/badge/⚡_Cloud_Hosting-100%25_Free_GitHub_Pages-0C241E?style=for-the-badge&logo=github&logoColor=white)](https://bandegangasai.github.io/annapurna-aahaar/)
+[![WhatsApp Ordering](https://img.shields.io/badge/💬_WhatsApp_Commerce-Instant_1--Click-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://bandegangasai.github.io/annapurna-aahaar/)
+[![100% Free Hosting](https://img.shields.io/badge/⚡_Infrastructure-Free_GitHub_Pages-0C241E?style=for-the-badge&logo=github&logoColor=white)](https://bandegangasai.github.io/annapurna-aahaar/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-A65332?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🌟 OFFICIAL PRODUCTION ACCESS
+## 🌟 Official Production Access & Direct Portals
 
 > ### 🚀 **Live E-Commerce Web Application:**
 > ### 👉 **[https://bandegangasai.github.io/annapurna-aahaar/](https://bandegangasai.github.io/annapurna-aahaar/)** 👈
 
-| Gateway | Link / Endpoint | Purpose |
+| Gateway / Portal | Direct Production Link | Functional Scope |
 | :--- | :--- | :--- |
-| 🛍️ **Interactive Web Storefront** | [Visit Storefront](https://bandegangasai.github.io/annapurna-aahaar/) | Browse products, select weights, add to cart & checkout |
-| 📦 **Real-Time Order Tracking** | [Live Order Tracker](https://bandegangasai.github.io/annapurna-aahaar/#/track) | Live order status tracking from kitchen to doorstep |
-| 📞 **Customer Care & Contact** | [Contact & Support](https://bandegangasai.github.io/annapurna-aahaar/#/contact) | Enquiries, direct kitchen contact, and telephone hotline |
-| 🗺️ **XML Sitemap** | [sitemap.xml](https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml) | Automated search engine crawl map for Google & Bing |
-| 🤖 **Robots Directives** | [robots.txt](https://bandegangasai.github.io/annapurna-aahaar/robots.txt) | Search engine indexing rules & security filters |
-| 🐙 **Source Code Repository** | [GitHub Repo](https://github.com/bandegangasai/annapurna-aahaar) | Official repository with CI/CD deployment pipelines |
+| 🛍️ **Interactive Storefront** | [Visit Storefront](https://bandegangasai.github.io/annapurna-aahaar/) | Browse products, weight variants, interactive cart, coupon discounts |
+| 📦 **Real-Time Order Tracker** | [Live Order Tracker](https://bandegangasai.github.io/annapurna-aahaar/#/track) | Live 5-stage order status tracking from kitchen to customer doorstep |
+| 🤖 **AI Smart Assistant** | Built-in Interactive Chat Widget | Natural language product recommendations, recipe pairing & WhatsApp ordering |
+| 🎙️ **Voice Search** | Integrated on Catalog & Navbar | Web Speech API speech-to-text voice search across all regional dialects |
+| 📖 **Heritage Story & Origin** | [Our Story (Bhainsa Kitchens)](https://bandegangasai.github.io/annapurna-aahaar/#/our-story) | Brand origin, sun-curing heritage, and stone-ground quality standards |
+| ⚙️ **Store Admin Dashboard** | [Admin Portal](https://bandegangasai.github.io/annapurna-aahaar/#/admin/login) | Real-time order management, inventory control, coupon engine, analytics |
+| 🗺️ **XML Sitemap** | [sitemap.xml](https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml) | Automated search engine crawl map for Google Search Console & Bing |
+| 🤖 **Robots Directives** | [robots.txt](https://bandegangasai.github.io/annapurna-aahaar/robots.txt) | Search engine indexing directives and privacy protection rules |
+| 📱 **PWA Manifest** | [manifest.json](https://bandegangasai.github.io/annapurna-aahaar/manifest.json) | Standalone installable mobile & desktop web application config |
 
 ---
 
 ## 🏛️ Brand & Business Profile
 
-* **Business Name**: **ANNAPURNA AAHAAR**
+* **Brand Name**: **ANNAPURNA AAHAAR**
 * **Tagline**: *"Tradition in Every Grain."*
-* **Origin & Production**: **Bhainsa, Nirmal District, Telangana (504103), India**
-* **Core Offerings**: Handcrafted sun-cured papads, stone-ground pure turmeric powder, whole-wheat sevaya, and traditional Indian food staples.
-* **Customer Channels**: Multilingual Web Storefront, 24/7 Automated Voice Telephony, and Instant Doorstep Dispatch.
-* **Official Business Email**: `annapurnaaahaar@gmail.com`
+* **Production Workshop**: **Main Market Area, Bhainsa, Nirmal District, Telangana — 504103, India**
+* **Core Philosophy**: 100% Pure, sun-cured, stone-ground authentic Indian food staples crafted with traditional heritage methods and zero artificial chemicals.
+* **Customer Channels**: Multilingual Web Storefront, Progressive Web App (PWA), 1-Click WhatsApp Direct Ordering, and 24/7 Voice Hotline Simulator.
+* **Official Business Inquiries**: `annapurnaaahaar@gmail.com`
 
 ---
 
-## 🍛 Handcrafted Heritage Product Catalog
+## 🍛 Authentic Handcrafted Product Portfolio
 
-All authentic products are prepared using time-honored traditional techniques in Bhainsa, Telangana, sun-cured, and hygienically packed with zero chemical additives:
+All authentic Annapurna Aahaar products are prepared in small batches using traditional recipes in Bhainsa, Telangana, naturally sun-cured, and packaged hygienically:
 
-| # | Product Name | Description | Available Packaging | Price (INR) |
+| # | Product Name | Description & Taste Profile | Packaging Options | Base Price (INR) |
 | :-: | :--- | :--- | :-: | :-: |
-| 1 | **Traditional Wheat Sevaya** | Handcrafted whole-wheat roasted vermicelli sevaya | 250g, 500g, 1kg | Starting at ₹90 |
-| 2 | **Urad Dal Papad** | Crispy black-gram urad dal papad with black pepper & cumin | 250g, 500g, 1kg | Starting at ₹150 |
-| 3 | **Moong Dal Papad** | Light, easily digestible yellow moong dal papad | 250g, 500g, 1kg | Starting at ₹160 |
-| 4 | **Masala Papad** | Spicy Indian papad bursting with red chili, ajwain & cumin | 250g, 500g, 1kg | Starting at ₹150 |
-| 5 | **Rice Papad** | Steamed & sun-dried rice flour papad with delicate crisp | 250g, 500g, 1kg | Starting at ₹150 |
-| 6 | **Pure Turmeric Powder** | 100% stone-ground golden haldi powder with high curcumin | 100g, 250g, 500g, 1kg | Starting at ₹80 |
-| 7 | **Maggie** | Classic Indian-spiced instant noodle packs | 4-Pack, 8-Pack | Starting at ₹85 |
-| 8 | **Noodles** | High-protein wheat noodles for Indian-style Hakka cooking | 300g, 500g, 1kg | Starting at ₹95 |
+| 1 | **Traditional Wheat Sevaya** | Handcrafted whole-wheat roasted vermicelli sevaya | 250g, 500g, 1kg | From ₹90 |
+| 2 | **Urad Dal Papad** | Crispy black-gram urad dal papad with black pepper & cumin | 250g, 500g, 1kg | From ₹150 |
+| 3 | **Moong Dal Papad** | Light, easily digestible yellow moong dal papad | 250g, 500g, 1kg | From ₹160 |
+| 4 | **Masala Papad** | Spicy Indian papad bursting with red chili, ajwain & cumin | 250g, 500g, 1kg | From ₹150 |
+| 5 | **Rice Papad** | Steamed & sun-dried rice flour papad with delicate crisp | 250g, 500g, 1kg | From ₹150 |
+| 6 | **Pure Turmeric (Haldi) Powder** | 100% stone-ground golden turmeric with high natural curcumin | 100g, 250g, 500g, 1kg | From ₹80 |
+| 7 | **Maggie** | Classic Indian-spiced instant noodle packs | 4-Pack, 8-Pack | From ₹85 |
+| 8 | **Noodles** | High-protein wheat noodles for Indian-style Hakka cooking | 300g, 500g, 1kg | From ₹95 |
 
 ---
 
-## 💎 Core Platform Capabilities
+## 🚀 Advanced Platform Features & Capabilities
 
-### 1. 🎨 Premium Indian Heritage Visual Identity (60-30-10 Rule)
-* **Forest Green (`#173F35`)** — Primary brand identity and structural elegance.
-* **Warm Ivory (`#F8F3E7`)** — Authentic parchment background canvas.
-* **Antique Gold (`#C79A45`)** — Premium borders, medals, accents, and action buttons.
-* **Terracotta (`#A65332`)** — Indian clay & earth contrast tones.
-* **Typography**: *Playfair Display* (Editorial headings), *Inter* (UI/Body), *Noto Sans Devanagari* (Hindi/Marathi), and *Noto Sans Telugu* (Telugu).
+```mermaid
+mindmap
+  root((🌾 Annapurna Aahaar Platform))
+    E-Commerce Storefront
+      Multilingual UI (EN, MR, HI, TE)
+      3D Parallax Tilt Hero
+      Voice Search (Web Speech API)
+      Real-Time Category Filters
+      Multi-Variant Pricing
+    Smart Ordering Engine
+      WhatsApp Direct Ordering
+      Cash on Delivery (COD)
+      Direct UPI Deep Links
+      Smart Bill Deduction
+    Business & Growth
+      Coupons & Promo Engine
+      AI Product Assistant
+      Customer Reviews Moderation
+      Low-Stock Alert System
+      Sales Analytics Dashboard
+    Infrastructure & SEO
+      Progressive Web App (PWA)
+      Service Worker Cache Shell
+      Schema.org Structured Data
+      Google Search Console Verified
+      100% Free Lifetime Hosting
+```
 
-### 2. ✨ 3D Interactive Heritage Hero Experience
-* Smooth 3D perspective physics with real-time mouse tracking and parallax tilt (`rotateX`, `rotateY`, `scale3d`).
-* High-definition culinary photography showcasing crispy papads in an engraved brass thali, pure golden turmeric, whole wheat vermicelli, raw grains, and aromatic Indian spices.
+### 1. 💬 WhatsApp Direct Ordering & Instant Checkout
+* **1-Click WhatsApp Ordering**: Customers can place orders directly on WhatsApp with a single tap from either individual Product Detail pages or the Cart Drawer.
+* **Auto-Formatted Itemized Invoices**: Automatically generates a structured, pre-filled WhatsApp message containing:
+  - Customer Full Name & Delivery Address
+  - Line-by-line item details, selected weight variants, and quantities
+  - Applied coupon codes and discount calculations
+  - Flat shipping calculation (₹40 standard, **FREE above ₹500**)
+  - Grand total and preferred payment choice (COD / UPI).
 
-### 3. 🌐 Full Multilingual Internationalization (4 Languages)
-* Instant 1-click regional switcher across the platform: **`[ 🌐 English ] [ मराठी ] [ हिन्दी ] [ తెలుగు ]`**.
-* Complete end-to-end localization covering product cards, weight selections, cart calculations, checkout receipts, live tracking, and support channels.
-* Preference saved in `localStorage` for returning visitors.
+### 2. 🤖 Zero-Cost AI Smart Product Assistant
+* **Annapurna Assistant**: An intelligent, client-side conversational assistant widget accessible 24/7 across the storefront.
+* **Smart Intent Recognition**: Detects customer questions about spices, papads, fasting foods, pricing under budget limits, shipping policies, and cooking suggestions.
+* **Interactive Product Action Cards**: Returns clickable product cards inside the chat window with direct *"View Details"* and *"Add to Cart"* buttons.
 
-### 4. 📞 Multilingual Voice Telephony & IVR Engine
-* 24/7 automated telephone voice helpline supporting English, Marathi, Hindi, and Telugu.
-* Automated keypad ordering, live order status lookup, order cancellation, and kitchen staff dispatch.
-* Robust session recovery backed by PostgreSQL state storage and Polly neural voices (*Aditi*, *Chitra*, *Kajal*).
+### 3. 🎙️ Voice-Activated Product Search
+* **Web Speech API Integration**: Integrated browser speech recognition on both the Navbar search bar and the Catalog page.
+* **Speech-to-Text Query Resolution**: Enables customers to speak product names in regional accents for instant catalog filtering.
 
-### 5. 💳 Multi-Mode Payment Infrastructure
-* **Cash on Delivery (COD)**: Doorstep settlement upon delivery.
-* **Direct UPI Transfer**: Integrated 1-click UPI copy, mobile deep link support (`upi://pay`), and 12-digit transaction reference verification.
-* **Online Payment Gateway**: Secure digital checkout with cards, net banking, and UPI.
+### 4. 🏷️ Dynamic Offers & Coupons Engine
+* Built-in discount coupon engine supporting both percentage (`%`) and fixed (`₹`) deductions.
+* Includes real-time validation for minimum order amounts and maximum discount caps.
+* **Default Active Codes**:
+  - `WELCOME10` — 10% OFF on all handcrafted food orders (Min order ₹200).
+  - `AAHAAR50` — Flat ₹50 OFF on heritage pantry orders (Min order ₹500).
+  - `FESTIVE15` — 15% OFF for festive seasonal orders (Min order ₹600).
+* **Admin Management**: Full CRUD interface inside the Admin Portal to create, activate, deactivate, or delete promotional codes.
 
-### 6. 🔍 100% Free Google Search Engine Optimization (SEO)
-* **Google Verification**: Verified and active via Google Search Console.
-* **Schema.org Structured Data**: Integrated `WebSite`, `LocalBusiness`, `Organization`, and `Product`/`Offer` JSON-LD schemas.
-* **Pre-Rendered Fallback**: Semantic initial HTML container for non-JS web crawlers.
-* **Sitemap & Robots**: Structured `sitemap.xml` and privacy-tuned `robots.txt`.
+### 5. 📦 Real-Time Inventory & Low-Stock Alerts
+* Variant-level stock quantity tracking.
+* **Automated Low-Stock Warning Banner**: Prominently alerts the store administrator when any product variant inventory falls to $\le 10$ units.
+* Single-click stock replenishment and price updating modal.
+
+### 6. ⭐ Customer Reviews & Trust Moderation
+* Public review submission form on product detail pages with 5-star rating selector, reviewer name, city, and verified feedback.
+* **Admin Moderation Queue**: Store owners can review, approve, reject, or remove customer reviews before publishing.
+* Dynamically recalculates product rating averages and star counts.
+
+### 7. 📱 Progressive Web App (PWA) & Offline Shell
+* [`sw.js`](frontend/public/sw.js) Service Worker caching static assets, stylesheets, scripts, and product imagery.
+* Full [`manifest.json`](frontend/public/manifest.json) configuration allowing customers to install the website as a standalone application on Android, iOS, Windows, and macOS.
+
+### 8. 🌐 Complete Multilingual Internationalization
+* Instant regional language switcher supporting **English**, **Marathi (मराठी)**, **Hindi (हिन्दी)**, and **Telugu (తెలుగు)**.
+* Complete localization covering navigation, hero messaging, product specifications, weight labels, cart calculations, order receipts, and return policies.
+* Persistent language preference saved in `localStorage`.
+
+### 9. 🔍 Enterprise Technical SEO & Structured Data
+* **Google Search Console Integration**: Fully verified ownership and automated search indexing.
+* **Schema.org JSON-LD Models**:
+  - `WebSite` with internal SearchAction
+  - `LocalBusiness` & `OnlineStore` with opening hours, geo-coordinates, and contact endpoints
+  - `Product` & `Offer` schemas for all 8 authentic items with pricing and in-stock availability
+  - `BreadcrumbList` navigation hierarchy.
+* **Dynamic Open Graph & Twitter Cards**: High-resolution 1200x900 social preview cards for WhatsApp, Facebook, Twitter, and LinkedIn sharing.
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ Platform System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph Clients["Customer Channels"]
-        WebClient["🖥️ Web Storefront (Desktop/Mobile)"]
-        VoiceClient["📞 Multilingual Voice Helpline"]
+    subgraph ClientChannels["📱 Omnichannel Customer Touchpoints"]
+        WebStorefront["🖥️ Web Storefront (Desktop / Mobile)"]
+        PWAApp["📲 Installed PWA (Offline Shell)"]
+        WhatsAppChannel["💬 1-Click WhatsApp Order Gateway"]
+        VoiceHotlineSim["📞 24/7 Telephone Voice Simulator"]
     end
 
-    subgraph CDN["Edge & Hosting (100% Free)"]
-        GHPages["⚡ GitHub Pages (HTTPS/CDN)"]
-        SitemapEngine["🗺️ XML Sitemap & Robots Engine"]
+    subgraph EdgeCDN["⚡ Edge Infrastructure (100% Free Lifetime)"]
+        GHPages["🚀 GitHub Pages CDN (HTTPS / HTTP2)"]
+        ServiceWorker["💾 Browser Service Worker Cache (sw.js)"]
+        SitemapRobots["🗺️ sitemap.xml & robots.txt"]
     end
 
-    subgraph BackendAPI["Backend Cloud Service (Render)"]
-        APIGateway["Express.js / TypeScript Gateway"]
-        IVRStateMachine["🎙️ Multilingual IVR Voice Engine"]
-        OrderManager["📦 Order Processing Service"]
-        PaymentVerifier["💳 UPI & Payment Gateway"]
+    subgraph ApplicationLayer["🧠 React 18 Application Core"]
+        Router["⚡ HashRouter SPA Engine"]
+        LangContext["🌐 Multilingual Engine (EN / MR / HI / TE)"]
+        CartEngine["🛒 Shopping Cart & Coupon Deductions"]
+        AiEngine["🤖 Zero-Cost Client-Side AI Assistant"]
+        SpeechEngine["🎙️ Web Speech Voice Recognition"]
+        AdminModule["⚙️ Executive Admin Portal"]
     end
 
-    subgraph DataStore["Database & Storage"]
-        PostgresDB[("🐘 PostgreSQL / Prisma ORM")]
+    subgraph DataLayer["💾 Resilient Data & Storage Layer"]
+        LocalData["🗄️ LocalStorage Database Engine"]
+        CloudBackend["🐘 Optional Cloud Backend (PostgreSQL / Prisma)"]
     end
 
-    subgraph SearchEngines["Search Discovery"]
-        GoogleBot["🔍 Google Search Console & Web Crawler"]
+    subgraph SearchEngines["🔍 Search Engine Crawlers"]
+        GoogleCrawler["🤖 Googlebot & Bingbot"]
     end
 
-    WebClient -->|HTTPS / REST| GHPages
-    GHPages -->|API Calls| APIGateway
-    VoiceClient -->|Telephony Webhook| IVRStateMachine
-    IVRStateMachine --> APIGateway
-    APIGateway --> OrderManager
-    APIGateway --> PaymentVerifier
-    OrderManager --> PostgresDB
-    PaymentVerifier --> PostgresDB
-    GoogleBot -->|Crawls & Indexes| SitemapEngine
-    SitemapEngine --> GHPages
+    WebStorefront --> GHPages
+    PWAApp --> ServiceWorker
+    ServiceWorker --> GHPages
+    GHPages --> Router
+    Router --> LangContext
+    Router --> CartEngine
+    Router --> AiEngine
+    Router --> SpeechEngine
+    Router --> AdminModule
+    CartEngine --> WhatsAppChannel
+    VoiceHotlineSim --> LangContext
+    CartEngine --> LocalData
+    AdminModule --> LocalData
+    LocalData -.-> CloudBackend
+    GoogleCrawler --> SitemapRobots
+    SitemapRobots --> GHPages
 ```
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies & Frameworks |
+| Layer | Technologies & Libraries |
 | :--- | :--- |
-| **Frontend Framework** | React 18, TypeScript, Vite 6, Tailwind CSS 3 |
-| **Animation & 3D** | Framer Motion 3D Parallax Physics, Lucide React Icons |
-| **Backend Framework** | Node.js, Express, TypeScript, Zod Schema Validation |
-| **Database & ORM** | PostgreSQL, Prisma ORM 5 |
-| **Voice & Telephony** | TwiML XML Response Generator, AWS Polly Multilingual TTS |
-| **Testing Suite** | Automated E-Commerce E2E Suite, Automated IVR State Machine Suite |
-| **Hosting & CI/CD** | GitHub Pages (Frontend), Cloud Backend (Render), Git Version Control |
+| **Frontend Framework** | React 18.2, TypeScript 5.2, Vite 6 |
+| **Styling & Design System** | Tailwind CSS 3.4, Custom Heritage Palette (`#173F35`, `#C79A45`, `#A65332`, `#FAF6EE`) |
+| **Icons & Visuals** | Lucide React, Custom Optimized WebP culinary assets |
+| **State & Business Logic** | React Context API (`CartContext`, `LanguageContext`, `AuthContext`, `ToastContext`) |
+| **Voice & Speech** | Web Speech Recognition API (`SpeechRecognition` / `webkitSpeechRecognition`), Web Audio API Chimes |
+| **PWA & Offline** | Service Worker (`sw.js`), Web App Manifest (`manifest.json`) |
+| **Backend (Optional)** | Node.js, Express, TypeScript, Prisma ORM, PostgreSQL |
+| **Hosting & CI/CD** | GitHub Pages, GitHub Actions (`deploy.yml`), Zero-Cost Lifetime Infrastructure |
 
 ---
 
-## ⚡ Local Development & Testing
+## ⚡ Local Development & Contribution
 
-### 1. Backend Setup
+### 1. Prerequisites
+- **Node.js**: v18.0 or higher
+- **npm**: v9.0 or higher
+- **Git**
+
+### 2. Clone & Install Dependencies
 ```bash
-cd backend
-npm install
+# Clone the repository
+git clone https://github.com/bandegangasai/annapurna-aahaar.git
+cd annapurna-aahaar
 
-# Copy environment variables
-cp .env.example .env
-
-# Generate Prisma client & apply database migrations
-npm run prisma:generate
-npm run prisma:push
-
-# Seed authentic product catalog
-npm run prisma:seed
-
-# Start backend server
-npm run dev
-```
-
-### 2. Frontend Setup
-```bash
+# Install frontend dependencies
 cd frontend
 npm install
+```
 
-# Start Vite development server
+### 3. Start Frontend Local Development Server
+```bash
 npm run dev
 ```
+The application will be live locally at `http://localhost:5173/`.
 
-### 3. Run Automated Tests
+### 4. Build for Production
 ```bash
-# Run End-to-End E-Commerce Test Battery
-cd backend
-npm run test:e2e
-
-# Run Multilingual IVR Telephony Test Battery
-npm run test:ivr:e2e
+npm run build
 ```
+This runs TypeScript compilation (`tsc`) and Vite bundling (`vite build`) producing the optimized distribution in `frontend/dist/`.
 
 ---
 
-## 📄 License & Ownership
+## 📄 License & Brand Ownership
 
 © 2026 **ANNAPURNA AAHAAR**. All rights reserved.  
-Authentic Heritage Food Products from **Bhainsa, Nirmal District, Telangana (504103)**.
+Authentic Heritage Food Products handcrafted in **Bhainsa, Nirmal District, Telangana — 504103, India**.
