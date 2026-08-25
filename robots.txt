@@ -1,5 +1,5 @@
 # Robots.txt for Annapurna Aahaar
-# Official Storefront: https://annapurnaaahaar.in/
+# Official Storefront: https://bandegangasai.github.io/annapurna-aahaar/
 User-agent: *
 Allow: /
 Allow: /assets/
@@ -34,4 +34,4 @@ Disallow: /api/
 Disallow: /api/*
 
 # XML Sitemap
-Sitemap: https://annapurnaaahaar.in/sitemap.xml
+Sitemap: https://bandegangasai.github.io/annapurna-aahaar/sitemap.xml
