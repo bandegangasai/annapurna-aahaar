@@ -9,7 +9,7 @@ export const NotFound: React.FC = () => {
       <SEOHead
         title="Page Not Found (404) | Annapurna Aahaar"
         description="The page you are looking for does not exist. Browse authentic Indian food products from Annapurna Aahaar, Bhainsa, Telangana."
-        url="https://annapurnaaahaar.in/#/404"
+        url="https://bandegangasai.github.io/annapurna-aahaar/#/404"
       />
 
       <div className="max-w-lg w-full bg-white rounded-3xl p-8 sm:p-12 border border-[#C79A45]/30 shadow-subtle text-center space-y-6">

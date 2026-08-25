@@ -9,7 +9,7 @@ export const ReturnPolicy: React.FC = () => {
       <SEOHead
         title="Return & Refund Policy | Annapurna Aahaar"
         description="Official 7-day return and 100% refund policy for Annapurna Aahaar food products from Bhainsa, Nirmal District, Telangana (504103)."
-        url="https://annapurnaaahaar.in/#/return-policy"
+        url="https://bandegangasai.github.io/annapurna-aahaar/#/return-policy"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">

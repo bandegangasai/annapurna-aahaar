@@ -13,8 +13,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   title = 'Annapurna Aahaar | Traditional Indian Food Products',
   description = 'Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152.',
   keywords = 'Annapurna Aahaar, annapurnaahaar, annapurna aahaar, Annapurna Aahaar Bhainsa, Annapurna Aahaar Nirmal, Annapurna Aahaar Telangana, Annapurna Aahaar papad, Annapurna Aahaar sevaya, Annapurna Aahaar turmeric, papad Bhainsa, sevaya Bhainsa, traditional food Bhainsa, food products Bhainsa, Bande Omkar, 9347036152, अन्नपूर्णा आहार, అన్నపూర్ణ ఆహార్',
-  image = 'https://annapurnaaahaar.in/images/hero-3d-heritage-spread.jpg',
-  url = 'https://annapurnaaahaar.in/',
+  image = 'https://bandegangasai.github.io/annapurna-aahaar/images/hero-3d-heritage-spread.jpg',
+  url = 'https://bandegangasai.github.io/annapurna-aahaar/',
   jsonLd,
 }) => {
   useEffect(() => {

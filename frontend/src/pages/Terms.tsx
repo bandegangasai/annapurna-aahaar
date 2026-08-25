@@ -9,7 +9,7 @@ export const Terms: React.FC = () => {
       <SEOHead
         title="Terms and Conditions | Annapurna Aahaar"
         description="Terms of service and commercial policies for Annapurna Aahaar e-commerce and voice telephony ordering."
-        url="https://annapurnaaahaar.in/#/terms"
+        url="https://bandegangasai.github.io/annapurna-aahaar/#/terms"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">

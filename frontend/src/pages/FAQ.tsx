@@ -57,7 +57,7 @@ export const FAQ: React.FC = () => {
       <SEOHead
         title="Frequently Asked Questions (FAQ) | Annapurna Aahaar"
         description="Find answers to common questions about Annapurna Aahaar food products, delivery timelines, ingredients, 24/7 telephone ordering (9347036152), and returns."
-        url="https://annapurnaaahaar.in/#/faq"
+        url="https://bandegangasai.github.io/annapurna-aahaar/#/faq"
         jsonLd={faqJsonLd}
       />
 
