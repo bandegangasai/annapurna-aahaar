@@ -2,15 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/annapurna-aahaar/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./favicon.svg" />
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#173F35" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annapurna Aahaar | Traditional Indian Food Products</title>
     
     <!-- Primary Meta Tags -->
     <meta name="title" content="Annapurna Aahaar | Traditional Indian Food Products" />
-    <meta name="description" content="Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152." />
-    <meta name="keywords" content="Annapurna Aahaar, Annapurna Aahaar Bhainsa, Annapurna Aahaar Nirmal, Annapurna Aahaar Telangana, Annapurna Aahaar papad, Annapurna Aahaar sevaya, Annapurna Aahaar turmeric, papad Bhainsa, sevaya Bhainsa, traditional food Bhainsa, food products Bhainsa, Bande Omkar, 9347036152" />
+    <meta name="description" content="Annapurna Aahaar offers authentic traditional Indian food products including whole-wheat sevaya, sun-cured papads, and stone-ground turmeric from Bhainsa, Nirmal District, Telangana (504103). Order online or call 9347036152." />
+    <meta name="keywords" content="Annapurna Aahaar, annapurnaahaar, annapurna aahaar, annapurna aahar, Annapurna Aahaar Bhainsa, Annapurna Aahaar Nirmal, Annapurna Aahaar Telangana, Annapurna Aahaar papad, Annapurna Aahaar sevaya, Annapurna Aahaar turmeric, papad Bhainsa, sevaya Bhainsa, traditional food Bhainsa, food products Bhainsa, Bande Omkar, 9347036152, अन्नपूर्णा आहार, అన్నపూర్ణ ఆహార్" />
     <meta name="author" content="Annapurna Aahaar" />
+    <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://bandegangasai.github.io/annapurna-aahaar/" />
     <meta name="google-site-verification" content="googlef6731b9abcae077f" />
     <meta name="google-site-verification" content="f6731b9abcae077f" />
@@ -20,7 +24,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://bandegangasai.github.io/annapurna-aahaar/" />
     <meta property="og:title" content="Annapurna Aahaar | Traditional Indian Food Products" />
-    <meta property="og:description" content="Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152." />
+    <meta property="og:description" content="Annapurna Aahaar offers authentic traditional Indian food products including whole-wheat sevaya, sun-cured papads, and stone-ground turmeric from Bhainsa, Nirmal District, Telangana (504103). Order online or call 9347036152." />
     <meta property="og:image" content="https://bandegangasai.github.io/annapurna-aahaar/images/hero-3d-heritage-spread.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="900" />
@@ -30,8 +34,22 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://bandegangasai.github.io/annapurna-aahaar/" />
     <meta name="twitter:title" content="Annapurna Aahaar | Traditional Indian Food Products" />
-    <meta name="twitter:description" content="Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152." />
+    <meta name="twitter:description" content="Annapurna Aahaar offers authentic traditional Indian food products including whole-wheat sevaya, sun-cured papads, and stone-ground turmeric from Bhainsa, Nirmal District, Telangana (504103). Order online or call 9347036152." />
     <meta name="twitter:image" content="https://bandegangasai.github.io/annapurna-aahaar/images/hero-3d-heritage-spread.jpg" />
+
+    <!-- Single Page Apps for GitHub Pages redirection handler -->
+    <script type="text/javascript">
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
 
     <!-- Google Fonts with font-display: swap for Fast Core Web Vitals -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,26 +66,34 @@
         "@type": "WebSite",
         "name": "Annapurna Aahaar",
         "alternateName": [
-          "Annapurna Aahaar Bhainsa",
+          "annapurnaahaar",
+          "annapurna aahaar",
+          "Annapurna Aahaar",
           "Annapurna Aahar",
+          "Annapurna Aahaar Bhainsa",
           "Annapurna Aahaar Telangana",
           "अन्नपूर्णा आहार",
           "అన్నపూర్ణ ఆహార్"
         ],
         "url": "https://bandegangasai.github.io/annapurna-aahaar/",
-        "description": "Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana.",
-        "inLanguage": ["en-IN", "mr-IN", "hi-IN", "te-IN"]
+        "description": "Annapurna Aahaar offers traditional handcrafted Indian food products including wheat sevaya, papads, and stone-ground turmeric powder from Bhainsa, Nirmal District, Telangana (504103).",
+        "inLanguage": ["en-IN", "mr-IN", "hi-IN", "te-IN"],
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://bandegangasai.github.io/annapurna-aahaar/#/products?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
       }
     </script>
 
-    <!-- Schema.org 2: LocalBusiness & Organization Structured Data -->
+    <!-- Schema.org 2: LocalBusiness & OnlineStore Structured Data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
+        "@type": ["LocalBusiness", "OnlineStore"],
         "name": "Annapurna Aahaar",
         "image": "https://bandegangasai.github.io/annapurna-aahaar/images/hero-3d-heritage-spread.jpg",
-        "description": "Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152.",
+        "description": "Annapurna Aahaar offers authentic traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call 9347036152.",
         "slogan": "Tradition in Every Grain.",
         "url": "https://bandegangasai.github.io/annapurna-aahaar/",
         "logo": "https://bandegangasai.github.io/annapurna-aahaar/favicon.svg",
@@ -79,11 +105,18 @@
         "email": "annapurnaaahaar@gmail.com",
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "Main Market Area",
           "addressLocality": "Bhainsa",
           "addressRegion": "Telangana",
           "postalCode": "504103",
           "addressCountry": "IN"
         },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "19.1917",
+          "longitude": "77.9628"
+        },
+        "openingHours": "Mo-Su 00:00-23:59",
         "priceRange": "₹80 - ₹320",
         "paymentAccepted": "Cash on Delivery, UPI, Credit Card, Debit Card, Net Banking",
         "currenciesAccepted": "INR"
@@ -367,36 +400,95 @@
   <body class="bg-[#F8F3E7] text-[#252525] antialiased selection:bg-[#C79A45] selection:text-[#173F35]">
     <!-- Googlebot & Accessibility Pre-Rendered Semantic Container -->
     <div id="root">
-      <header style="background-color: #173F35; color: #F8F3E7; padding: 20px; text-align: center;">
-        <h1 style="font-size: 28px; margin: 0; font-family: Georgia, serif;">Annapurna Aahaar</h1>
-        <p style="color: #C79A45; font-style: italic; margin: 5px 0 0 0;">Tradition in Every Grain.</p>
-        <p style="font-size: 14px; margin: 6px 0 0 0;">Bhainsa, Nirmal District, Telangana — 504103 | Call to Order: <a href="tel:9347036152" style="color: #DFC17B; font-weight: bold;">9347036152</a></p>
+      <header style="background-color: #173F35; color: #F8F3E7; padding: 25px 20px; text-align: center;">
+        <h1 style="font-size: 32px; margin: 0; font-family: Georgia, serif; font-weight: bold; color: #F8F3E7;">
+          Annapurna Aahaar
+        </h1>
+        <p style="color: #DFC17B; font-style: italic; margin: 6px 0 0 0; font-size: 18px;">
+          "Tradition in Every Grain."
+        </p>
+        <p style="font-size: 14px; margin: 8px 0 0 0; color: #F8F3E7;">
+          Bhainsa, Nirmal District, Telangana — 504103 | 24/7 Telephone Helpline: <a href="tel:9347036152" style="color: #DFC17B; font-weight: bold; text-decoration: underline;">9347036152</a>
+        </p>
+        <nav style="margin-top: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; font-size: 13px;">
+          <a href="#/" style="color: #F8F3E7; text-decoration: underline;">Home</a>
+          <a href="#/products" style="color: #DFC17B; font-weight: bold; text-decoration: underline;">Products Catalogue</a>
+          <a href="#/our-story" style="color: #F8F3E7; text-decoration: underline;">Our Story</a>
+          <a href="#/why-us" style="color: #F8F3E7; text-decoration: underline;">Why Choose Us</a>
+          <a href="#/contact" style="color: #F8F3E7; text-decoration: underline;">Contact</a>
+          <a href="#/faq" style="color: #F8F3E7; text-decoration: underline;">FAQ</a>
+          <a href="#/shipping-policy" style="color: #F8F3E7; text-decoration: underline;">Shipping Policy</a>
+          <a href="#/return-policy" style="color: #F8F3E7; text-decoration: underline;">Return Policy</a>
+        </nav>
       </header>
-      <main style="max-width: 900px; margin: 30px auto; padding: 0 20px; font-family: system-ui, sans-serif; line-height: 1.6;">
+
+      <main style="max-width: 960px; margin: 30px auto; padding: 0 20px; font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #252525;">
         <section>
-          <h2 style="color: #173F35;">Traditional Indian Food Products</h2>
-          <p>Annapurna Aahaar offers traditional Indian food products including sevaya, papad and turmeric powder from Bhainsa, Nirmal District, Telangana. Order online or call <a href="tel:9347036152" style="color: #173F35; font-weight: bold;">9347036152</a>.</p>
+          <h2 style="color: #173F35; font-size: 24px; font-family: Georgia, serif;">Authentic Indian Food Products from Bhainsa, Telangana</h2>
+          <p>
+            <strong>Annapurna Aahaar</strong> (annapurnaahaar / अन्नपूर्णा आहार / అన్నపూర్ణ ఆహార్), founded by <strong>Bande Omkar</strong> in <strong>Bhainsa, Nirmal District, Telangana (PIN: 504103)</strong>, provides 100% pure, natural, and handcrafted Indian food products. Order online or call our 24/7 dedicated telephone helpline at <strong><a href="tel:9347036152" style="color: #173F35; font-weight: bold;">9347036152</a></strong>.
+          </p>
         </section>
-        <section style="margin-top: 25px;">
-          <h3 style="color: #173F35;">Our Handcrafted Products</h3>
-          <ul>
-            <li><strong>Traditional Wheat Sevaya</strong> — Handcrafted whole-wheat roasted vermicelli sevaya.</li>
-            <li><strong>Urad Dal Papad</strong> — Crispy authentic papad with cumin and pepper.</li>
-            <li><strong>Moong Dal Papad</strong> — Light, digestible yellow moong dal papad.</li>
-            <li><strong>Masala Papad</strong> — Spicy Indian papad with red chili and ajwain.</li>
-            <li><strong>Rice Papad</strong> — Sun-dried melt-in-mouth rice papad.</li>
-            <li><strong>Pure Turmeric Powder</strong> — 100% pure stone-ground haldi powder.</li>
-            <li><strong>Maggie &amp; Noodles</strong> — Premium high-protein noodles.</li>
+
+        <section style="margin-top: 30px;">
+          <h3 style="color: #173F35; font-size: 20px; font-family: Georgia, serif;">Our Handcrafted Product Line</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 15px;">
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/traditional-wheat-sevaya" style="color: #173F35; font-weight: bold; text-decoration: underline;">Traditional Wheat Sevaya</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">Handcrafted whole-wheat roasted vermicelli sevaya. Price: ₹90 (500g) / ₹180 (1kg).</p>
+            </div>
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/urad-dal-papad" style="color: #173F35; font-weight: bold; text-decoration: underline;">Urad Dal Papad</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">Crispy handcrafted black-gram papad with black pepper and cumin. Price: ₹150 (500g) / ₹300 (1kg).</p>
+            </div>
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/moong-dal-papad" style="color: #173F35; font-weight: bold; text-decoration: underline;">Moong Dal Papad</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">Light, digestible yellow moong dal papad with authentic spices. Price: ₹160 (500g) / ₹320 (1kg).</p>
+            </div>
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/masala-papad" style="color: #173F35; font-weight: bold; text-decoration: underline;">Masala Papad</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">Spicy Indian papad bursting with authentic red chili and ajwain. Price: ₹150 (500g) / ₹300 (1kg).</p>
+            </div>
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/rice-papad" style="color: #173F35; font-weight: bold; text-decoration: underline;">Rice Papad (Biyyapu Appadalu)</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">Steamed and sun-dried rice flour papad with delicate crispiness. Price: ₹150 (500g) / ₹300 (1kg).</p>
+            </div>
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/pure-turmeric-powder" style="color: #173F35; font-weight: bold; text-decoration: underline;">Pure Turmeric Powder</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">100% pure stone-ground golden haldi powder from farm roots. Price: ₹80 (250g) / ₹150 (500g).</p>
+            </div>
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/maggie" style="color: #173F35; font-weight: bold; text-decoration: underline;">Maggie Instant Noodles</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">Classic Indian masala instant noodles. Price: ₹85 (Pack of 6).</p>
+            </div>
+            <div style="background: #ffffff; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
+              <h4 style="margin: 0 0 6px 0; font-size: 16px;"><a href="#/products/noodles" style="color: #173F35; font-weight: bold; text-decoration: underline;">High-Protein Noodles</a></h4>
+              <p style="margin: 0; font-size: 13px; color: #4b5563;">High-protein wheat noodles for Hakka preparations. Price: ₹95 (500g).</p>
+            </div>
+          </div>
+        </section>
+
+        <section style="margin-top: 30px;">
+          <h3 style="color: #173F35; font-size: 20px; font-family: Georgia, serif;">Simple Customer Ordering Channels</h3>
+          <p>1. <strong>Online Store:</strong> Browse catalogue, select weight variants, and order with Cash on Delivery (COD) or instant UPI payment (9542836358@ybl).</p>
+          <p>2. <strong>24/7 Telephone Voice Helpline (9347036152):</strong> Call anytime for automated interactive voice ordering in English, Marathi (मराठी), Hindi (हिन्दी), or Telugu (తెలుగు).</p>
+        </section>
+
+        <section style="margin-top: 30px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+          <h3 style="color: #173F35; font-size: 18px; font-family: Georgia, serif;">Customer Support & Legal Policies</h3>
+          <ul style="font-size: 14px; line-height: 1.8;">
+            <li><a href="#/faq" style="color: #173F35; text-decoration: underline;">Frequently Asked Questions (FAQ)</a> — Common queries regarding our heritage products and ordering.</li>
+            <li><a href="#/shipping-policy" style="color: #173F35; text-decoration: underline;">Shipping & Delivery Policy</a> — Flat ₹40 delivery across India (FREE shipping above ₹500).</li>
+            <li><a href="#/return-policy" style="color: #173F35; text-decoration: underline;">Return & Refund Policy</a> — 7-day return guarantee for damaged or unopened sealed packets.</li>
+            <li><a href="#/privacy-policy" style="color: #173F35; text-decoration: underline;">Privacy Policy</a> — Customer data protection standards.</li>
+            <li><a href="#/terms" style="color: #173F35; text-decoration: underline;">Terms & Conditions</a> — Commercial guidelines & Telangana jurisdiction.</li>
           </ul>
         </section>
-        <section style="margin-top: 25px;">
-          <h3 style="color: #173F35;">Ordering Channels</h3>
-          <p>1. <strong>Online Store:</strong> Browse catalogue, select packet sizes, and pay via Cash on Delivery, UPI, or Online Cards.</p>
-          <p>2. <strong>24/7 Telephone Voice Helpline:</strong> Call <strong><a href="tel:9347036152" style="color: #173F35;">9347036152</a></strong> for instant multilingual automated voice ordering in English, Marathi (मराठी), Hindi (हिन्दी), and Telugu (తెలుగు).</p>
-        </section>
       </main>
-      <footer style="background-color: #0C241E; color: #F8F3E7; padding: 20px; text-align: center; font-size: 13px;">
-        <p>Annapurna Aahaar • Bhainsa, Nirmal District, Telangana (504103) • Email: annapurnaaahaar@gmail.com</p>
+
+      <footer style="background-color: #0C241E; color: #F8F3E7; padding: 25px 20px; text-align: center; font-size: 13px; margin-top: 40px;">
+        <p style="margin: 0 0 5px 0;"><strong>Annapurna Aahaar</strong> • Bhainsa, Nirmal District, Telangana (504103)</p>
+        <p style="margin: 0; color: #DFC17B;">Owner / Founder: Bande Omkar • Phone: 9347036152 • Email: annapurnaaahaar@gmail.com</p>
       </footer>
     </div>
     <script type="module" src="/src/main.tsx"></script>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Annapurna Aahaar | Page Redirect</title>
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages
+      // https://github.com/rafgraph/spa-github-pages
+      var pathSegmentsToKeep = 1;
+      var l = window.location;
+      l.replace(
+        l.protocol +
+          '//' +
+          l.hostname +
+          (l.port ? ':' + l.port : '') +
+          l.pathname
+            .split('/')
+            .slice(0, 1 + pathSegmentsToKeep)
+            .join('/') +
+          '/?/' +
+          l.pathname
+            .slice(1)
+            .split('/')
+            .slice(pathSegmentsToKeep)
+            .join('/')
+            .replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash
+      );
+    </script>
+    <style>
+      body {
+        background-color: #F8F3E7;
+        font-family: Georgia, serif;
+        color: #173F35;
+        text-align: center;
+        padding: 50px 20px;
+      }
+      h1 { font-size: 28px; margin-bottom: 10px; }
+      p { font-size: 16px; color: #4b5563; }
+      a { color: #C79A45; font-weight: bold; text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <h1>Annapurna Aahaar</h1>
+    <p>Redirecting to authentic traditional food catalogue...</p>
+    <p>If you are not redirected automatically, please <a href="/annapurna-aahaar/">click here to return home</a>.</p>
+  </body>
+</html>

@@ -39,12 +39,26 @@ export const FAQ: React.FC = () => {
     },
   ];
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.a,
+      },
+    })),
+  };
+
   return (
     <div className="bg-[#F8F3E7] min-h-screen py-10 lg:py-16 text-[#252525]">
       <SEOHead
         title="Frequently Asked Questions (FAQ) | Annapurna Aahaar"
         description="Find answers to common questions about Annapurna Aahaar food products, delivery timelines, ingredients, 24/7 telephone ordering (9347036152), and returns."
         url="https://bandegangasai.github.io/annapurna-aahaar/#/faq"
+        jsonLd={faqJsonLd}
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">

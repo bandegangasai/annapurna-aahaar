@@ -35,8 +35,8 @@ export const TRANSLATIONS = {
 
     // Hero Section
     hero_badge: '100% Pure & Authentic Handcrafted Indian Foods',
-    hero_title_1: 'Tradition in',
-    hero_title_2: 'Every Bite.',
+    hero_title_1: 'Annapurna Aahaar',
+    hero_title_2: 'Authentic Indian Foods',
     hero_subtitle:
       'Handcrafted sun-dried papads, stone-ground pure turmeric, and authentic roasted wheat sevaya from the heritage kitchens of Bhainsa, Telangana.',
     hero_shop_now: 'Shop Products',
@@ -223,8 +223,8 @@ export const TRANSLATIONS = {
 
     // Hero Section
     hero_badge: '१००% अस्सल व पारंपरिक भारतीय खाद्यपदार्थ',
-    hero_title_1: 'परंपरेची चव,',
-    hero_title_2: 'प्रत्येक घासात.',
+    hero_title_1: 'अन्नपूर्णा आहार',
+    hero_title_2: 'पारंपरिक शुद्ध खाद्यपदार्थ',
     hero_subtitle:
       'भैंसा येथील अस्सल हाताने लाटलेले पापड, उन्हात वाळवलेल्या गव्हाच्या शेवया आणि शुद्ध दगडी जात्यावर दळलेली हळद पावडर.',
     hero_shop_now: 'उत्पादने पहा',
@@ -410,9 +410,9 @@ export const TRANSLATIONS = {
     brand_location: 'भैंसा, निर्मल जिला, तेलंगाना — 504103',
 
     // Hero Section
-    hero_badge: '100% शुद्ध और प्रामाणिक पारंपरिक भारतीय खाद्य उत्पाद',
-    hero_title_1: 'परंपरा का स्वाद,',
-    hero_title_2: 'हर निवाले में।',
+    hero_badge: '100% शुद्ध और पारंपरिक भारतीय खाद्य उत्पाद',
+    hero_title_1: 'अन्नपूर्णा आहार',
+    hero_title_2: 'पारंपरिक शुद्ध खाद्य उत्पाद',
     hero_subtitle:
       'भैंसा, तेलंगाना की पारंपरिक रसोई से शुद्ध हाथ से बने पापड़, भुनी हुई गेहूं की सेवइयां और 100% शुद्ध पिसी हुई हल्दी पाउडर।',
     hero_shop_now: 'उत्पाद देखें',
@@ -599,8 +599,8 @@ export const TRANSLATIONS = {
 
     // Hero Section
     hero_badge: '100% స్వచ్ఛమైన & సంప్రదాయ భారతీయ ఆహార ఉత్పత్తులు',
-    hero_title_1: 'ప్రతి ముద్దలో',
-    hero_title_2: 'సంప్రదాయ రుచి.',
+    hero_title_1: 'అన్నపూర్ణ ఆహార్',
+    hero_title_2: 'సాంప్రదాయ భారతీయ ఆహార ఉత్పత్తులు',
     hero_subtitle:
       'భైంసా సంప్రదాయ వంటింటి నుంచి చేతితో తయారుచేసిన అప్పడాలు, ఎండబెట్టిన గోధుమ సేమియా మరియు స్వచ్ఛమైన రాతితో విసిరిన పసుపు పొడి.',
     hero_shop_now: 'ఉత్పత్తులు చూడండి',
